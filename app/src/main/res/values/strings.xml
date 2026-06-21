@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PiggyBite</string>
+    <string name="nav_calendar">Lịch/Calendar</string>
+    <string name="nav_home">Trang chủ/Home</string>
+    <string name="nav_wallet">Ví/Wallet</string>
+    <string name="gallery">Thư viện/Gallery</string>
+    <string name="capture">Chụp ảnh/Capture</string>
+    <string name="record">Ghi âm/Record</string>
+    <string name="statistics">Thống kê/Statistics</string>
+    <string name="ai_feature">Tính năng AI/AI Feature</string>
+    <string name="settings">Cài đặt/Settings</string>
+    <string name="income">Thu nhập/Income</string>
+    <string name="expense">Chi tiêu/Spend</string>
+    <string name="total_balance">Tổng số dư/Total Balance</string>
+    <string name="total_income">Tổng thu/Total Income</string>
+    <string name="total_expense">Tổng chi/Total Expense</string>
+    <string name="cat_fixed">Cố định/Fixed</string>
+    <string name="cat_essential">Nhu cầu thiết yếu/Essentials</string>
+    <string name="cat_enjoyment">Hưởng thụ &amp; Giải trí/Enjoyment</string>
+    <string name="cat_education">Giáo dục/Education</string>
+    <string name="cat_flex">Linh hoạt/Flex</string>
+    <string name="cat_other">Khác/Other</string>
+
+    <string-array name="emojis">
+        <item>😀</item><item>😃</item><item>😄</item><item>😁</item><item>😆</item><item>😅</item><item>😂</item><item>🤣</item><item>😊</item><item>😇</item>
+        <item>🙂</item><item>🙃</item><item>😉</item><item>😌</item><item>😍</item><item>🥰</item><item>😘</item><item>😗</item><item>😙</item><item>😚</item>
+        <item>😋</item><item>😛</item><item>😝</item><item>😜</item><item>🤪</item><item>🤨</item><item>🧐</item><item>🤓</item><item>😎</item><item>🤩</item>
+        <item>🥳</item><item>😏</item><item>😒</item><item>😞</item><item>😔</item><item>😟</item><item>😕</item><item>🙁</item><item>☹️</item><item>😣</item>
+        <item>😖</item><item>😫</item><item>😩</item><item>🥺</item><item>😢</item><item>😭</item><item>😤</item><item>😠</item><item>😡</item><item>🤬</item>
+        <item>🤯</item><item>😳</item><item>🥵</item><item>🥶</item><item>😱</item><item>😨</item><item>😰</item><item>😥</item><item>😓</item><item>🤗</item>
+        <item>🤔</item><item>🤭</item><item>🤫</item><item>🤥</item><item>😶</item><item>😐</item><item>😑</item><item>😬</item><item>🙄</item><item>😯</item>
+        <item>😦</item><item>😧</item><item>😮</item><item>😲</item><item>🥱</item><item>😴</item><item>🤤</item><item>😪</item><item>😵</item><item>🤐</item>
+        <item>🥴</item><item>🤢</item><item>🤮</item><item>🤧</item><item>😷</item><item>🤒</item><item>🤕</item><item>🤑</item><item>🤠</item><item>😈</item>
+        <item>🍏</item><item>🍎</item><item>🍐</item><item>🍊</item><item>🍋</item><item>🍌</item><item>🍉</item><item>🍇</item><item>🍓</item><item>🍈</item>
+        <item>🍒</item><item>🍑</item><item>🥭</item><item>🍍</item><item>🥥</item><item>🥝</item><item>🍅</item><item>🍆</item><item>🥑</item><item>🥦</item>
+        <item>🥬</item><item>🥒</item><item>🌶</item><item>🌽</item><item>🥕</item><item>🥔</item><item>🍠</item><item>🥐</item><item>🥯</item><item>🍞</item>
+        <item>🥖</item><item>🥨</item><item>🧀</item><item>🥚</item><item>🍳</item><item>🥞</item><item>🥓</item><item>🥩</item><item>🍗</item><item>🍖</item>
+        <item>🌭</item><item>🍔</item><item>🍟</item><item>🍕</item><item>🥪</item><item>🥙</item><item>🌮</item><item>🌯</item><item>🥗</item><item>🥘</item>
+        <item>🥣</item><item>🍝</item><item>🍜</item><item>🍲</item><item>🍛</item><item>🍣</item><item> Bento</item><item>🥟</item><item>🍤</item><item>🍙</item>
+        <item>🍚</item><item>🍘</item><item>🍥</item><item>🥠</item><item>🥮</item><item>🍢</item><item>🍡</item><item>🍧</item><item>🍨</item><item>🍦</item>
+        <item>🥧</item><item>🍰</item><item>🎂</item><item>🍮</item><item>🍭</item><item>🍬</item><item>🍫</item><item>🍿</item><item>🧂</item><item>🥤</item>
+        <item>🧃</item><item>🍵</item><item>☕️</item><item>🍺</item><item>🍻</item><item>🥂</item><item>🍷</item><item>🥃</item><item>🍸</item><item>🍹</item>
+        <item>🏠</item><item>🏡</item><item>🏢</item><item>🏣</item><item>🏥</item><item>🏦</item><item>🏨</item><item>🏩</item><item>🏪</item><item>🏫</item>
+        <item>⛪️</item><item>🕋</item><item>⛲️</item><item>⛺️</item><item>🏠</item><item>🚗</item><item>🚕</item><item>🚙</item><item>🚌</item><item>🚎</item>
+        <item>🏎</item><item>🚓</item><item>🚑</item><item>🚒</item><item>🚐</item><item>🚚</item><item>🚛</item><item>🚜</item><item>🚲</item><item>🛵</item>
+        <item>🏍</item><item>🛺</item><item>🚆</item><item>🚄</item><item>🚄</item><item>🚇</item><item>✈️</item><item>🚢</item><item>⛵️</item><item>🛶</item>
+        <item>⚽️</item><item>🏀</item><item>🏈</item><item>⚾️</item><item>🥎</item><item>🎾</item><item>🏐</item><item>🏉</item><item>🎱</item><item>🏓</item>
+        <item>🥊</item><item>🥋</item><item>🥅</item><item>⛳️</item><item>⛸</item><item>🎣</item><item>🚣</item><item>🏊</item><item>🏄</item><item>🛀</item>
+    </string-array>
+</resources>

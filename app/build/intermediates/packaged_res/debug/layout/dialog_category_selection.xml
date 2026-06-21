@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet_translucent"
+    android:paddingBottom="32dp">
+
+    <View
+        android:id="@+id/dragHandle"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/light_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Header -->
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/circle_bg_dark"
+        android:src="@drawable/ic_close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dragHandle"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Danh mục chi tiêu"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btnClose"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnClose" />
+
+    <ImageButton
+        android:id="@+id/btnDone"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/circle_bg_accent"
+        android:src="@drawable/ic_check"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dragHandle"
+        app:tint="@color/white" />
+
+    <!-- Month Switcher -->
+    <LinearLayout
+        android:id="@+id/monthSwitcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+        <ImageView
+            android:id="@+id/btnPrevMonth"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:rotation="90"
+            android:src="@drawable/ic_arrow_down"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tvCurrentMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:text="Tháng 11, 2024"
+            android:textColor="@color/accent"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btnNextMonth"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:rotation="-90"
+            android:src="@drawable/ic_arrow_down"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <!-- Content Scroll -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/monthSwitcher">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
+
+            <!-- EXPENSE GROUPS -->
+            <LinearLayout
+                android:id="@+id/layoutExpense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/headerFixed"
+                    style="@style/CategoryHeaderStyle"
+                    android:drawableStart="@drawable/ic_home"
+                    android:text="Cố định" />
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="8dp">
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🏠 Thuê nhà" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="❤️ Hiếu hỉ" />
+                </com.google.android.material.chip.ChipGroup>
+
+                <TextView
+                    android:id="@+id/headerEssential"
+                    style="@style/CategoryHeaderStyle"
+                    android:drawableStart="@drawable/ic_cart"
+                    android:layout_marginTop="24dp"
+                    android:text="Nhu cầu thiết yếu" />
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="8dp">
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="☕ Cafe" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🥐 Ăn uống" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🥦 Đi chợ" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="💡 Điện/ Nước" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🛵 Di chuyển" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="⛽ Xăng" />
+                </com.google.android.material.chip.ChipGroup>
+
+                <TextView
+                    android:id="@+id/headerFun"
+                    style="@style/CategoryHeaderStyle"
+                    android:drawableStart="@drawable/ic_heart"
+                    android:layout_marginTop="24dp"
+                    android:text="Hưởng thụ &amp; Giải trí" />
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="8dp">
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🛍️ Mua sắm" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🤪 Shoppee/ Tiktok" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🛫 Du lịch" />
+                </com.google.android.material.chip.ChipGroup>
+
+                <TextView
+                    android:id="@+id/headerEducation"
+                    style="@style/CategoryHeaderStyle"
+                    android:drawableStart="@drawable/ic_book"
+                    android:layout_marginTop="24dp"
+                    android:text="Giáo dục" />
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="8dp">
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="📚 Học tập" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- INCOME GROUPS -->
+            <LinearLayout
+                android:id="@+id/layoutIncome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/headerIncomeFixed"
+                    style="@style/CategoryHeaderStyle"
+                    android:drawableStart="@drawable/ic_wallet"
+                    android:text="Cố định" />
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="8dp">
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="💵 Lương" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🤝 Cho thuê nhà" />
+                </com.google.android.material.chip.ChipGroup>
+
+                <TextView
+                    android:id="@+id/headerIncomeFlex"
+                    style="@style/CategoryHeaderStyle"
+                    android:drawableStart="@drawable/ic_mic"
+                    android:layout_marginTop="24dp"
+                    android:text="Linh hoạt" />
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="8dp">
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="💹 Đầu tư" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="💻 Freelance" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="🌹 Tiếp thị liên kết" />
+                    <com.google.android.material.chip.Chip style="@style/CategoryChipStyle" android:text="💰 Thu nhập khác" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Common Khác Section -->
+            <TextView
+                android:id="@+id/headerOther"
+                style="@style/CategoryHeaderStyle"
+                android:drawableStart="@drawable/ic_settings"
+                android:layout_marginTop="24dp"
+                android:text="Khác"
+                android:visibility="gone" />
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/groupOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCreateNew"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_save_button"
+        android:text="+ Tạo mới"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/scrollContent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

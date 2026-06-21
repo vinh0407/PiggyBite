@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Core Indigo Theme -->
+    <color name="primary_blue">#4A5BCC</color>
+    <color name="primary_dark">#3A4AB0</color>
+    <color name="primary_light">#E8EAF6</color>
+
+    <!-- UI Backgrounds -->
+    <color name="bg_app">#F4F7FE</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="translucent_white">#CCFFFFFF</color>
+
+    <!-- Text Colors -->
+    <color name="text_main">#1E2235</color>
+    <color name="text_hint">#8E949A</color>
+    <color name="text_white">#FFFFFF</color>
+
+    <!-- Semantic Colors -->
+    <color name="expense_red">#EA5455</color>
+    <color name="income_green">#28C76F</color>
+    <color name="warning_yellow">#FF9F43</color>
+    <color name="accent_purple">#D131F5</color>
+
+    <!-- Basic -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="grey_light">#F1F2F6</color>
+    <color name="light_grey">#E0E0E0</color>
+
+    <!-- Compatibility Aliases (Required by system/old styles) -->
+    <color name="primary">#4A5BCC</color>
+    <color name="primary_variant">#3A4AB0</color>
+    <color name="accent">#4A5BCC</color>
+    <color name="background">#F4F7FE</color>
+    <color name="on_surface">#1E2235</color>
+    <color name="dark_grey">#FFFFFF</color> <!-- Forced to white for theme unification -->
+    <color name="pill_bg">#F1F2F6</color>
+</resources>

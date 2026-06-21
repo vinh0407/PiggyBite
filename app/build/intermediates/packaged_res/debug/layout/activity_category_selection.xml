@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <!-- Header -->
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/circle_bg_dark"
+        android:src="@drawable/ic_close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Danh mục chi tiêu"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnClose" />
+
+    <LinearLayout
+        android:id="@+id/monthSwitcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+        <ImageView
+            android:id="@+id/btnPrevMonth"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:rotation="90"
+            android:src="@drawable/ic_arrow_down"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tvCurrentMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:text="Tháng 11, 2024"
+            android:textColor="@color/accent"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btnNextMonth"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:rotation="-90"
+            android:src="@drawable/ic_arrow_down"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnDone"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/circle_bg_accent"
+        android:src="@drawable/ic_check"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white" />
+
+    <!-- Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@id/btnCreateNew"
+        app:layout_constraintTop_toBottomOf="@id/monthSwitcher">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="24dp">
+
+            <!-- Cố định Group -->
+            <TextView
+                android:id="@+id/headerFixed"
+                style="@style/CategoryHeaderStyle"
+                android:drawableStart="@drawable/ic_home"
+                android:text="Cố định" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="🏠 Thuê nhà" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="❤️ Hiếu hỉ" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Nhu cầu thiết yếu Group -->
+            <TextView
+                android:id="@+id/headerEssential"
+                style="@style/CategoryHeaderStyle"
+                android:drawableStart="@drawable/ic_cart"
+                android:layout_marginTop="24dp"
+                android:text="Nhu cầu thiết yếu" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="☕ Cafe" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="🥐 Ăn uống" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="🥦 Đi chợ" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="💡 Điện/ Nước" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="🛵 Di chuyển" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="⛽ Xăng" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Hưởng thụ & Giải trí Group -->
+            <TextView
+                android:id="@+id/headerFun"
+                style="@style/CategoryHeaderStyle"
+                android:drawableStart="@drawable/ic_heart"
+                android:layout_marginTop="24dp"
+                android:text="Hưởng thụ &amp; Giải trí" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="🛍️ Mua sắm" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="🤪 Shoppee/ Tiktok" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="🛫 Du lịch" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Giáo dục Group -->
+            <TextView
+                android:id="@+id/headerEducation"
+                style="@style/CategoryHeaderStyle"
+                android:drawableStart="@drawable/ic_book"
+                android:layout_marginTop="24dp"
+                android:text="Giáo dục" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/groupEducation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/CategoryChipStyle"
+                    android:text="📚 Học tập" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Khác Group -->
+            <TextView
+                android:id="@+id/headerOther"
+                style="@style/CategoryHeaderStyle"
+                android:drawableStart="@drawable/ic_settings"
+                android:layout_marginTop="24dp"
+                android:text="Khác"
+                android:visibility="gone" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/groupOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Action -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCreateNew"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/bg_save_button"
+        android:text="+ Tạo mới"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

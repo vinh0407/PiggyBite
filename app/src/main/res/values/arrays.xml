@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ai_keywords">
+        <item>tiền</item>
+        <item>chi tiêu</item>
+        <item>thu nhập</item>
+        <item>quỹ</item>
+        <item>tiết kiệm</item>
+        <item>báo cáo</item>
+        <item>thống kê</item>
+    </string-array>
+</resources>

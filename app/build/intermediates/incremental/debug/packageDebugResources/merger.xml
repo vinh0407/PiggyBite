@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!&lt;dir>navigation"><source path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res"><file name="slide_in_left" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\anim\slide_in_left.xml" qualifiers="" type="anim"/><file name="slide_in_right" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\anim\slide_in_right.xml" qualifiers="" type="anim"/><file name="slide_out_left" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\anim\slide_out_left.xml" qualifiers="" type="anim"/><file name="slide_out_right" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\anim\slide_out_right.xml" qualifiers="" type="anim"/><file name="chip_background_selector" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\color\chip_background_selector.xml" qualifiers="" type="color"/><file name="nav_item_color" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\color\nav_item_color.xml" qualifiers="" type="color"/><file name="bg_amount_input" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_amount_input.xml" qualifiers="" type="drawable"/><file name="bg_bottom_sheet_translucent" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_bottom_sheet_translucent.xml" qualifiers="" type="drawable"/><file name="bg_floating_footer" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_floating_footer.xml" qualifiers="" type="drawable"/><file name="bg_income_card" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_income_card.xml" qualifiers="" type="drawable"/><file name="bg_jar" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_jar.xml" qualifiers="" type="drawable"/><file name="bg_keypad_button" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_keypad_button.xml" qualifiers="" type="drawable"/><file name="bg_nav_active" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_nav_active.xml" qualifiers="" type="drawable"/><file name="bg_pill_dark" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_pill_dark.xml" qualifiers="" type="drawable"/><file name="bg_save_button" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_save_button.xml" qualifiers="" type="drawable"/><file name="bg_switch_expense" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_switch_expense.xml" qualifiers="" type="drawable"/><file name="bg_switch_income" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_switch_income.xml" qualifiers="" type="drawable"/><file name="bg_transaction_card" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_transaction_card.xml" qualifiers="" type="drawable"/><file name="capture_ring" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\capture_ring.xml" qualifiers="" type="drawable"/><file name="circle_bg_accent" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\circle_bg_accent.xml" qualifiers="" type="drawable"/><file name="circle_bg_dark" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\circle_bg_dark.xml" qualifiers="" type="drawable"/><file name="circle_white" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\circle_white.xml" qualifiers="" type="drawable"/><file name="icon_app_money" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\icon_app_money.jpg" qualifiers="" type="drawable"/><file name="ic_arrow_down" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_arrow_down.xml" qualifiers="" type="drawable"/><file name="ic_backspace" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_backspace.xml" qualifiers="" type="drawable"/><file name="ic_book" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_book.xml" qualifiers="" type="drawable"/><file name="ic_bubble" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_bubble.xml" qualifiers="" type="drawable"/><file name="ic_calendar" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_calendar.xml" qualifiers="" type="drawable"/><file name="ic_calendar_nav" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_calendar_nav.xml" qualifiers="" type="drawable"/><file name="ic_camera" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_camera.xml" qualifiers="" type="drawable"/><file name="ic_cart" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_cart.xml" qualifiers="" type="drawable"/><file name="ic_chart" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_chart.xml" qualifiers="" type="drawable"/><file name="ic_check" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_check.xml" qualifiers="" type="drawable"/><file name="ic_check_circle" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_check_circle.xml" qualifiers="" type="drawable"/><file name="ic_close" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_close.xml" qualifiers="" type="drawable"/><file name="ic_coin" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_coin.xml" qualifiers="" type="drawable"/><file name="ic_flash_off" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_flash_off.xml" qualifiers="" type="drawable"/><file name="ic_flash_on" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_flash_on.xml" qualifiers="" type="drawable"/><file name="ic_flip_camera" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_flip_camera.xml" qualifiers="" type="drawable"/><file name="ic_gallery" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_gallery.xml" qualifiers="" type="drawable"/><file name="ic_heart" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_heart.xml" qualifiers="" type="drawable"/><file name="ic_home" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_home.xml" qualifiers="" type="drawable"/><file name="ic_launcher_background" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_launcher_background.xml" qualifiers="" type="drawable"/><file name="ic_launcher_foreground" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_launcher_foreground.xml" qualifiers="" type="drawable"/><file name="ic_mic" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_mic.xml" qualifiers="" type="drawable"/><file name="ic_piggy_bank" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_piggy_bank.xml" qualifiers="" type="drawable"/><file name="ic_settings" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_settings.xml" qualifiers="" type="drawable"/><file name="ic_wallet" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_wallet.xml" qualifiers="" type="drawable"/><file name="ic_waves" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_waves.xml" qualifiers="" type="drawable"/><file name="pill_background" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\pill_background.xml" qualifiers="" type="drawable"/><file name="activity_add_transaction" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_add_transaction.xml" qualifiers="" type="layout"/><file name="activity_main" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_main.xml" qualifiers="" type="layout"/><file name="activity_settings" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_settings.xml" qualifiers="" type="layout"/><file name="dialog_category_selection" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\dialog_category_selection.xml" qualifiers="" type="layout"/><file name="dialog_create_category" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\dialog_create_category.xml" qualifiers="" type="layout"/><file name="dialog_currency_selection" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\dialog_currency_selection.xml" qualifiers="" type="layout"/><file name="dialog_emoji_picker" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\dialog_emoji_picker.xml" qualifiers="" type="layout"/><file name="fragment_calendar" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\fragment_calendar.xml" qualifiers="" type="layout"/><file name="fragment_wallet" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\fragment_wallet.xml" qualifiers="" type="layout"/><file name="item_emoji" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\item_emoji.xml" qualifiers="" type="layout"/><file name="activity_main" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout-sw600dp\activity_main.xml" qualifiers="sw600dp-v13" type="layout"/><file name="bottom_nav_menu" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\menu\bottom_nav_menu.xml" qualifiers="" type="menu"/><file name="ic_launcher" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml" qualifiers="anydpi-v26" type="mipmap"/><file name="ic_launcher_round" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml" qualifiers="anydpi-v26" type="mipmap"/><file path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\values\colors.xml" qualifiers=""><color name="white">#FFFFFF</color><color name="black">#000000</color><color name="expense_red">#EA5455</color><color name="income_green">#28C76F</color><color name="text_hint">#8E949A</color><color name="primary_dark">#3A4AB0</color><color name="bg_app">#F4F7FE</color><color name="grey_light">#F1F2F6</color><color name="warning_yellow">#FF9F43</color><color name="text_main">#1E2235</color><color name="text_white">#FFFFFF</color><color name="accent_purple">#D131F5</color><color name="primary_light">#E8EAF6</color><color name="translucent_white">#CCFFFFFF</color><color name="primary_blue">#4A5BCC</color><color name="accent">#4A5BCC</color><color name="surface">#FFFFFF</color><color name="primary">#4A5BCC</color><color name="background">#F4F7FE</color><color name="on_surface">#1E2235</color><color name="primary_variant">#3A4AB0</color><color name="dark_grey">#FFFFFF</color><color name="light_grey">#E0E0E0</color><color name="pill_bg">#F1F2F6</color></file><file path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\values\strings.xml" qualifiers=""><string name="app_name">PiggyBite</string><string name="nav_calendar">Lịch/Calendar</string><string name="nav_home">Trang chủ/Home</string><string name="nav_wallet">Ví/Wallet</string><string name="gallery">Thư viện/Gallery</string><string name="capture">Chụp ảnh/Capture</string><string name="record">Ghi âm/Record</string><string name="statistics">Thống kê/Statistics</string><string name="ai_feature">Tính năng AI/AI Feature</string><string name="settings">Cài đặt/Settings</string><string-array name="emojis">
+        <item>😀</item><item>😃</item><item>😄</item><item>😁</item><item>😆</item><item>😅</item><item>😂</item><item>🤣</item><item>😊</item><item>😇</item>
+        <item>🙂</item><item>🙃</item><item>😉</item><item>😌</item><item>😍</item><item>🥰</item><item>😘</item><item>😗</item><item>😙</item><item>😚</item>
+        <item>😋</item><item>😛</item><item>😝</item><item>😜</item><item>🤪</item><item>🤨</item><item>🧐</item><item>🤓</item><item>😎</item><item>🤩</item>
+        <item>🥳</item><item>😏</item><item>😒</item><item>😞</item><item>😔</item><item>😟</item><item>😕</item><item>🙁</item><item>☹️</item><item>😣</item>
+        <item>😖</item><item>😫</item><item>😩</item><item>🥺</item><item>😢</item><item>😭</item><item>😤</item><item>😠</item><item>😡</item><item>🤬</item>
+        <item>🤯</item><item>😳</item><item>🥵</item><item>🥶</item><item>😱</item><item>😨</item><item>😰</item><item>😥</item><item>😓</item><item>🤗</item>
+        <item>🤔</item><item>🤭</item><item>🤫</item><item>🤥</item><item>😶</item><item>😐</item><item>😑</item><item>😬</item><item>🙄</item><item>😯</item>
+        <item>😦</item><item>😧</item><item>😮</item><item>😲</item><item>🥱</item><item>😴</item><item>🤤</item><item>😪</item><item>😵</item><item>🤐</item>
+        <item>🥴</item><item>🤢</item><item>🤮</item><item>🤧</item><item>😷</item><item>🤒</item><item>🤕</item><item>🤑</item><item>🤠</item><item>😈</item>
+        <item>🍏</item><item>🍎</item><item>🍐</item><item>🍊</item><item>🍋</item><item>🍌</item><item>🍉</item><item>🍇</item><item>🍓</item><item>🍈</item>
+        <item>🍒</item><item>🍑</item><item>🥭</item><item>🍍</item><item>🥥</item><item>🥝</item><item>🍅</item><item>🍆</item><item>🥑</item><item>🥦</item>
+        <item>🥬</item><item>🥒</item><item>🌶</item><item>🌽</item><item>🥕</item><item>🥔</item><item>🍠</item><item>🥐</item><item>🥯</item><item>🍞</item>
+        <item>🥖</item><item>🥨</item><item>🧀</item><item>🥚</item><item>🍳</item><item>🥞</item><item>🥓</item><item>🥩</item><item>🍗</item><item>🍖</item>
+        <item>🌭</item><item>🍔</item><item>🍟</item><item>🍕</item><item>🥪</item><item>🥙</item><item>🌮</item><item>🌯</item><item>🥗</item><item>🥘</item>
+        <item>🥣</item><item>🍝</item><item>🍜</item><item>🍲</item><item>🍛</item><item>🍣</item><item> Bento</item><item>🥟</item><item>🍤</item><item>🍙</item>
+        <item>🍚</item><item>🍘</item><item>🍥</item><item>🥠</item><item>🥮</item><item>🍢</item><item>🍡</item><item>🍧</item><item>🍨</item><item>🍦</item>
+        <item>🥧</item><item>🍰</item><item>🎂</item><item>🍮</item><item>🍭</item><item>🍬</item><item>🍫</item><item>🍿</item><item>🧂</item><item>🥤</item>
+        <item>🧃</item><item>🍵</item><item>☕️</item><item>🍺</item><item>🍻</item><item>🥂</item><item>🍷</item><item>🥃</item><item>🍸</item><item>🍹</item>
+        <item>🏠</item><item>🏡</item><item>🏢</item><item>🏣</item><item>🏥</item><item>🏦</item><item>🏨</item><item>🏩</item><item>🏪</item><item>🏫</item>
+        <item>⛪️</item><item>🕋</item><item>⛲️</item><item>⛺️</item><item>🏠</item><item>🚗</item><item>🚕</item><item>🚙</item><item>🚌</item><item>🚎</item>
+        <item>🏎</item><item>🚓</item><item>🚑</item><item>🚒</item><item>🚐</item><item>🚚</item><item>🚛</item><item>🚜</item><item>🚲</item><item>🛵</item>
+        <item>🏍</item><item>🛺</item><item>🚆</item><item>🚄</item><item>🚄</item><item>🚇</item><item>✈️</item><item>🚢</item><item>⛵️</item><item>🛶</item>
+        <item>⚽️</item><item>🏀</item><item>🏈</item><item>⚾️</item><item>🥎</item><item>🎾</item><item>🏐</item><item>🏉</item><item>🎱</item><item>🏓</item>
+        <item>🥊</item><item>🥋</item><item>🥅</item><item>⛳️</item><item>⛸</item><item>🎣</item><item>🚣</item><item>🏊</item><item>🏄</item><item>🛀</item>
+    </string-array><string name="income">Thu nhập/Income</string><string name="expense">Chi tiêu/Spend</string><string name="total_income">Tổng thu/Total Income</string><string name="total_expense">Tổng chi/Total Expense</string><string name="total_balance">Tổng số dư/Total Balance</string><string name="cat_essential">Nhu cầu thiết yếu/Essentials</string><string name="cat_education">Giáo dục/Education</string><string name="cat_enjoyment">Hưởng thụ &amp; Giải trí/Enjoyment</string><string name="cat_flex">Linh hoạt/Flex</string><string name="cat_other">Khác/Other</string><string name="cat_fixed">Cố định/Fixed</string></file><file path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\values\themes.xml" qualifiers=""><style name="Theme.Money" parent="Theme.MaterialComponents.Light.NoActionBar">
+        
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <item name="colorSecondary">@color/accent_purple</item>
+        <item name="colorSecondaryVariant">@color/primary_dark</item>
+        <item name="colorOnSecondary">@color/white</item>
+        
+        <item name="android:statusBarColor">@color/bg_app</item>
+        <item name="android:windowLightStatusBar">true</item>
+        
+        <item name="android:windowBackground">@color/bg_app</item>
+    </style><style name="PremiumCardStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+    </style><style name="BottomNavPill">
+        <item name="android:background">@drawable/bg_bottom_pill</item>
+        <item name="android:elevation">8dp</item>
+    </style><style name="CircleImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style><style name="CameraSideBtn">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">@drawable/circle_bg_dark</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:tint">@color/white</item>
+    </style><style name="CameraZoomPill">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style><style name="CategoryHeaderStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_main</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style><style name="CategoryChipStyle" parent="Widget.MaterialComponents.Chip.Action">
+        <item name="chipBackgroundColor">@color/white</item>
+        <item name="android:textColor">@color/text_main</item>
+        <item name="chipCornerRadius">16dp</item>
+        <item name="chipStrokeColor">@color/grey_light</item>
+        <item name="chipStrokeWidth">1dp</item>
+    </style><style name="SettingsItemStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style><style name="SettingsArrowStyle">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:src">@drawable/ic_arrow_down</item>
+        <item name="android:rotation">-90</item>
+        <item name="android:tint">@color/text_hint</item>
+    </style><style name="SettingsTextStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:textColor">@color/text_main</item>
+        <item name="android:textSize">16sp</item>
+    </style><style name="StatsTabStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style><style name="SettingsIconStyle">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:tint">@color/primary_blue</item>
+    </style><style name="SettingsValueStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:textColor">@color/text_hint</item>
+        <item name="android:textSize">14sp</item>
+    </style><style name="CalendarWeekdayStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/text_hint</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style><style name="KeypadButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/text_main</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style><style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style><style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style><style name="CustomBottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style><style name="AIChatPill">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/bg_pill_white</item>
+        <item name="android:backgroundTint">#F0F2FF</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+    </style></file><file name="stats_tab_text_color" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\color\stats_tab_text_color.xml" qualifiers="" type="color"/><file name="bg_stats_tab" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_stats_tab.xml" qualifiers="" type="drawable"/><file name="icon_app_money_dark" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\icon_app_money_dark.jpg" qualifiers="" type="drawable"/><file name="activity_statistics" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_statistics.xml" qualifiers="" type="layout"/><file name="item_stats_entry" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\item_stats_entry.xml" qualifiers="" type="layout"/><file name="item_stats_summary_card" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\item_stats_summary_card.xml" qualifiers="" type="layout"/><file name="activity_statistics" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout-sw600dp\activity_statistics.xml" qualifiers="sw600dp-v13" type="layout"/><file path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\values-v23\themes.xml" qualifiers="v23"><style name="Theme.Money" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/primary_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@color/bg_app</item>
+    </style></file><file name="bg_bottom_pill" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_bottom_pill.xml" qualifiers="" type="drawable"/><file name="bg_pill_grey" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_pill_grey.xml" qualifiers="" type="drawable"/><file name="activity_login" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_login.xml" qualifiers="" type="layout"/><file name="item_quick_action" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\item_quick_action.xml" qualifiers="" type="layout"/><file name="item_cal_summary" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\item_cal_summary.xml" qualifiers="" type="layout"/><file name="bg_header_curved" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_header_curved.xml" qualifiers="" type="drawable"/><file name="bg_pill_white" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_pill_white.xml" qualifiers="" type="drawable"/><file name="bg_bottom_sheet_top_curved" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_bottom_sheet_top_curved.xml" qualifiers="" type="drawable"/><file name="fragment_ai_chat" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\fragment_ai_chat.xml" qualifiers="" type="layout"/><file name="item_fund_premium" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\item_fund_premium.xml" qualifiers="" type="layout"/><file name="bg_progress_blue" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_progress_blue.xml" qualifiers="" type="drawable"/><file name="activity_register" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_register.xml" qualifiers="" type="layout"/><file name="ic_brain" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_brain.xml" qualifiers="" type="drawable"/><file name="activity_ai_chat" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_ai_chat.xml" qualifiers="" type="layout"/><file name="bg_liquid_glass" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\bg_liquid_glass.xml" qualifiers="" type="drawable"/><file name="activity_add_fund" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_add_fund.xml" qualifiers="" type="layout"/><file name="activity_all_funds" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_all_funds.xml" qualifiers="" type="layout"/><file name="activity_all_transactions" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\activity_all_transactions.xml" qualifiers="" type="layout"/><file name="ic_eye" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_eye.xml" qualifiers="" type="drawable"/><file name="ic_eye_off" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\drawable\ic_eye_off.xml" qualifiers="" type="drawable"/><file name="item_chat_ai" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\item_chat_ai.xml" qualifiers="" type="layout"/><file name="item_chat_user" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\item_chat_user.xml" qualifiers="" type="layout"/><file path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\values\arrays.xml" qualifiers=""><string-array name="ai_keywords">
+        <item>tiền</item>
+        <item>chi tiêu</item>
+        <item>thu nhập</item>
+        <item>quỹ</item>
+        <item>tiết kiệm</item>
+        <item>báo cáo</item>
+        <item>thống kê</item>
+    </string-array></file><file name="dialog_vivid_options" path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\main\res\layout\dialog_vivid_options.xml" qualifiers="" type="layout"/></source></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!&lt;dir>navigation"><source path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\build\generated\res\resValues\debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!&lt;dir>navigation"><source path="C:\Users\ADMIN\AndroidStudioProjects\Money\app\build\generated\res\resValues\debug"/></dataSet><mergedItems/></merger>

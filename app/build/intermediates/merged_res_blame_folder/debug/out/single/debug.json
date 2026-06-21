@@ -1,0 +1,298 @@
+[
+    {
+        "merged": "com.money.app-merged_res-46:/anim_slide_out_right.xml.flat",
+        "source": "com.money.app-main-48:/anim/slide_out_right.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/anim_slide_in_right.xml.flat",
+        "source": "com.money.app-main-48:/anim/slide_in_right.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_gallery.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_gallery.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_coin.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_coin.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_activity_main.xml.flat",
+        "source": "com.money.app-main-48:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_capture_ring.xml.flat",
+        "source": "com.money.app-main-48:/drawable/capture_ring.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_fragment_wallet.xml.flat",
+        "source": "com.money.app-main-48:/layout/fragment_wallet.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_dialog_keypad.xml.flat",
+        "source": "com.money.app-main-48:/layout/dialog_keypad.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_pill_dark.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_pill_dark.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_settings.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_settings.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_item_emoji.xml.flat",
+        "source": "com.money.app-main-48:/layout/item_emoji.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/anim_slide_in_left.xml.flat",
+        "source": "com.money.app-main-48:/anim/slide_in_left.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_waves.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_waves.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_mic.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_mic.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_jar.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_jar.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_dialog_daily_transactions.xml.flat",
+        "source": "com.money.app-main-48:/layout/dialog_daily_transactions.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_flash_off.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_flash_off.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_flip_camera.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_flip_camera.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/menu_bottom_nav_menu.xml.flat",
+        "source": "com.money.app-main-48:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_piggy_bank.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_piggy_bank.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_activity_add_transaction.xml.flat",
+        "source": "com.money.app-main-48:/layout/activity_add_transaction.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/anim_slide_out_left.xml.flat",
+        "source": "com.money.app-main-48:/anim/slide_out_left.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_item_calendar_day.xml.flat",
+        "source": "com.money.app-main-48:/layout/item_calendar_day.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_cart.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_cart.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_close.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_close.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_item_rating_star.xml.flat",
+        "source": "com.money.app-main-48:/layout/item_rating_star.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_dialog_fund_transfer.xml.flat",
+        "source": "com.money.app-main-48:/layout/dialog_fund_transfer.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_keypad_button.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_keypad_button.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_floating_footer.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_floating_footer.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_camera.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_camera.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_switch_expense.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_switch_expense.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_arrow_down.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_arrow_down.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_nav_active.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_nav_active.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout-sw600dp_activity_main.xml.flat",
+        "source": "com.money.app-main-48:/layout-sw600dp/activity_main.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_icon_app_money.jpg.flat",
+        "source": "com.money.app-main-48:/drawable/icon_app_money.jpg"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_heart.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_heart.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_activity_settings.xml.flat",
+        "source": "com.money.app-main-48:/layout/activity_settings.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_switch_income.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_switch_income.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/color_nav_item_color.xml.flat",
+        "source": "com.money.app-main-48:/color/nav_item_color.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_check.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_check.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_amount_input.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_amount_input.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_wallet.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_wallet.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/color_chip_background_selector.xml.flat",
+        "source": "com.money.app-main-48:/color/chip_background_selector.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_pill_background.xml.flat",
+        "source": "com.money.app-main-48:/drawable/pill_background.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_book.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_book.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.money.app-main-48:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_dialog_quick_add.xml.flat",
+        "source": "com.money.app-main-48:/layout/dialog_quick_add.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_home.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_home.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_transaction_card.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_transaction_card.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_save_button.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_save_button.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_bubble.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_bubble.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_item_calendar_month.xml.flat",
+        "source": "com.money.app-main-48:/layout/item_calendar_month.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_dialog_emoji_picker.xml.flat",
+        "source": "com.money.app-main-48:/layout/dialog_emoji_picker.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_dialog_create_category.xml.flat",
+        "source": "com.money.app-main-48:/layout/dialog_create_category.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.money.app-main-48:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_calendar_nav.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_calendar_nav.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_chart.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_chart.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_item_transaction_detail.xml.flat",
+        "source": "com.money.app-main-48:/layout/item_transaction_detail.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_backspace.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_backspace.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_circle_bg_dark.xml.flat",
+        "source": "com.money.app-main-48:/drawable/circle_bg_dark.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_dialog_category_selection.xml.flat",
+        "source": "com.money.app-main-48:/layout/dialog_category_selection.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_calendar.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_calendar.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_bottom_sheet_translucent.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_bottom_sheet_translucent.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_fragment_calendar.xml.flat",
+        "source": "com.money.app-main-48:/layout/fragment_calendar.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_bg_income_card.xml.flat",
+        "source": "com.money.app-main-48:/drawable/bg_income_card.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_circle_bg_accent.xml.flat",
+        "source": "com.money.app-main-48:/drawable/circle_bg_accent.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_flash_on.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_flash_on.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_circle_white.xml.flat",
+        "source": "com.money.app-main-48:/drawable/circle_white.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_check_circle.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_check_circle.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.money.app-main-48:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_item_fund.xml.flat",
+        "source": "com.money.app-main-48:/layout/item_fund.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_activity_category_selection.xml.flat",
+        "source": "com.money.app-main-48:/layout/activity_category_selection.xml"
+    },
+    {
+        "merged": "com.money.app-merged_res-46:/layout_dialog_currency_selection.xml.flat",
+        "source": "com.money.app-main-48:/layout/dialog_currency_selection.xml"
+    }
+]

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Jar Body -->
+    <item android:top="40dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#33B3E5FC" /> <!-- Light blue transparent -->
+            <stroke android:width="2dp" android:color="#80FFFFFF" />
+            <corners
+                android:bottomLeftRadius="60dp"
+                android:bottomRightRadius="60dp"
+                android:topLeftRadius="30dp"
+                android:topRightRadius="30dp" />
+        </shape>
+    </item>
+    <!-- Lid -->
+    <item android:bottom="230dp" android:left="30dp" android:right="30dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FF212121" /> <!-- Dark lid -->
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</layer-list>
