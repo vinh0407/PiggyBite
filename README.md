@@ -116,7 +116,7 @@ For developers or users migrating data, PiggyBite follows the International Fina
 ---
 
 ## ⚖️ License & Credits
-Copyright © 2024 PiggyBite Development Team.
+Copyright © 2026 PiggyBite Development Team.
 Licensed under the **MIT License**. Use of the Gemini API is subject to Google's Generative AI Terms of Service.
 
 *PiggyBite: Empowering your wealth through the lens of Intelligence.*
