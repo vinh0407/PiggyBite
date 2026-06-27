@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.money.app" />
+                  <option name="mobileSdkAppId" value="1:38203815083:android:992571b63249166711b3ee" />
+                  <option name="projectId" value="piggybite-df0d8" />
+                  <option name="projectNumber" value="38203815083" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

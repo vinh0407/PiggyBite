@@ -84,7 +84,10 @@
             android:orientation="vertical"
             android:paddingVertical="12dp">
 
-            <LinearLayout style="@style/SettingsItemStyle">
+            <LinearLayout
+                android:id="@+id/btnProfile"
+                style="@style/SettingsItemStyle"
+                android:foreground="?attr/selectableItemBackground">
                 <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_heart" />
                 <TextView style="@style/SettingsTextStyle" android:text="Thông tin cá nhân" />
                 <ImageView style="@style/SettingsArrowStyle" />
@@ -105,6 +108,26 @@
                 <TextView style="@style/SettingsTextStyle" android:text="Tiền tệ" />
                 <TextView style="@style/SettingsValueStyle" android:text="VND" />
                 <ImageView style="@style/SettingsArrowStyle" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
+
+            <LinearLayout
+                android:id="@+id/btnLogout"
+                style="@style/SettingsItemStyle"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_arrow_down"
+                    android:rotation="270"
+                    app:tint="@color/expense_red" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="Đăng xuất"
+                    android:textColor="@color/expense_red" />
+                <ImageView style="@style/SettingsArrowStyle" app:tint="@color/expense_red" />
             </LinearLayout>
 
         </LinearLayout>

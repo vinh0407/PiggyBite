@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +14,7 @@ import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.Fund
 import com.money.app.util.AppUtils
+import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.launch
 
 class AllFundsActivity : AppCompatActivity() {
@@ -46,16 +46,45 @@ class AllFundsActivity : AppCompatActivity() {
             val percent = if (fund.targetAmount > 0) (fund.currentAmount / fund.targetAmount * 100).toInt() else 0
             holder.tvPercent.text = "$percent%"
             holder.progressBar.progress = percent.coerceIn(0, 100)
-            // Use generic icon for now
             holder.ivIcon.setImageResource(R.drawable.ic_piggy_bank)
+
+            holder.btnShare.setOnClickListener {
+                showShareDialog(fund)
+            }
         }
         override fun getItemCount() = list.size
+
+        private fun showShareDialog(fund: Fund) {
+            val etEmail = EditText(this@AllFundsActivity)
+            etEmail.hint = "Email thành viên gia đình"
+            
+            AlertDialog.Builder(this@AllFundsActivity)
+                .setTitle("Chia sẻ quỹ chung")
+                .setMessage("Nhập email người bạn muốn mời vào quỹ '${fund.name}':")
+                .setView(etEmail)
+                .setPositiveButton("Mời") { _, _ ->
+                    val email = etEmail.text.toString().trim()
+                    if (email.isNotEmpty()) {
+                        lifecycleScope.launch {
+                            val syncManager = FirebaseSyncManager(this@AllFundsActivity)
+                            // Note: In a production app, use the syncId saved when creating the fund
+                            val fid = fund.syncId
+                            syncManager.shareFund(fid, email)
+                            Toast.makeText(this@AllFundsActivity, "Đã gửi lời mời", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                .setNegativeButton("Hủy", null)
+                .show()
+        }
+
         inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val tvName = v.findViewById<TextView>(R.id.tvGoalName)
             val tvProgress = v.findViewById<TextView>(R.id.tvGoalProgress)
             val tvPercent = v.findViewById<TextView>(R.id.tvGoalPercent)
             val progressBar = v.findViewById<ProgressBar>(R.id.pbGoal)
             val ivIcon = v.findViewById<ImageView>(R.id.ivGoalIcon)
+            val btnShare = v.findViewById<ImageButton>(R.id.btnShareFund)
         }
     }
 }

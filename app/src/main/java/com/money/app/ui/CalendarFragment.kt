@@ -17,6 +17,7 @@ import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.Transaction
 import com.money.app.util.AppUtils
+import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -179,6 +180,7 @@ class CalendarFragment : Fragment() {
                                     timestamp = try { inFormat.parse(rawDate)?.time ?: System.currentTimeMillis() } catch(e: Exception) { System.currentTimeMillis() }
                                 )
                                 db.transactionDao().insert(trans)
+                                FirebaseSyncManager(requireContext()).saveTransaction(trans)
                             }
                         }
                     }

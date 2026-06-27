@@ -1379,6 +1379,10 @@ color bright_foreground_inverse_material_dark
 color bright_foreground_inverse_material_light
 color bright_foreground_material_dark
 color bright_foreground_material_light
+color browser_actions_bg_grey
+color browser_actions_divider_color
+color browser_actions_text_color
+color browser_actions_title_color
 color button_material_dark
 color button_material_light
 color call_notification_answer_color
@@ -2225,6 +2229,8 @@ dimen abc_text_size_subtitle_material_toolbar
 dimen abc_text_size_title_material
 dimen abc_text_size_title_material_toolbar
 dimen appcompat_dialog_background_inset
+dimen browser_actions_context_menu_max_width
+dimen browser_actions_context_menu_min_padding
 dimen cardview_compat_inset_shadow
 dimen cardview_default_elevation
 dimen cardview_default_radius
@@ -3120,6 +3126,9 @@ drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
+drawable ic_other_sign_in
+drawable ic_passkey
+drawable ic_password
 drawable ic_piggy_bank
 drawable ic_search_black_24
 drawable ic_settings
@@ -3312,8 +3321,13 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
-id btnAI
+id browser_actions_header_text
+id browser_actions_menu_item_icon
+id browser_actions_menu_item_text
+id browser_actions_menu_items
+id browser_actions_menu_view
 id btnAddFund
+id btnAddMemberOption
 id btnBack
 id btnCapture
 id btnClose
@@ -3330,6 +3344,8 @@ id btnFlip
 id btnGallery
 id btnIncome
 id btnLogin
+id btnLogout
+id btnMap
 id btnNavCalendar
 id btnNavHome
 id btnNavWallet
@@ -3337,8 +3353,7 @@ id btnNext
 id btnNextMonth
 id btnPrev
 id btnPrevMonth
-id btnRecord
-id btnRefresh
+id btnProfile
 id btnRegister
 id btnSave
 id btnSaveCategory
@@ -3346,8 +3361,12 @@ id btnSaveFund
 id btnSelectEmoji
 id btnSend
 id btnSettings
+id btnShareFund
+id btnUpdateProfile
 id btnViewAllTrans
+id btnViewContributionsOption
 id btnViewFlowMore
+id btnVoice
 id btnWithdraw
 id buttonPanel
 id cache_measures
@@ -3369,6 +3388,7 @@ id chain
 id chain2
 id chains
 id chartLegend
+id chatHeader
 id checkbox
 id checked
 id chronometer
@@ -3440,6 +3460,8 @@ id edge
 id edit_query
 id edit_text_id
 id elastic
+id emailContainer
+id emailRegisterContainer
 id embed
 id emojiGrid
 id end
@@ -3455,6 +3477,8 @@ id etFundName
 id etInitialBalance
 id etName
 id etPassword
+id etPhone
+id etPhonePassword
 id etTargetAmount
 id exitUntilCollapsed
 id expand_activities_button
@@ -3491,7 +3515,6 @@ id group_divider
 id grouping
 id groups
 id headerBg
-id headerChat
 id headerEducation
 id headerEssential
 id headerFixed
@@ -3518,13 +3541,12 @@ id immediateStop
 id included
 id indeterminate
 id info
+id inputArea
 id inputContainer
-id inputLayout
 id invisible
 id inward
 id italic
 id item_touch_helper_previous_elevation
-id ivAIIcon
 id ivGoalIcon
 id ivLogo
 id ivNavCalendar
@@ -3579,6 +3601,7 @@ id material_timepicker_view
 id material_value_index
 id matrix
 id message
+id micPulse
 id middle
 id mini
 id monthSwitcher
@@ -3667,6 +3690,9 @@ id pbGoal
 id peekHeight
 id percent
 id performance
+id permanentSuggestions
+id phoneContainer
+id phoneRegisterContainer
 id pieChart
 id pillRating
 id pillSaving
@@ -3680,11 +3706,13 @@ id progress_horizontal
 id radio
 id ratio
 id rbAll
+id rbEmail
 id rbExpense
 id rbIncome
 id rbModeExpense
 id rbModeIncome
 id rbMonth
+id rbPhone
 id rbWeek
 id rbYear
 id recentList
@@ -3692,8 +3720,10 @@ id rectangles
 id report_drawn
 id reverseSawtooth
 id rgChartToggle
+id rgLoginMethod
 id rgModeToggle
 id rgPeriodTabs
+id rgRegisterMethod
 id right
 id rightToLeft
 id right_icon
@@ -3768,7 +3798,8 @@ id submenuarrow
 id submit_area
 id sug1
 id sug2
-id suggestionLayout
+id sug3
+id sug4
 id summaryBal
 id summaryExp
 id summaryInc
@@ -3811,7 +3842,6 @@ id title_template
 id toggle
 id top
 id topPanel
-id topPills
 id touch_outside
 id transitionToEnd
 id transitionToStart
@@ -3821,18 +3851,21 @@ id transition_position
 id transition_scene_layoutid_cache
 id transition_transform
 id triangle
-id tvAISuggestion
 id tvAmount
+id tvBalance
 id tvChartTitle
+id tvChatTitle
 id tvCurrentMonth
 id tvDailyCount
 id tvDateRange
 id tvDateTime
+id tvForgotPassword
 id tvGoalName
 id tvGoalPercent
 id tvGoalProgress
 id tvLabel
 id tvLabelHistory
+id tvLiveText
 id tvMessage
 id tvRegister
 id tvSelectedDateLabel
@@ -3842,6 +3875,7 @@ id tvTitle
 id tvTotalBalance
 id tvUserName
 id tvValue
+id tvVoiceStatus
 id tvWelcome
 id tvZoom1
 id tvZoom2
@@ -3862,6 +3896,7 @@ id view_tree_saved_state_registry_owner
 id view_tree_view_model_store_owner
 id visible
 id visible_removing_fragment_view_tag
+id webView
 id welcomeCard
 id west
 id wide
@@ -3995,9 +4030,13 @@ layout activity_all_funds
 layout activity_all_transactions
 layout activity_login
 layout activity_main
+layout activity_map
+layout activity_profile
 layout activity_register
 layout activity_settings
 layout activity_statistics
+layout browser_actions_context_menu_page
+layout browser_actions_context_menu_row
 layout custom_dialog
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog
@@ -4019,7 +4058,7 @@ layout dialog_create_category
 layout dialog_currency_selection
 layout dialog_emoji_picker
 layout dialog_vivid_options
-layout fragment_ai_chat
+layout dialog_voice_input
 layout fragment_calendar
 layout fragment_wallet
 layout ime_base_split_test_activity
@@ -4097,6 +4136,9 @@ menu bottom_nav_menu
 mipmap ic_launcher
 mipmap ic_launcher_round
 plurals mtrl_badge_content_description
+raw firebase_common_keep
+raw hello
+raw videoplayback
 string abc_action_bar_home_description
 string abc_action_bar_up_description
 string abc_action_menu_overflow_description
@@ -4125,6 +4167,8 @@ string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
 string ai_feature
+string android_credentials_TYPE_PASSWORD_CREDENTIAL
+string androidx_credentials_TYPE_PUBLIC_KEY_CREDENTIAL
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior
@@ -4170,13 +4214,23 @@ string common_google_play_services_wear_update_text
 string common_open_on_phone
 string common_signin_button_text
 string common_signin_button_text_long
+string copy_toast_msg
+string default_web_client_id
 string error_a11y_label
 string error_icon_content_description
 string expense
 string exposed_dropdown_menu_content_description
 string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior
+string fallback_menu_item_copy_link
+string fallback_menu_item_open_in_browser
+string fallback_menu_item_share_link
 string gallery
+string gcm_defaultSenderId
+string google_api_key
+string google_app_id
+string google_crash_reporting_api_key
+string google_storage_bucket
 string hide_bottom_view_on_scroll_behavior
 string icon_content_description
 string income
@@ -4289,6 +4343,7 @@ string path_password_eye
 string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
+string project_id
 string record
 string search_menu_title
 string searchbar_scrolling_view_behavior
@@ -4724,6 +4779,7 @@ style ShapeAppearanceOverlay_MaterialComponents_MaterialCalendar_Window_Fullscre
 style ShapeAppearanceOverlay_MaterialComponents_MaterialCalendar_Year
 style ShapeAppearanceOverlay_MaterialComponents_TextInputLayout_FilledBox
 style StatsTabStyle
+style SuggestionPill
 style TextAppearance_AppCompat
 style TextAppearance_AppCompat_Body1
 style TextAppearance_AppCompat_Body2
@@ -4872,6 +4928,7 @@ style Theme_Design_Light
 style Theme_Design_Light_BottomSheetDialog
 style Theme_Design_Light_NoActionBar
 style Theme_Design_NoActionBar
+style Theme_Hidden
 style Theme_Material3_Dark
 style Theme_Material3_Dark_BottomSheetDialog
 style Theme_Material3_Dark_Dialog
@@ -4947,6 +5004,7 @@ style Theme_MaterialComponents_Light_NoActionBar_Bridge
 style Theme_MaterialComponents_NoActionBar
 style Theme_MaterialComponents_NoActionBar_Bridge
 style Theme_Money
+style Theme_PlayCore_Transparent
 style ThemeOverlay_AppCompat
 style ThemeOverlay_AppCompat_ActionBar
 style ThemeOverlay_AppCompat_Dark
@@ -5594,3 +5652,4 @@ styleable ViewPager2 android_orientation
 styleable ViewStubCompat android_id android_layout android_inflatedId
 styleable ViewTransition android_id SharedValue SharedValueId clearsTag duration ifTagNotSet ifTagSet motionInterpolator motionTarget onStateTransition pathMotionArc setsTag transitionDisable upDuration viewTransitionMode
 styleable include constraintSet
+xml image_share_filepaths

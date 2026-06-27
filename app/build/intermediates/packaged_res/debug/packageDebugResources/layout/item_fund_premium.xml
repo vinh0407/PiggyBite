@@ -118,6 +118,17 @@
                 app:elevation="0dp" />
 
             <ImageButton
+                android:id="@+id/btnShareFund"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/circle_bg_dark"
+                android:backgroundTint="#F0F2FF"
+                android:padding="8dp"
+                android:src="@drawable/ic_camera"
+                app:tint="@color/primary_blue" />
+
+            <ImageButton
                 android:id="@+id/btnDeleteFund"
                 android:layout_width="36dp"
                 android:layout_height="36dp"

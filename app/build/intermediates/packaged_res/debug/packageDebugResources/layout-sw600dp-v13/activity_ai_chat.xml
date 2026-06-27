@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_app">
+
+    <!-- Header for Tablet -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/chatHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_header_curved"
+        android:paddingBottom="48dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/circle_bg_dark"
+            android:backgroundTint="#40FFFFFF"
+            android:padding="16dp"
+            android:src="@drawable/ic_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tvChatTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PiggyBite AI Assistant"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/btnBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnBack" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvChatTitle">
+
+            <TextView
+                android:id="@+id/pillSaving"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_grey"
+                android:backgroundTint="#40FFFFFF"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="8dp"
+                android:text="Đang tính toán..."
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/pillRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/bg_pill_grey"
+                android:backgroundTint="#E0FFFFFF"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="8dp"
+                android:text="..."
+                android:textColor="@color/primary_blue"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Main Chat Content -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChat"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:padding="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/permanentSuggestions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chatHeader"
+        app:layout_constraintWidth_max="900dp" />
+
+    <!-- Welcome Card Optimized for Tablet -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/welcomeCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="64dp"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toTopOf="@id/permanentSuggestions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chatHeader"
+        app:layout_constraintWidth_max="700dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="48dp">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_brain"
+                app:tint="@color/primary_blue" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Xin chào! Tôi là PiggyBite AI"
+                android:textColor="@color/text_main"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Tôi có thể giúp bạn lập kế hoạch tài chính, phân tích chi tiêu hoặc chỉ là tán gẫu."
+                android:textColor="@color/text_hint"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Permanent Suggestions Area for Tablet -->
+    <HorizontalScrollView
+        android:id="@+id/permanentSuggestions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@id/inputArea">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="40dp">
+
+            <TextView
+                android:id="@+id/sug1"
+                style="@style/SuggestionPill"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="24dp"
+                android:text="Ăn uống %?"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/sug2"
+                style="@style/SuggestionPill"
+                android:layout_marginStart="16dp"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="24dp"
+                android:text="Quỹ khẩn cấp?"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/sug3"
+                style="@style/SuggestionPill"
+                android:layout_marginStart="16dp"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="24dp"
+                android:text="Tỷ lệ tiết kiệm?"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/sug4"
+                style="@style/SuggestionPill"
+                android:layout_marginStart="16dp"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="24dp"
+                android:text="Phân tích chi tiêu"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Input Area for Tablet -->
+    <LinearLayout
+        android:id="@+id/inputArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="40dp"
+        android:paddingVertical="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxWidth="900dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etChat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_pill_grey"
+                android:hint="Nhập tin nhắn..."
+                android:paddingHorizontal="32dp"
+                android:paddingVertical="16dp"
+                android:textColor="@color/text_main"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/btnSend"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="24dp"
+                android:background="@drawable/bg_nav_active"
+                android:padding="16dp"
+                android:src="@android:drawable/ic_menu_send"
+                app:tint="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,8 @@
 package com.money.app.data;
 
-@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000 \n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\b\'\u0018\u0000 \t2\u00020\u0001:\u0001\tB\u0005\u00a2\u0006\u0002\u0010\u0002J\b\u0010\u0003\u001a\u00020\u0004H&J\b\u0010\u0005\u001a\u00020\u0006H&J\b\u0010\u0007\u001a\u00020\bH&\u00a8\u0006\n"}, d2 = {"Lcom/money/app/data/AppDatabase;", "Landroidx/room/RoomDatabase;", "()V", "chatMessageDao", "Lcom/money/app/data/ChatMessageDao;", "fundDao", "Lcom/money/app/data/FundDao;", "transactionDao", "Lcom/money/app/data/TransactionDao;", "Companion", "app_debug"})
-@androidx.room.Database(entities = {com.money.app.data.Transaction.class, com.money.app.data.Fund.class, com.money.app.data.ChatMessage.class}, version = 6)
+@kotlin.Metadata(mv = {2, 2, 0}, k = 1, xi = 48, d1 = {"\u0000 \n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\b\'\u0018\u0000 \n2\u00020\u0001:\u0001\nB\u0007\u00a2\u0006\u0004\b\u0002\u0010\u0003J\b\u0010\u0004\u001a\u00020\u0005H&J\b\u0010\u0006\u001a\u00020\u0007H&J\b\u0010\b\u001a\u00020\tH&\u00a8\u0006\u000b"}, d2 = {"Lcom/money/app/data/AppDatabase;", "Landroidx/room/RoomDatabase;", "<init>", "()V", "transactionDao", "Lcom/money/app/data/TransactionDao;", "fundDao", "Lcom/money/app/data/FundDao;", "chatMessageDao", "Lcom/money/app/data/ChatMessageDao;", "Companion", "app_debug"})
+@androidx.room.Database(entities = {com.money.app.data.Transaction.class, com.money.app.data.Fund.class, com.money.app.data.ChatMessage.class}, version = 15, exportSchema = false)
+@androidx.room.TypeConverters(value = {com.money.app.data.Converters.class})
 public abstract class AppDatabase extends androidx.room.RoomDatabase {
     @kotlin.jvm.Volatile()
     @org.jetbrains.annotations.Nullable()
@@ -22,7 +23,7 @@ public abstract class AppDatabase extends androidx.room.RoomDatabase {
     @org.jetbrains.annotations.NotNull()
     public abstract com.money.app.data.ChatMessageDao chatMessageDao();
     
-    @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000\u001a\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\b\u0086\u0003\u0018\u00002\u00020\u0001B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002J\u000e\u0010\u0005\u001a\u00020\u00042\u0006\u0010\u0006\u001a\u00020\u0007R\u0010\u0010\u0003\u001a\u0004\u0018\u00010\u0004X\u0082\u000e\u00a2\u0006\u0002\n\u0000\u00a8\u0006\b"}, d2 = {"Lcom/money/app/data/AppDatabase$Companion;", "", "()V", "INSTANCE", "Lcom/money/app/data/AppDatabase;", "getDatabase", "context", "Landroid/content/Context;", "app_debug"})
+    @kotlin.Metadata(mv = {2, 2, 0}, k = 1, xi = 48, d1 = {"\u0000\u001a\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\b\u0086\u0003\u0018\u00002\u00020\u0001B\t\b\u0002\u00a2\u0006\u0004\b\u0002\u0010\u0003J\u000e\u0010\u0006\u001a\u00020\u00052\u0006\u0010\u0007\u001a\u00020\bR\u0010\u0010\u0004\u001a\u0004\u0018\u00010\u0005X\u0082\u000e\u00a2\u0006\u0002\n\u0000\u00a8\u0006\t"}, d2 = {"Lcom/money/app/data/AppDatabase$Companion;", "", "<init>", "()V", "INSTANCE", "Lcom/money/app/data/AppDatabase;", "getDatabase", "context", "Landroid/content/Context;", "app_debug"})
     public static final class Companion {
         
         private Companion() {

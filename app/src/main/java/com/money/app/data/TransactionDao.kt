@@ -4,7 +4,7 @@ import androidx.room.*
 
 @Dao
 interface TransactionDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(transaction: Transaction): Long
 
     @Query("SELECT * FROM transactions ORDER BY timestamp DESC LIMIT 1")
@@ -21,6 +21,9 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE timestamp >= :startTime AND timestamp <= :endTime")
     suspend fun getTransactionsInTimeRange(startTime: Long, endTime: Long): List<Transaction>
+
+    @Query("SELECT * FROM transactions WHERE category LIKE :query OR description LIKE :query")
+    suspend fun searchTransactions(query: String): List<Transaction>
 
     @Query("DELETE FROM transactions")
     suspend fun clearAll()

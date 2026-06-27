@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.ChatMessage
+import com.money.app.data.Transaction
 import com.money.app.util.AppUtils
+import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,7 +35,12 @@ class AIChatActivity : AppCompatActivity() {
     private lateinit var btnSend: ImageButton
     private val chatMessages = mutableListOf<ChatMessage>()
     private lateinit var adapter: ChatAdapter
-    private val GEMINI_API_KEY = "AQ.Ab8RN6JzQXDQWxS-VBYby4cQjwq6gbax7lrGZPW0EXCiGSxgKA"
+    private val GEMINI_API_KEY = "AQ.Ab8RN6LYB28S5p69FS6i0gyOO9ZWSmCDSSBGhKS_SWoGCpzVag"
+    private val CHATGPT_API_KEY = "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"
+    
+    private var lastProposedFundName: String? = null
+    private var lastProposedAmount: Double = 0.0
+    private var lastProposedEmoji: String = "💰"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,12 +66,10 @@ class AIChatActivity : AppCompatActivity() {
     }
 
     private fun setupSuggestions() {
-        findViewById<TextView>(R.id.sug1).setOnClickListener {
-            sendMessage((it as TextView).text.toString())
-        }
-        findViewById<TextView>(R.id.sug2).setOnClickListener {
-            sendMessage((it as TextView).text.toString())
-        }
+        findViewById<TextView>(R.id.sug1).setOnClickListener { sendMessage((it as TextView).text.toString()) }
+        findViewById<TextView>(R.id.sug2).setOnClickListener { sendMessage((it as TextView).text.toString()) }
+        findViewById<TextView>(R.id.sug3).setOnClickListener { sendMessage((it as TextView).text.toString()) }
+        findViewById<TextView>(R.id.sug4).setOnClickListener { sendMessage((it as TextView).text.toString()) }
     }
 
     private fun sendMessage(query: String) {
@@ -74,7 +80,6 @@ class AIChatActivity : AppCompatActivity() {
             etChat.text.clear()
             processAI(query)
             
-            // Hide welcome card and show chat on first message
             findViewById<androidx.cardview.widget.CardView>(R.id.welcomeCard)?.visibility = View.GONE
             rvChat.visibility = View.VISIBLE
         }
@@ -136,6 +141,8 @@ class AIChatActivity : AppCompatActivity() {
                 chatMessages.addAll(history)
                 adapter.notifyDataSetChanged()
                 rvChat.scrollToPosition(chatMessages.size - 1)
+                findViewById<androidx.cardview.widget.CardView>(R.id.welcomeCard)?.visibility = View.GONE
+                rvChat.visibility = View.VISIBLE
             }
         }
     }
@@ -156,67 +163,56 @@ class AIChatActivity : AppCompatActivity() {
     private fun processAI(query: String) {
         val lower = query.lowercase().trim()
         
+        // 1. Check for Predefined Quick Answers (No API call)
+        val quickAnswers = mapOf(
+            "ăn uống %?" to "Chi tiêu cho ăn uống thường nên chiếm từ 10% đến 20% thu nhập hàng tháng để đảm bảo tài chính lành mạnh.",
+            "quỹ khẩn cấp?" to "Quỹ khẩn cấp nên đủ chi trả từ 3 đến 6 tháng chi phí sinh hoạt thiết yếu của bạn.",
+            "tỷ lệ tiết kiệm?" to "Bạn nên cố gắng tiết kiệm ít nhất 20% tổng thu nhập hàng tháng theo quy tắc 50/30/20.",
+            "chi tiêu cho ăn uống nên chiếm bao nhiêu phần trăm thu nhập?" to "Chi tiêu cho ăn uống thường nên chiếm từ 10% đến 20% thu nhập hàng tháng.",
+            "quỹ khẩn cấp nên có bao nhiêu?" to "Quỹ khẩn cấp nên đủ chi trả từ 3 đến 6 tháng chi phí sinh hoạt.",
+            "tỷ lệ tiết kiệm hợp lý là bao nhiêu?" to "Nên tiết kiệm ít nhất 20% thu nhập hàng tháng."
+        )
+
+        for ((q, a) in quickAnswers) {
+            if (lower == q) {
+                addMessageToUI(ChatMessage(text = a, isUser = false, timestamp = System.currentTimeMillis()))
+                saveMessageToDB(ChatMessage(text = a, isUser = false, timestamp = System.currentTimeMillis()))
+                return
+            }
+        }
+
+        // 2. Logical flow for Agreement (Fund creation)
+        if ((lower == "yes" || lower == "có" || lower == "đồng ý" || lower == "ok") && lastProposedFundName != null) {
+            createProposedFund()
+            return
+        }
+
+        // 3. Dynamic RAG/AI for everything else
+        callGeminiAPI(query)
+    }
+
+    private fun createProposedFund() {
         lifecycleScope.launch {
             val db = AppDatabase.getDatabase(this@AIChatActivity)
-            val all = withContext(Dispatchers.IO) { db.transactionDao().getAllTransactions() }
+            val fund = com.money.app.data.Fund(
+                name = lastProposedFundName!!,
+                targetAmount = lastProposedAmount,
+                currentAmount = 0.0,
+                icon = lastProposedEmoji,
+                createdDate = System.currentTimeMillis(),
+                endDate = System.currentTimeMillis() + (90L * 24 * 60 * 60 * 1000)
+            )
+            withContext(Dispatchers.IO) { 
+                db.fundDao().insert(fund) 
+                FirebaseSyncManager(this@AIChatActivity).createFund(fund)
+            }
             
-            // Logic check for Fund Creation
-            if (lower.contains("tiết kiệm")) {
-                val expenseMap = all.filter { it.isExpense }.groupBy { it.category }
-                val totalExp = all.filter { it.isExpense }.sumOf { AppUtils.parseAmount(it.amount) }
-                
-                val suggestion = if (totalExp > 0) {
-                    val topCat = expenseMap.maxByOrNull { it.value.sumOf { t -> AppUtils.parseAmount(t.amount) } }?.key ?: ""
-                    "Dựa trên phân tích AI, bạn đang chi nhiều nhất cho '$topCat'. Nếu giảm 10% chi tiêu mục này, bạn có thể tiết kiệm thêm khoảng ${AppUtils.formatCurrency(totalExp * 0.1)} mỗi tháng đấy!"
-                } else {
-                    "Bạn hiện chưa có khoản chi nào, hãy tiếp tục duy trì thói quen tiết kiệm tuyệt vời này nhé!"
-                }
-                addMessageToUI(ChatMessage(text = suggestion, isUser = false, timestamp = System.currentTimeMillis()))
-                return@launch
-            }
-
-            if (lower.contains("vũng tàu") || lower.contains("kế hoạch")) {
-                val response = "Tôi thấy bạn muốn đi Vũng Tàu. Dự kiến chi phí khoảng 2.000.000đ cho 2 ngày. Bạn có muốn tôi tạo quỹ 'Du lịch Vũng Tàu' với mục tiêu này không? (Nhập 'yes' để tạo)"
-                addMessageToUI(ChatMessage(text = response, isUser = false, timestamp = System.currentTimeMillis()))
-                return@launch
-            }
-
-            if (lower == "yes" && chatMessages.lastOrNull()?.text?.contains("Vũng Tàu") == true) {
-                val fund = com.money.app.data.Fund(
-                    name = "Du lịch Vũng Tàu",
-                    targetAmount = 2000000.0,
-                    currentAmount = 0.0,
-                    icon = "🌊",
-                    createdDate = System.currentTimeMillis(),
-                    endDate = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000)
-                )
-                withContext(Dispatchers.IO) { db.fundDao().insert(fund) }
-                addMessageToUI(ChatMessage(text = "Tuyệt vời! Tôi đã tạo quỹ 'Du lịch Vũng Tàu' cho bạn rồi nhé. Chúc bạn có chuyến đi vui vẻ!", isUser = false, timestamp = System.currentTimeMillis()))
-                return@launch
-            }
-
-            val localResponse = when {
-                lower.contains("chi tiêu") -> {
-                    val total = all.filter { it.isExpense }.sumOf { AppUtils.parseAmount(it.amount) }
-                    "Tổng chi tiêu của bạn đến nay là ${AppUtils.formatCurrency(total)}. Hãy chi tiêu thông minh nhé!"
-                }
-                lower.contains("tiết kiệm") -> {
-                    "Bạn nên dành ít nhất 20% thu nhập để tiết kiệm. Hiện tại bạn đang có những quỹ mục tiêu rất tốt!"
-                }
-                lower.contains("cà phê") || lower.contains("cafe") -> {
-                    val cafeTotal = all.filter { it.category.contains("Cafe") }.sumOf { AppUtils.parseAmount(it.amount) }
-                    "Bạn đã tiêu ${AppUtils.formatCurrency(cafeTotal)} cho Cafe. Bớt uống lại để tiết kiệm nào!"
-                }
-                else -> null
-            }
-
-            if (localResponse != null) {
-                val aiMsg = ChatMessage(text = localResponse, isUser = false, timestamp = System.currentTimeMillis())
-                addMessageToUI(aiMsg)
-                saveMessageToDB(aiMsg)
-            } else {
-                callGeminiAPI(query)
-            }
+            val response = "Tuyệt vời! Tôi đã tạo quỹ '$lastProposedFundName' với mục tiêu ${AppUtils.formatCurrency(lastProposedAmount)} cho bạn rồi nhé. Hãy cố gắng đạt được mục tiêu này! 🚀"
+            val aiMsg = ChatMessage(text = response, isUser = false, timestamp = System.currentTimeMillis())
+            addMessageToUI(aiMsg)
+            saveMessageToDB(aiMsg)
+            
+            lastProposedFundName = null
         }
     }
 
@@ -224,51 +220,91 @@ class AIChatActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val db = AppDatabase.getDatabase(this@AIChatActivity)
-                val all = db.transactionDao().getAllTransactions()
-                val totalExp = all.filter { it.isExpense }.sumOf { AppUtils.parseAmount(it.amount) }
-                val totalInc = all.filter { !it.isExpense }.sumOf { AppUtils.parseAmount(it.amount) }
                 
-                // Context for Gemini
-                val context = "Dữ liệu người dùng: Tổng chi tiêu ${AppUtils.formatCurrency(totalExp)}, Tổng thu nhập ${AppUtils.formatCurrency(totalInc)}."
+                // --- RAG: Search context ---
+                val terms = prompt.lowercase().split(" ").filter { it.length > 2 }
+                val results = mutableListOf<Transaction>()
+                terms.forEach { results.addAll(db.transactionDao().searchTransactions(it)) }
                 
-                // Updated to gemini-3.5-flash as per provided snippet
-                val url = URL("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=$GEMINI_API_KEY")
+                val context = results.distinctBy { it.id }.take(10).joinToString("\n") { 
+                    "${it.date}: ${if(it.isExpense) "-" else "+"}${it.amount} [${it.category}] ${it.description}"
+                }
+                
+                val total = db.transactionDao().getAllTransactions().sumOf { 
+                    if(it.isExpense) -AppUtils.parseAmount(it.amount) else AppUtils.parseAmount(it.amount)
+                }
+
+                val system = """
+                    Bạn là PiggyBite AI Assistant (3.5 Flash).
+                    Dữ liệu thực tế của người dùng:
+                    - Số dư: ${AppUtils.formatCurrency(total)}
+                    - Lịch sử khớp: $context
+                    
+                    Yêu cầu:
+                    1. Trả lời dựa trên số liệu nếu có thể.
+                    2. Nếu đề xuất quỹ, dùng: [FUND_ACTION: Tên|Số Tiền|Emoji]
+                """.trimIndent()
+
+                val escaped = JSONObject.quote("$system\n\nNgười dùng hỏi: $prompt")
+                
+                // Route to ChatGPT for rules/general, Gemini for personal/RAG
+                val useChatGPT = prompt.contains("quy tắc") || prompt.contains("nên") || prompt.contains("phần trăm")
+                
+                val url = if (useChatGPT) URL("https://api.openai.com/v1/chat/completions") 
+                          else URL("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent")
+
                 val conn = url.openConnection() as HttpURLConnection
                 conn.requestMethod = "POST"
                 conn.setRequestProperty("Content-Type", "application/json")
+                if (useChatGPT) {
+                    conn.setRequestProperty("Authorization", "Bearer $CHATGPT_API_KEY")
+                } else {
+                    conn.setRequestProperty("X-goog-api-key", GEMINI_API_KEY)
+                }
                 conn.doOutput = true
+                conn.connectTimeout = 8000
+                conn.readTimeout = 12000
 
-                val body = """
-                    {
-                      "contents": [{
-                        "parts":[{"text": "$context Bạn là PiggyBite AI phiên bản Flash 1.5. Hãy tư vấn tài chính ngắn gọn, thông minh, đôi khi hài hước và thân thiện cho người dùng. Nếu họ hỏi ngoài lề, hãy trả lời tự nhiên. Câu hỏi: $prompt"}]
-                      }]
+                val payload = if (useChatGPT) {
+                    "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": $escaped}]}"
+                } else {
+                    "{\"contents\": [{\"parts\":[{\"text\": $escaped}]}]}"
+                }
+
+                conn.outputStream.use { it.write(payload.toByteArray()) }
+
+                if (conn.responseCode == 200) {
+                    val raw = conn.inputStream.bufferedReader().use { it.readText() }
+                    val json = JSONObject(raw)
+                    var text = if (useChatGPT) {
+                        json.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
+                    } else {
+                        json.getJSONArray("candidates").getJSONObject(0).getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text")
                     }
-                """.trimIndent()
 
-                conn.outputStream.use { it.write(body.toByteArray()) }
-
-                val responseCode = conn.responseCode
-                if (responseCode == 200) {
-                    val responseStr = conn.inputStream.bufferedReader().use { it.readText() }
-                    val jsonResponse = JSONObject(responseStr)
-                    val aiText = jsonResponse.getJSONArray("candidates")
-                        .getJSONObject(0)
-                        .getJSONObject("content")
-                        .getJSONArray("parts")
-                        .getJSONObject(0)
-                        .getString("text")
+                    // Handle Actions
+                    val regex = Regex("\\[FUND_ACTION: (.+?)\\|(.+?)\\|(.+?)\\]")
+                    regex.find(text)?.let {
+                        lastProposedFundName = it.groupValues[1]
+                        lastProposedAmount = it.groupValues[2].toDoubleOrNull() ?: 0.0
+                        lastProposedEmoji = it.groupValues[3]
+                        text = text.replace(it.value, "").trim() + "\n\n(Tôi có thể tạo quỹ này giúp bạn, đồng ý không?)"
+                    }
 
                     withContext(Dispatchers.Main) {
-                        val aiMsg = ChatMessage(text = aiText, isUser = false, timestamp = System.currentTimeMillis())
+                        val aiMsg = ChatMessage(text = text, isUser = false, timestamp = System.currentTimeMillis())
                         addMessageToUI(aiMsg)
                         saveMessageToDB(aiMsg)
                     }
+                } else {
+                    val errorLog = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                    Log.e("AI_API", "Code ${conn.responseCode}: $errorLog")
+                    throw Exception("API Error")
                 }
             } catch (e: Exception) {
+                Log.e("AI_CHAT", "Error: ${e.message}", e)
                 withContext(Dispatchers.Main) {
-                    val errorMsg = ChatMessage(text = "Kết nối bị gián đoạn. Hãy thử lại sau nhé!", isUser = false, timestamp = System.currentTimeMillis())
-                    addMessageToUI(errorMsg)
+                    addMessageToUI(ChatMessage(text = "Hệ thống đang bận một chút (${e.message}), bạn nhắn lại sau nhé!", isUser = false, timestamp = System.currentTimeMillis()))
                 }
             }
         }
@@ -281,12 +317,8 @@ class AIChatActivity : AppCompatActivity() {
             return ViewHolder(v)
         }
         override fun getItemViewType(position: Int) = if (list[position].isUser) 1 else 0
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.tv.text = list[position].text
-        }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) { holder.tv.text = list[position].text }
         override fun getItemCount() = list.size
-        inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-            val tv = v.findViewById<TextView>(R.id.tvMessage)
-        }
+        inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) { val tv = v.findViewById<TextView>(R.id.tvMessage) }
     }
 }

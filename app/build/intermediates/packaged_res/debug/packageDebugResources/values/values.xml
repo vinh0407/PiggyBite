@@ -68,12 +68,19 @@
     <string name="cat_fixed">Cố định/Fixed</string>
     <string name="cat_flex">Linh hoạt/Flex</string>
     <string name="cat_other">Khác/Other</string>
+    <string name="default_web_client_id" translatable="false">38203815083-f9oclvbcp320ak4va6j7vgbfkhsqom06.apps.googleusercontent.com</string>
     <string name="expense">Chi tiêu/Spend</string>
     <string name="gallery">Thư viện/Gallery</string>
+    <string name="gcm_defaultSenderId" translatable="false">38203815083</string>
+    <string name="google_api_key" translatable="false">AIzaSyAkj7Bypcv1FH4CQ-rsGTKfXySmowraqJc</string>
+    <string name="google_app_id" translatable="false">1:38203815083:android:992571b63249166711b3ee</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAkj7Bypcv1FH4CQ-rsGTKfXySmowraqJc</string>
+    <string name="google_storage_bucket" translatable="false">piggybite-df0d8.firebasestorage.app</string>
     <string name="income">Thu nhập/Income</string>
     <string name="nav_calendar">Lịch/Calendar</string>
     <string name="nav_home">Trang chủ/Home</string>
     <string name="nav_wallet">Ví/Wallet</string>
+    <string name="project_id" translatable="false">piggybite-df0d8</string>
     <string name="record">Ghi âm/Record</string>
     <string name="settings">Cài đặt/Settings</string>
     <string name="statistics">Thống kê/Statistics</string>
@@ -215,6 +222,18 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:background">@android:color/transparent</item>
+    </style>
+    <style name="SuggestionPill">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:background">@drawable/bg_pill_grey</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
     </style>
     <style name="Theme.Money" parent="Theme.MaterialComponents.Light.NoActionBar">
         

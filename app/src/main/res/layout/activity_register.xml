@@ -56,6 +56,29 @@
             android:orientation="vertical"
             android:padding="32dp">
 
+            <RadioGroup
+                android:id="@+id/rgRegisterMethod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
+                <RadioButton
+                    android:id="@+id/rbEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:checked="true"
+                    android:textColor="@color/text_main" />
+                <RadioButton
+                    android:id="@+id/rbPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:text="Số điện thoại"
+                    android:textColor="@color/text_main" />
+            </RadioGroup>
+
             <EditText
                 android:id="@+id/etName"
                 android:layout_width="match_parent"
@@ -65,25 +88,58 @@
                 android:inputType="textPersonName"
                 android:paddingHorizontal="24dp" />
 
-            <EditText
-                android:id="@+id/etEmail"
+            <LinearLayout
+                android:id="@+id/emailRegisterContainer"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_pill_grey"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:paddingHorizontal="24dp" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_pill_grey"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:paddingHorizontal="24dp" />
 
-            <EditText
-                android:id="@+id/etPassword"
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_pill_grey"
+                    android:hint="Mật khẩu"
+                    android:inputType="textPassword"
+                    android:paddingHorizontal="24dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/phoneRegisterContainer"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_pill_grey"
-                android:hint="Mật khẩu"
-                android:inputType="textPassword"
-                android:paddingHorizontal="24dp" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <EditText
+                    android:id="@+id/etPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_pill_grey"
+                    android:hint="Số điện thoại"
+                    android:inputType="phone"
+                    android:paddingHorizontal="24dp" />
+
+                <EditText
+                    android:id="@+id/etPhonePassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_pill_grey"
+                    android:hint="Mật khẩu"
+                    android:inputType="textPassword"
+                    android:paddingHorizontal="24dp" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/etInitialBalance"

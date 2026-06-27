@@ -4,7 +4,6 @@ import com.money.app.R
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -12,13 +11,13 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -27,11 +26,12 @@ import androidx.core.content.ContextCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.auth.FirebaseAuth
+import com.money.app.util.FirebaseSyncManager
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import com.money.app.data.AppDatabase
-import com.money.app.data.Transaction
 import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -47,8 +47,8 @@ class MainActivity : AppCompatActivity() {
     private var flashMode = ImageCapture.FLASH_MODE_OFF
     private var currentZoom = 1.0f
     private var currentActiveNavId: Int = R.id.btnNavHome
-
     private var speechRecognizer: SpeechRecognizer? = null
+    private val auth = FirebaseAuth.getInstance()
 
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
@@ -64,22 +64,56 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (auth.currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_main)
+
+        val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        currentActiveNavId = prefs.getInt("last_nav_id", R.id.btnNavHome)
+
+        lifecycleScope.launch {
+            val syncManager = FirebaseSyncManager(this@MainActivity)
+            
+            // Check for new invitations for current email
+            val userEmail = auth.currentUser?.email
+            val userId = auth.currentUser?.uid
+            if (!userEmail.isNullOrEmpty() && userId != null) {
+                syncManager.checkPendingInvitations(userEmail, userId)
+            }
+
+            syncManager.syncTransactions()
+            syncManager.syncFunds()
+        }
 
         viewFinder = findViewById(R.id.viewFinder)
 
         setupNavigation()
         
-        // Initial landing: Wallet (Management)
-        currentActiveNavId = R.id.btnNavHome
         updateNavUI(currentActiveNavId)
         
-        findViewById<View>(R.id.homeContent)?.visibility = View.GONE
-        findViewById<View>(R.id.fragmentContainer)?.visibility = View.VISIBLE
-        
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, WalletFragment())
-            .commit()
+        // Restore last fragment
+        when (currentActiveNavId) {
+            R.id.btnNavCalendar -> {
+                findViewById<View>(R.id.homeContent)?.visibility = View.GONE
+                findViewById<View>(R.id.fragmentContainer)?.visibility = View.VISIBLE
+                supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, CalendarFragment()).commit()
+            }
+            R.id.btnNavWallet -> {
+                findViewById<View>(R.id.homeContent)?.visibility = View.VISIBLE
+                findViewById<View>(R.id.fragmentContainer)?.visibility = View.GONE
+                if (allPermissionsGranted()) startCamera()
+            }
+            else -> {
+                findViewById<View>(R.id.homeContent)?.visibility = View.GONE
+                findViewById<View>(R.id.fragmentContainer)?.visibility = View.VISIBLE
+                supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, WalletFragment()).commit()
+            }
+        }
 
         findViewById<View>(R.id.btnCapture)?.setOnClickListener {
             takePhotoAndRecognizeText()
@@ -108,14 +142,103 @@ class MainActivity : AppCompatActivity() {
             imageCapture?.flashMode = flashMode
         }
 
-        findViewById<View>(R.id.btnRecord)?.setOnClickListener {
-            startVoiceRecognition()
+        findViewById<View>(R.id.btnVoice)?.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 20)
+            } else {
+                showVoiceInputDialog()
+            }
         }
 
         setupZoomControls()
-
         cameraExecutor = Executors.newSingleThreadExecutor()
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
+    }
+
+    private fun showVoiceInputDialog() {
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            Toast.makeText(this, "Thiết bị không hỗ trợ nhận diện giọng nói. Vui lòng cài đặt ứng dụng Google.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val dialog = BottomSheetDialog(this, R.style.CustomBottomSheetDialog)
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog_voice_input, null)
+        dialog.setContentView(view)
+
+        val tvStatus = view.findViewById<TextView>(R.id.tvVoiceStatus)
+        val tvLiveText = view.findViewById<TextView>(R.id.tvLiveText)
+
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")
+            putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)
+        }
+
+        // Explicitly try to use Google recognition service for best stability
+        speechRecognizer?.destroy()
+        speechRecognizer = try {
+            SpeechRecognizer.createSpeechRecognizer(this, android.content.ComponentName.unflattenFromString("com.google.android.googlequicksearchbox/com.google.android.voicesearch.service.SpeechRecognitionService"))
+        } catch (e: Exception) {
+            SpeechRecognizer.createSpeechRecognizer(this)
+        }
+
+        speechRecognizer?.setRecognitionListener(object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) {
+                tvStatus.text = "PiggyBite đang nghe..."
+            }
+            override fun onBeginningOfSpeech() {}
+            override fun onRmsChanged(rmsdB: Float) {}
+            override fun onBufferReceived(buffer: ByteArray?) {}
+            override fun onEndOfSpeech() {
+                tvStatus.text = "Đang xử lý dữ liệu..."
+            }
+            override fun onError(error: Int) {
+                val message = when (error) {
+                    SpeechRecognizer.ERROR_AUDIO -> "Lỗi âm thanh. Hãy thử lại."
+                    SpeechRecognizer.ERROR_CLIENT -> "Lỗi kết nối. Hãy kiểm tra mạng."
+                    SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Cần quyền Micro trong cài đặt."
+                    SpeechRecognizer.ERROR_NETWORK -> "Lỗi mạng Internet."
+                    SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Kết nối mạng quá chậm."
+                    SpeechRecognizer.ERROR_NO_MATCH -> "Không nghe rõ, hãy thử lại."
+                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Hệ thống đang bận."
+                    SpeechRecognizer.ERROR_SERVER -> "Lỗi máy chủ nhận diện."
+                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Bạn chưa nói gì cả."
+                    else -> "Lỗi hệ thống ($error)"
+                }
+                tvStatus.text = message
+                Log.e("Voice", "Error: $error - $message")
+            }
+            override fun onResults(results: Bundle?) {
+                val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                if (!matches.isNullOrEmpty()) {
+                    val text = matches[0]
+                    tvLiveText.text = text
+                    view.postDelayed({
+                        if (dialog.isShowing) {
+                            dialog.dismiss()
+                            val addIntent = Intent(this@MainActivity, AddTransactionActivity::class.java)
+                            addIntent.putExtra("EXTRA_VOICE_TEXT", text)
+                            startActivity(addIntent)
+                        }
+                    }, 800)
+                }
+            }
+            override fun onPartialResults(partialResults: Bundle?) {
+                val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                if (!matches.isNullOrEmpty()) {
+                    tvLiveText.text = matches[0]
+                }
+            }
+            override fun onEvent(eventType: Int, params: Bundle?) {}
+        })
+
+        speechRecognizer?.startListening(intent)
+        dialog.show()
+
+        dialog.setOnDismissListener {
+            speechRecognizer?.stopListening()
+        }
     }
 
     private fun setupZoomControls() {
@@ -129,10 +252,6 @@ class MainActivity : AppCompatActivity() {
             z1?.setTextColor(if (zoom == 1.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
             z2?.setTextColor(if (zoom == 2.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
             z5?.setTextColor(if (zoom == 5.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
-            
-            z1?.paint?.isFakeBoldText = (zoom == 1.0f)
-            z2?.paint?.isFakeBoldText = (zoom == 2.0f)
-            z5?.paint?.isFakeBoldText = (zoom == 5.0f)
         }
 
         z1?.setOnClickListener { updateZoomUI(1.0f) }
@@ -140,53 +259,12 @@ class MainActivity : AppCompatActivity() {
         z5?.setOnClickListener { updateZoomUI(5.0f) }
     }
 
-    private fun startVoiceRecognition() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 20)
-            return
-        }
-
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Đang lắng nghe... / Listening...")
-
-        speechRecognizer?.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {}
-            override fun onBeginningOfSpeech() {}
-            override fun onRmsChanged(rmsdB: Float) {}
-            override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {}
-            override fun onError(error: Int) {
-                Toast.makeText(this@MainActivity, "Lỗi ghi âm", Toast.LENGTH_SHORT).show()
-            }
-            override fun onResults(results: Bundle?) {
-                val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (!matches.isNullOrEmpty()) {
-                    val text = matches[0]
-                    processVoiceText(text)
-                }
-            }
-            override fun onPartialResults(partialResults: Bundle?) {}
-            override fun onEvent(eventType: Int, params: Bundle?) {}
-        })
-
-        speechRecognizer?.startListening(intent)
-        Toast.makeText(this, "Hãy nói gì đó...", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun processVoiceText(text: String) {
-        val intent = Intent(this, AddTransactionActivity::class.java)
-        intent.putExtra("EXTRA_VOICE_TEXT", text)
-        startActivity(intent)
-    }
-
     private fun updateFlashIcon() {
         val btnFlash = findViewById<ImageButton>(R.id.btnFlash) ?: return
         when (flashMode) {
             ImageCapture.FLASH_MODE_OFF -> btnFlash.setImageResource(R.drawable.ic_flash_off)
             ImageCapture.FLASH_MODE_ON -> btnFlash.setImageResource(R.drawable.ic_flash_on)
-            ImageCapture.FLASH_MODE_AUTO -> btnFlash.setImageResource(R.drawable.ic_flash_on)
+            else -> btnFlash.setImageResource(R.drawable.ic_flash_on)
         }
     }
 
@@ -241,11 +319,8 @@ class MainActivity : AppCompatActivity() {
                 currentActiveNavId = R.id.btnNavWallet
                 updateNavUI(currentActiveNavId)
                 
-                if (allPermissionsGranted()) {
-                    startCamera()
-                } else {
-                    ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-                }
+                if (allPermissionsGranted()) startCamera()
+                else ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 10)
             }
         }
     }
@@ -335,6 +410,17 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         cameraExecutor.shutdown()
         speechRecognizer?.destroy()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 10 && allPermissionsGranted()) startCamera()
+        if (requestCode == 20 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) showVoiceInputDialog()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().putInt("last_nav_id", currentActiveNavId).apply()
     }
 
     override fun onResume() {

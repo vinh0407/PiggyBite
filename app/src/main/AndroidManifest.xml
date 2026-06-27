@@ -15,18 +15,24 @@
         android:roundIcon="@drawable/icon_app_money"
         android:supportsRtl="true"
         android:theme="@style/Theme.Money">
+
         <activity
             android:name=".ui.StatisticsActivity"
             android:exported="false" />
+
         <activity
-            android:name=".ui.CategorySelectionActivity"
+            android:name=".ui.ProfileActivity"
             android:exported="false" />
+
+
         <activity
             android:name=".ui.SettingsActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.AddTransactionActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true">
@@ -35,25 +41,36 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.RegisterActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.AIChatActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.AddFundActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.AllFundsActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.AllTransactionsActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.MapActivity"
+            android:exported="false" />
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Money">
         </activity>
+
     </application>
 </manifest>

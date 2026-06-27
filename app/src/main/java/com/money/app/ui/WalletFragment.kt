@@ -10,13 +10,18 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.Fund
 import com.money.app.data.Transaction
+import com.money.app.ui.MapActivity
 import com.money.app.util.AppUtils
+import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,10 +34,10 @@ class WalletFragment : Fragment() {
     private lateinit var fundsContainer: LinearLayout
     private lateinit var lineChart: LineChartView
     private lateinit var tvUserName: TextView
-    private lateinit var tvAISuggestion: TextView
     private lateinit var tvChartTitle: TextView
     private lateinit var tvTotalBalance: TextView
     private lateinit var ivToggleBalance: ImageView
+    private lateinit var btnMap: ImageButton
     
     private var isExpenseMode = true
     private var isBalanceVisible = true
@@ -46,7 +51,6 @@ class WalletFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         
         tvUserName = view.findViewById(R.id.tvUserName)
-        tvAISuggestion = view.findViewById(R.id.tvAISuggestion)
         tvChartTitle = view.findViewById(R.id.tvChartTitle)
         pieChart = view.findViewById(R.id.pieChart)
         chartLegend = view.findViewById(R.id.chartLegend)
@@ -55,6 +59,7 @@ class WalletFragment : Fragment() {
         lineChart = view.findViewById(R.id.lineChart)
         tvTotalBalance = view.findViewById(R.id.tvTotalBalance)
         ivToggleBalance = view.findViewById(R.id.ivToggleBalance)
+        btnMap = view.findViewById(R.id.btnMap)
 
         val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val name = prefs.getString("user_name", "")
@@ -97,8 +102,8 @@ class WalletFragment : Fragment() {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
         }
         
-        view.findViewById<ImageButton>(R.id.btnAI).setOnClickListener {
-            startActivity(Intent(requireContext(), AIChatActivity::class.java))
+        view.findViewById<ImageButton>(R.id.btnMap).setOnClickListener {
+            startActivity(Intent(requireContext(), MapActivity::class.java))
         }
 
         // btnViewAllTrans
@@ -154,7 +159,6 @@ class WalletFragment : Fragment() {
             updateLineChart(all)
             renderRecent(all.take(10))
             renderFunds()
-            generateAISuggestion(all)
         }
     }
 
@@ -209,31 +213,6 @@ class WalletFragment : Fragment() {
             }
         }
         lineChart.setData(spendArr, incomeArr)
-    }
-
-    private fun generateAISuggestion(transactions: List<Transaction>) {
-        if (transactions.isEmpty()) {
-            tvAISuggestion.text = "Bắt đầu ghi chép để PiggyBite AI giúp bạn tối ưu tài chính nhé!"
-            return
-        }
-        val expenses = transactions.filter { it.isExpense }
-        if (expenses.isEmpty()) {
-            tvAISuggestion.text = "Bạn chưa có khoản chi nào. Thật tuyệt vời, hãy tiếp tục duy trì nhé!"
-            return
-        }
-        
-        val topCategory = expenses.groupBy { it.category }
-            .maxByOrNull { it.value.sumOf { AppUtils.parseAmount(it.amount) } }?.key ?: "Khác"
-        
-        val totalExp = expenses.sumOf { AppUtils.parseAmount(it.amount) }
-        val topAmount = expenses.filter { it.category == topCategory }.sumOf { AppUtils.parseAmount(it.amount) }
-        val percent = (topAmount / totalExp * 100).toInt()
-
-        tvAISuggestion.text = when {
-            percent > 50 -> "Bạn đang chi tới $percent% cho '$topCategory'. Hãy cân nhắc cắt giảm để cân bằng ví nhé!"
-            percent > 30 -> "'$topCategory' chiếm tỷ trọng khá lớn ($percent%). Bạn có thể tiết kiệm thêm từ mục này đấy!"
-            else -> "Chi tiêu của bạn khá dàn trải và hợp lý. PiggyBite AI đánh giá cao sự kỷ luật này!"
-        }
     }
 
     private fun updateBalanceDisplay() {
@@ -322,17 +301,151 @@ class WalletFragment : Fragment() {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext(), R.style.CustomBottomSheetDialog)
         dialog.setContentView(view)
 
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        val isOwner = fund.ownerId == currentUserId
+
+        val deleteContainer = view.findViewById<LinearLayout>(R.id.btnDeleteOption)
+        val deleteText = deleteContainer.getChildAt(1) as? TextView
+        
+        if (!isOwner) {
+            deleteText?.text = "Rời khỏi quỹ/Leave"
+        } else {
+            deleteText?.text = "Giải thể quỹ/Disband"
+        }
+
         view.findViewById<LinearLayout>(R.id.btnEditOption).setOnClickListener {
             dialog.dismiss()
             showUpdateFundDialog(fund)
         }
 
-        view.findViewById<LinearLayout>(R.id.btnDeleteOption).setOnClickListener {
+        view.findViewById<LinearLayout>(R.id.btnAddMemberOption).setOnClickListener {
             dialog.dismiss()
-            deleteFund(fund)
+            showAddMemberDialog(fund)
+        }
+
+        view.findViewById<LinearLayout>(R.id.btnViewContributionsOption).setOnClickListener {
+            dialog.dismiss()
+            showContributionsDialog(fund)
+        }
+
+        deleteContainer.setOnClickListener {
+            dialog.dismiss()
+            if (isOwner) confirmDeleteFund(fund)
+            else confirmLeaveFund(fund)
         }
 
         dialog.show()
+    }
+
+    private fun confirmLeaveFund(fund: Fund) {
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Rời khỏi quỹ")
+            .setMessage("Bạn có chắc muốn rời khỏi quỹ '${fund.name}'? Số tiền bạn đã đóng sẽ được hoàn lại vào tài khoản của bạn.")
+            .setPositiveButton("Rời & Hoàn tiền") { _, _ ->
+                leaveFundAndRefund(fund)
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+
+    private fun leaveFundAndRefund(fund: Fund) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val syncManager = FirebaseSyncManager(requireContext())
+            syncManager.leaveFund(fund)
+            
+            // Sync to remove from local
+            syncManager.syncFunds()
+            
+            withContext(Dispatchers.Main) {
+                loadData()
+                Toast.makeText(context, "Bạn đã rời quỹ và nhận lại tiền", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun confirmDeleteFund(fund: Fund) {
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Giải thể quỹ")
+            .setMessage("Bạn có chắc muốn xóa quỹ '${fund.name}'? Số tiền mỗi thành viên đã đóng sẽ được hoàn lại vào tài khoản của họ.")
+            .setPositiveButton("Xóa & Hoàn tiền") { _, _ ->
+                deleteFundAndRefund(fund)
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+
+    private fun deleteFundAndRefund(fund: Fund) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val syncManager = FirebaseSyncManager(requireContext())
+            syncManager.deleteFundAndRefund(fund)
+            
+            // Sync to remove from local
+            syncManager.syncFunds()
+            
+            withContext(Dispatchers.Main) {
+                loadData()
+                Toast.makeText(context, "Quỹ đã được giải thể và hoàn tiền", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun showContributionsDialog(fund: Fund) {
+        val container = LinearLayout(requireContext())
+        container.orientation = LinearLayout.VERTICAL
+        container.setPadding(60, 40, 60, 40)
+
+        lifecycleScope.launch {
+            val dbRef = FirebaseDatabase.getInstance().reference
+            
+            fund.memberContributions.forEach { (uid, amount) ->
+                val snapshot = dbRef.child("users").child(uid).child("profile").get().await()
+                val name = snapshot.child("name").value as? String ?: "Người dùng ẩn"
+                
+                val tv = TextView(requireContext())
+                tv.text = "$name: ${AppUtils.formatCurrency(amount)}"
+                tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_main))
+                tv.textSize = 16f
+                tv.setPadding(0, 10, 0, 10)
+                container.addView(tv)
+            }
+
+            if (fund.memberContributions.isEmpty()) {
+                val tv = TextView(requireContext())
+                tv.text = "Chưa có đóng góp nào."
+                container.addView(tv)
+            }
+
+            withContext(Dispatchers.Main) {
+                android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Chi tiết đóng góp")
+                    .setView(container)
+                    .setPositiveButton("Đóng", null)
+                    .show()
+            }
+        }
+    }
+
+    private fun showAddMemberDialog(fund: Fund) {
+        val etEmail = EditText(requireContext())
+        etEmail.hint = "Email thành viên gia đình"
+        etEmail.setPadding(40, 40, 40, 40)
+        
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Thêm người vào quỹ")
+            .setMessage("Nhập email người bạn muốn mời vào quỹ '${fund.name}':")
+            .setView(etEmail)
+            .setPositiveButton("Thêm") { _, _ ->
+                val email = etEmail.text.toString().trim()
+                if (email.isNotEmpty()) {
+                    lifecycleScope.launch {
+                        val syncManager = FirebaseSyncManager(requireContext())
+                        syncManager.shareFund(fund.syncId, email)
+                        Toast.makeText(requireContext(), "Đã gửi lời mời tới $email", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
     }
 
     private fun showUpdateFundDialog(fund: Fund) {
@@ -357,31 +470,6 @@ class WalletFragment : Fragment() {
             .show()
     }
 
-    private fun deleteFund(fund: Fund) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val db = AppDatabase.getDatabase(requireContext())
-            
-            // Refund remaining amount to main wallet as Income
-            if (fund.currentAmount > 0) {
-                val trans = Transaction(
-                    amount = fund.currentAmount.toLong().toString(),
-                    category = "Rút tiền quỹ",
-                    description = "Hoàn tiền từ quỹ ${fund.name} bị xóa",
-                    date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
-                    isExpense = false,
-                    timestamp = System.currentTimeMillis()
-                )
-                db.transactionDao().insert(trans)
-            }
-
-            db.fundDao().delete(fund)
-            withContext(Dispatchers.Main) { 
-                loadData()
-                renderFunds() 
-            }
-        }
-    }
-
     private fun showAmountDialog(fund: Fund, isDeposit: Boolean) {
         val et = EditText(requireContext())
         et.inputType = android.text.InputType.TYPE_CLASS_NUMBER
@@ -403,11 +491,26 @@ class WalletFragment : Fragment() {
     private fun processFundTransaction(fund: Fund, amount: Double, isDeposit: Boolean) {
         lifecycleScope.launch(Dispatchers.IO) {
             val db = AppDatabase.getDatabase(requireContext())
+            val syncManager = FirebaseSyncManager(requireContext())
+            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
             
-            // 1. Update Fund Amount
-            if (isDeposit) fund.currentAmount += amount
-            else fund.currentAmount -= amount
+            // 1. Update Fund Amount and Member Contributions
+            if (isDeposit) {
+                fund.currentAmount += amount
+                val currentContrib = fund.memberContributions[currentUserId] ?: 0.0
+                val newMap = fund.memberContributions.toMutableMap()
+                newMap[currentUserId] = currentContrib + amount
+                fund.memberContributions = newMap
+            } else {
+                fund.currentAmount -= amount
+                val currentContrib = fund.memberContributions[currentUserId] ?: 0.0
+                val newMap = fund.memberContributions.toMutableMap()
+                newMap[currentUserId] = (currentContrib - amount).coerceAtLeast(0.0)
+                fund.memberContributions = newMap
+            }
+            
             db.fundDao().update(fund)
+            syncManager.createFund(fund) // createFund updates the whole object in RTDB
 
             // 2. Create Transaction
             val trans = Transaction(
@@ -419,6 +522,7 @@ class WalletFragment : Fragment() {
                 timestamp = System.currentTimeMillis()
             )
             db.transactionDao().insert(trans)
+            syncManager.saveTransaction(trans)
 
             withContext(Dispatchers.Main) {
                 loadData()

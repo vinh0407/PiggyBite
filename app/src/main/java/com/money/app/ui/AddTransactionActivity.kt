@@ -11,6 +11,7 @@ import com.google.android.material.chip.ChipGroup
 import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.Transaction
+import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -71,14 +72,65 @@ class AddTransactionActivity : AppCompatActivity() {
         btnSave.setOnClickListener { validateAndSave() }
     }
 
+
+
     private fun parseVoiceText(text: String) {
-        val lower = text.lowercase()
-        // Simple regex to find numbers (amount)
-        val amountMatch = Regex("\\d+").find(lower)
-        if (amountMatch != null) {
-            handleKey(amountMatch.value)
+        val lower = text.lowercase().replace("-", " ").trim()
+        val words = lower.split(" ").filter { it.isNotBlank() }
+        
+        if (words.isEmpty()) return
+
+        var tempAmount = 0L
+        var description = text
+        
+        fun vnToNum(word: String): Long {
+            return when (word) {
+                "một" -> 1; "hai" -> 2; "ba" -> 3; "bốn" -> 4; "năm" -> 5
+                "sáu" -> 6; "bảy" -> 7; "tám" -> 8; "chín" -> 9; "mười" -> 10
+                "chục" -> 10; "trăm" -> 100; "ngàn", "nghìn" -> 1000
+                "triệu" -> 1000000; "k" -> 1000; "lít" -> 100000; "củ" -> 1000000
+                else -> 0L
+            }
         }
-        autoCategorize(lower)
+
+        var amountFound = false
+        var currentMultiplier = 1000L 
+        
+        for (i in words.indices.reversed()) {
+            val word = words[i]
+            val num = word.toLongOrNull()
+            
+            if (num != null) {
+                tempAmount += num * currentMultiplier
+                amountFound = true
+                description = words.subList(0, i).joinToString(" ")
+            } else {
+                val vnVal = vnToNum(word)
+                if (vnVal >= 10) {
+                    currentMultiplier = if (word == "chục" || word == "mươi") 10000L else vnVal
+                } else if (vnVal > 0) {
+                    tempAmount += vnVal * currentMultiplier
+                    amountFound = true
+                    description = words.subList(0, i).joinToString(" ")
+                } else if (amountFound) break
+            }
+        }
+
+        if (lower.endsWith("năm chục") || lower.endsWith("năm mươi")) {
+            tempAmount = 50000L
+            description = lower.replace("năm chục", "").replace("năm mươi", "").trim()
+        }
+
+        if (tempAmount > 0) {
+            currentRawAmount = tempAmount.toString()
+            val amountDouble = currentRawAmount.toDoubleOrNull() ?: 0.0
+            tvAmount.text = java.text.DecimalFormat("#,###").format(amountDouble)
+            btnSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary_blue))
+            btnSave.setTextColor(android.graphics.Color.WHITE)
+        }
+        
+        etDescription.setText(description.replaceFirstChar { it.uppercase() })
+        autoCategorize(description)
     }
 
     private fun parseOCRText(text: String) {
@@ -246,7 +298,14 @@ class AddTransactionActivity : AppCompatActivity() {
                 isExpense = isExpenseMode,
                 timestamp = System.currentTimeMillis()
             )
+            
+            // Save locally
             db.transactionDao().insert(trans)
+            
+            // Save to Firebase
+            val syncManager = FirebaseSyncManager(this@AddTransactionActivity)
+            syncManager.saveTransaction(trans)
+
             finish()
         }
     }

@@ -7,10 +7,12 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.Fund
 import com.money.app.data.Transaction
+import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,14 +41,23 @@ class AddFundActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 val db = AppDatabase.getDatabase(this@AddFundActivity)
+                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                
                 val fund = Fund(
                     name = name,
                     targetAmount = target,
                     currentAmount = current,
                     icon = "🏦",
                     createdDate = System.currentTimeMillis(),
-                    endDate = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000)
+                    endDate = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000),
+                    ownerId = currentUserId,
+                    members = listOf(currentUserId),
+                    memberContributions = if (current > 0) mapOf(currentUserId to current) else mapOf()
                 )
+                
+                val syncManager = FirebaseSyncManager(this@AddFundActivity)
+                syncManager.createFund(fund)
+                
                 db.fundDao().insert(fund)
 
                 // Deduct initial amount from main wallet
@@ -60,6 +71,7 @@ class AddFundActivity : AppCompatActivity() {
                         timestamp = System.currentTimeMillis()
                     )
                     db.transactionDao().insert(trans)
+                    syncManager.saveTransaction(trans)
                 }
 
                 Toast.makeText(this@AddFundActivity, "Đã tạo quỹ thành công", Toast.LENGTH_SHORT).show()
