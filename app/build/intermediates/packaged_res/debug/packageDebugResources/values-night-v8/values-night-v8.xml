@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accent_purple">#E599F7</color>
+    <color name="background">#121212</color>
+    <color name="bg_app">#121212</color>
+    <color name="black">#FFFFFF</color>
+    <color name="expense_red">#FF6B6B</color>
+    <color name="grey_light">#2C2C2C</color>
+    <color name="income_green">#51CF66</color>
+    <color name="light_grey">#3A3A3A</color>
+    <color name="on_surface">#E1E1E1</color>
+    <color name="primary">#5C6BC0</color>
+    <color name="primary_blue">#5C6BC0</color>
+    <color name="primary_dark">#1A237E</color>
+    <color name="primary_light">#283593</color>
+    <color name="surface">#1E1E1E</color>
+    <color name="text_hint">#A0A0A0</color>
+    <color name="text_main">#E1E1E1</color>
+    <color name="text_white">#FFFFFF</color>
+    <color name="translucent_white">#22FFFFFF</color>
+    <color name="warning_yellow">#FFD43B</color>
+    <color name="white">#1E1E1E</color>
+    <style name="Theme.Money" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <item name="colorSecondary">@color/accent_purple</item>
+        <item name="colorSecondaryVariant">@color/primary_dark</item>
+        <item name="colorOnSecondary">@color/white</item>
+        
+        <item name="android:statusBarColor">@color/bg_app</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <item name="android:windowBackground">@color/bg_app</item>
+    </style>
+</resources>

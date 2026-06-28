@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout-sw600dp-v13\\activity_statistics.xml",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout-sw600dp\\activity_statistics.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout-sw600dp-v13\\activity_ai_chat.xml",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout-sw600dp\\activity_ai_chat.xml"
+    },
+    {
+        "merged": "com.money.app-mergeDebugResources-79:/layout-sw600dp-v13/activity_ai_chat.xml",
+        "source": "com.money.app-main-82:/layout-sw600dp/activity_ai_chat.xml"
+    },
+    {
+        "merged": "com.money.app-mergeDebugResources-79:/layout-sw600dp-v13/activity_main.xml",
+        "source": "com.money.app-main-82:/layout-sw600dp/activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout-sw600dp-v13\\activity_main.xml",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout-sw600dp\\activity_main.xml"
+    },
+    {
+        "merged": "com.money.app-mergeDebugResources-79:/layout-sw600dp-v13/activity_statistics.xml",
+        "source": "com.money.app-main-82:/layout-sw600dp/activity_statistics.xml"
+    }
+]
