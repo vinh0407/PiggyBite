@@ -3,6 +3,7 @@ package com.money.app.util
 import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import android.util.Log
 import com.money.app.data.AppDatabase
 import com.money.app.data.Fund
 import com.money.app.data.Transaction
@@ -10,6 +11,16 @@ import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Centralized Sync Manager responsible for orchestrating data flow between 
+ * local SQLite (Room) and Firebase Realtime Database.
+ * 
+ * Handles:
+ * - Transaction synchronization
+ * - Fund/Goal collaborative data
+ * - Invitation management for shared funds
+ * - Pending refund processing
+ */
 class FirebaseSyncManager(private val context: Context) {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance().reference
@@ -20,7 +31,7 @@ class FirebaseSyncManager(private val context: Context) {
     }
 
     suspend fun syncTransactions() {
-        val userId = auth.currentUser?.uid ?: return
+        val userId = auth.currentUser?.uid ?: throw MoneyException("User not authenticated")
         try {
             // 1. Check for pending refunds
             checkPendingRefunds(userId)
@@ -31,7 +42,7 @@ class FirebaseSyncManager(private val context: Context) {
 
             snapshot.children.forEach { child ->
                 val syncId = child.key ?: return@forEach
-                val amount = child.child("amount").value as? String ?: "0"
+                val amount = (child.child("amount").value as? Number)?.toDouble() ?: 0.0
                 val timestamp = child.child("timestamp").value as? Long ?: 0L
                 val category = child.child("category").value as? String ?: ""
 
@@ -61,6 +72,7 @@ class FirebaseSyncManager(private val context: Context) {
                 }
             }
         } catch (e: Exception) {
+            Log.e("Sync", "General error during sync: ${e.message}")
             e.printStackTrace()
         }
     }
@@ -75,7 +87,7 @@ class FirebaseSyncManager(private val context: Context) {
                     
                     if (amount.toDouble() > 0) {
                         val trans = Transaction(
-                            amount = amount.toLong().toString(),
+                            amount = amount.toDouble(),
                             category = "Hoàn tiền quỹ",
                             description = "Hoàn tiền từ quỹ $fundName bị giải thể",
                             date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
@@ -158,6 +170,7 @@ class FirebaseSyncManager(private val context: Context) {
     suspend fun saveTransaction(transaction: Transaction) {
         val userId = auth.currentUser?.uid ?: return
         try {
+            // Kotlin String Template and HashMap usage
             val transData = hashMapOf(
                 "amount" to transaction.amount,
                 "category" to transaction.category,
@@ -169,7 +182,11 @@ class FirebaseSyncManager(private val context: Context) {
             db.child("users").child(userId).child("transactions")
                 .child(transaction.syncId).setValue(transData).await()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Sync", "Failed to save transaction: ${e.message}")
+            if (transaction.amount < 0) {
+                throw MoneyException("Số tiền không thể là số âm")
+            }
+            throw e // Re-throw to let UI handle it
         }
     }
 

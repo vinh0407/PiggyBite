@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Tổng chi"
+            android:text="@string/label_total_spend"
             android:textColor="@color/text_hint"
             android:textSize="12sp" />
 
@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="0đ"
+            android:text="@string/wallet_zero_balance"
             android:textColor="@color/expense_red"
             android:textSize="14sp"
             android:textStyle="bold" />

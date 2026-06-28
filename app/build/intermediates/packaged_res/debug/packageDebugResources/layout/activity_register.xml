@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:text="Tạo tài khoản"
+        android:text="@string/register_title"
         android:textColor="@color/white"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -67,7 +67,7 @@
                     android:id="@+id/rbEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Email"
+                    android:text="@string/login_email"
                     android:checked="true"
                     android:textColor="@color/text_main" />
                 <RadioButton
@@ -75,7 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:text="Số điện thoại"
+                    android:text="@string/login_phone"
                     android:textColor="@color/text_main" />
             </RadioGroup>
 
@@ -84,7 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@drawable/bg_pill_grey"
-                android:hint="Họ và tên"
+                android:hint="@string/register_name_hint"
                 android:inputType="textPersonName"
                 android:paddingHorizontal="24dp" />
 
@@ -99,7 +99,7 @@
                     android:layout_height="56dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_pill_grey"
-                    android:hint="Email"
+                    android:hint="@string/login_email"
                     android:inputType="textEmailAddress"
                     android:paddingHorizontal="24dp" />
 
@@ -109,7 +109,7 @@
                     android:layout_height="56dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_pill_grey"
-                    android:hint="Mật khẩu"
+                    android:hint="@string/login_password_hint"
                     android:inputType="textPassword"
                     android:paddingHorizontal="24dp" />
             </LinearLayout>
@@ -126,7 +126,7 @@
                     android:layout_height="56dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_pill_grey"
-                    android:hint="Số điện thoại"
+                    android:hint="@string/login_phone"
                     android:inputType="phone"
                     android:paddingHorizontal="24dp" />
 
@@ -136,7 +136,7 @@
                     android:layout_height="56dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_pill_grey"
-                    android:hint="Mật khẩu"
+                    android:hint="@string/login_password_hint"
                     android:inputType="textPassword"
                     android:paddingHorizontal="24dp" />
             </LinearLayout>
@@ -147,7 +147,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_pill_grey"
-                android:hint="Tài sản hiện có (VND)"
+                android:hint="@string/register_balance_hint"
                 android:inputType="number"
                 android:paddingHorizontal="24dp" />
 
@@ -157,7 +157,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="32dp"
                 android:backgroundTint="@color/primary_blue"
-                android:text="Đăng ký"
+                android:text="@string/register_submit"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 app:cornerRadius="28dp" />

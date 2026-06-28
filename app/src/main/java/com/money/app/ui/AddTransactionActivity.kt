@@ -74,7 +74,11 @@ class AddTransactionActivity : AppCompatActivity() {
 
 
 
+    /**
+     * Kotlin String & Logic Handling: Parses Vietnamese voice input into amount and description
+     */
     private fun parseVoiceText(text: String) {
+        // String manipulation: lowercase, replace, trim
         val lower = text.lowercase().replace("-", " ").trim()
         val words = lower.split(" ").filter { it.isNotBlank() }
         
@@ -133,12 +137,16 @@ class AddTransactionActivity : AppCompatActivity() {
         autoCategorize(description)
     }
 
+    /**
+     * Kotlin String & Number Handling: Extracts numbers from OCR text using patterns
+     */
     private fun parseOCRText(text: String) {
         val lines = text.split("\n")
         var foundAmount = 0L
         lines.forEach { line ->
-            // Try to find currency-like patterns or large numbers
+            // String manipulation: Regex-like replacement to clean up numeric strings
             val clean = line.replace(".", "").replace(",", "").replace("đ", "").trim()
+            // Number handling: Safe conversion from String to Long
             val num = clean.toLongOrNull()
             if (num != null && num > foundAmount) {
                 foundAmount = num
@@ -289,24 +297,28 @@ class AddTransactionActivity : AppCompatActivity() {
         } else "❓ Khác"
 
         lifecycleScope.launch {
-            val db = AppDatabase.getDatabase(this@AddTransactionActivity)
-            val trans = Transaction(
-                amount = currentRawAmount,
-                category = category,
-                date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
-                description = etDescription.text.toString(),
-                isExpense = isExpenseMode,
-                timestamp = System.currentTimeMillis()
-            )
-            
-            // Save locally
-            db.transactionDao().insert(trans)
-            
-            // Save to Firebase
-            val syncManager = FirebaseSyncManager(this@AddTransactionActivity)
-            syncManager.saveTransaction(trans)
+            try {
+                val db = AppDatabase.getDatabase(this@AddTransactionActivity)
+                val trans = Transaction(
+                    amount = currentRawAmount.toDoubleOrNull() ?: 0.0,
+                    category = category,
+                    date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
+                    description = etDescription.text.toString(),
+                    isExpense = isExpenseMode,
+                    timestamp = System.currentTimeMillis()
+                )
+                
+                // Save locally
+                db.transactionDao().insert(trans)
+                
+                // Save to Firebase
+                val syncManager = FirebaseSyncManager(this@AddTransactionActivity)
+                syncManager.saveTransaction(trans)
 
-            finish()
+                finish()
+            } catch (e: Exception) {
+                Toast.makeText(this@AddTransactionActivity, "Lỗi khi lưu giao dịch: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

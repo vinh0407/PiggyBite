@@ -24,6 +24,7 @@
             android:backgroundTint="#40FFFFFF"
             android:padding="12dp"
             android:src="@drawable/ic_close"
+            android:contentDescription="@string/btn_cancel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/white" />
@@ -32,7 +33,7 @@
             android:id="@+id/tvChatTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PiggyBite AI"
+            android:text="@string/app_name"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -58,7 +59,7 @@
                 android:backgroundTint="#40FFFFFF"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
-                android:text="Đang tính toán..."
+                android:text="@string/ai_calculating"
                 android:textColor="@color/white"
                 android:textSize="11sp" />
 
@@ -71,7 +72,7 @@
                 android:backgroundTint="#E0FFFFFF"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
-                android:text="..."
+                android:text="@string/ai_dots"
                 android:textColor="@color/primary_blue"
                 android:textSize="11sp"
                 android:textStyle="bold" />
@@ -116,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Xin chào! Tôi là PiggyBite AI"
+                android:text="@string/ai_welcome_title"
                 android:textColor="@color/text_main"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -126,7 +127,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="Tôi có thể giúp bạn lập kế hoạch tài chính,\nphân tích chi tiêu hoặc chỉ là tán gẫu."
+                android:text="@string/ai_welcome_desc"
                 android:textColor="@color/text_hint"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -150,25 +151,25 @@
             <TextView
                 android:id="@+id/sug1"
                 style="@style/SuggestionPill"
-                android:text="Ăn uống %?" />
+                android:text="@string/ai_sug_food" />
 
             <TextView
                 android:id="@+id/sug2"
                 style="@style/SuggestionPill"
                 android:layout_marginStart="8dp"
-                android:text="Quỹ khẩn cấp?" />
+                android:text="@string/ai_sug_emergency" />
 
             <TextView
                 android:id="@+id/sug3"
                 style="@style/SuggestionPill"
                 android:layout_marginStart="8dp"
-                android:text="Tỷ lệ tiết kiệm?" />
+                android:text="@string/ai_sug_saving" />
 
             <TextView
                 android:id="@+id/sug4"
                 style="@style/SuggestionPill"
                 android:layout_marginStart="8dp"
-                android:text="Phân tích chi tiêu" />
+                android:text="@string/ai_sug_analysis" />
         </LinearLayout>
     </HorizontalScrollView>
 
@@ -190,11 +191,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bg_pill_grey"
-            android:hint="Nhập tin nhắn..."
+            android:hint="@string/ai_chat_hint"
             android:paddingHorizontal="20dp"
             android:paddingVertical="12dp"
             android:textColor="@color/text_main"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:inputType="text"
+            android:autofillHints="none" />
 
         <ImageButton
             android:id="@+id/btnSend"

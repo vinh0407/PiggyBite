@@ -209,7 +209,7 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
         transactions.forEach { trans ->
             val transCats = trans.category.split(",").map { it.trim() }
             if (transCats.any { categoryNames.contains(it) }) {
-                total += trans.amount.replace(",", "").toDoubleOrNull() ?: 0.0
+                total += trans.amount
             }
         }
         return total

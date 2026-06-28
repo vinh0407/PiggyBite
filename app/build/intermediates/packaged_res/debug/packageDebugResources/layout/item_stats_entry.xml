@@ -43,7 +43,7 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mô tả/Danh mục"
+                android:text="@string/label_description_cat"
                 android:textColor="@color/text_main"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="15/06/2026"
+                android:text="@string/wallet_placeholder"
                 android:textColor="@color/text_hint"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -62,7 +62,7 @@
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-20,000đ"
+            android:text="@string/wallet_zero_balance"
             android:textColor="@color/expense_red"
             android:textSize="15sp"
             android:textStyle="bold" />

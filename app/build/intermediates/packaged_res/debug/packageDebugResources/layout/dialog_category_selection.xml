@@ -33,7 +33,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Danh mục chi tiêu"
+        android:text="@string/cat_selection_title"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -80,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="12dp"
-            android:text="Tháng 11, 2024"
+            android:text="@string/wallet_placeholder"
             android:textColor="@color/accent"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -120,7 +120,7 @@
                     android:id="@+id/headerFixed"
                     style="@style/CategoryHeaderStyle"
                     android:drawableStart="@drawable/ic_home"
-                    android:text="Cố định" />
+                    android:text="@string/cat_fixed" />
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
                     style="@style/CategoryHeaderStyle"
                     android:drawableStart="@drawable/ic_cart"
                     android:layout_marginTop="24dp"
-                    android:text="Nhu cầu thiết yếu" />
+                    android:text="@string/cat_essential" />
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
                     style="@style/CategoryHeaderStyle"
                     android:drawableStart="@drawable/ic_heart"
                     android:layout_marginTop="24dp"
-                    android:text="Hưởng thụ &amp; Giải trí" />
+                    android:text="@string/cat_enjoyment" />
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                     style="@style/CategoryHeaderStyle"
                     android:drawableStart="@drawable/ic_book"
                     android:layout_marginTop="24dp"
-                    android:text="Giáo dục" />
+                    android:text="@string/cat_education" />
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -183,7 +183,7 @@
                     style="@style/CategoryHeaderStyle"
                     android:drawableStart="@drawable/ic_settings"
                     android:layout_marginTop="24dp"
-                    android:text="Khác" />
+                    android:text="@string/cat_other" />
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -205,7 +205,7 @@
                     android:id="@+id/headerIncomeFixed"
                     style="@style/CategoryHeaderStyle"
                     android:drawableStart="@drawable/ic_wallet"
-                    android:text="Cố định" />
+                    android:text="@string/cat_fixed" />
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -220,7 +220,7 @@
                     style="@style/CategoryHeaderStyle"
                     android:drawableStart="@drawable/ic_mic"
                     android:layout_marginTop="24dp"
-                    android:text="Linh hoạt" />
+                    android:text="@string/cat_flex" />
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -236,7 +236,7 @@
                     style="@style/CategoryHeaderStyle"
                     android:drawableStart="@drawable/ic_settings"
                     android:layout_marginTop="24dp"
-                    android:text="Khác" />
+                    android:text="@string/cat_other" />
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -271,7 +271,7 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_save_button"
-        android:text="+ Tạo mới"
+        android:text="@string/cat_create_new"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="18sp"

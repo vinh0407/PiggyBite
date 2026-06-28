@@ -1,5 +1,6 @@
 package com.money.app.ui
 
+import com.money.app.databinding.FragmentWalletBinding
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +11,9 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.money.app.R
@@ -26,121 +30,144 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Dashboard Fragment representing the user's primary wallet overview.
+ * Features:
+ * - Real-time balance calculation
+ * - Monthly analysis charts (Donut & Line)
+ * - Recent transaction history
+ * - Shared fund management
+ * 
+ * Automatically refreshes data in [onResume] to ensure UI consistency.
+ */
 class WalletFragment : Fragment() {
 
-    private lateinit var pieChart: PieChartView
-    private lateinit var chartLegend: GridLayout
-    private lateinit var recentList: LinearLayout
-    private lateinit var fundsContainer: LinearLayout
-    private lateinit var lineChart: LineChartView
-    private lateinit var tvUserName: TextView
-    private lateinit var tvChartTitle: TextView
-    private lateinit var tvTotalBalance: TextView
-    private lateinit var ivToggleBalance: ImageView
-    private lateinit var btnMap: ImageButton
+    private var _binding: FragmentWalletBinding? = null
+    private val binding get() = _binding!!
     
     private var isExpenseMode = true
     private var isBalanceVisible = true
     private var actualBalance = 0.0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_wallet, container, false)
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            saveAvatarUri(uri)
+            binding.ivProfile.setImageURI(uri)
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentWalletBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        tvUserName = view.findViewById(R.id.tvUserName)
-        tvChartTitle = view.findViewById(R.id.tvChartTitle)
-        pieChart = view.findViewById(R.id.pieChart)
-        chartLegend = view.findViewById(R.id.chartLegend)
-        recentList = view.findViewById(R.id.recentList)
-        fundsContainer = view.findViewById(R.id.fundsContainer)
-        lineChart = view.findViewById(R.id.lineChart)
-        tvTotalBalance = view.findViewById(R.id.tvTotalBalance)
-        ivToggleBalance = view.findViewById(R.id.ivToggleBalance)
-        btnMap = view.findViewById(R.id.btnMap)
-
         val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val name = prefs.getString("user_name", "")
-        tvUserName.text = name?.uppercase() ?: ""
+        binding.tvUserName.text = name?.uppercase() ?: ""
 
-        ivToggleBalance.setOnClickListener {
+        binding.ivToggleBalance.setOnClickListener {
             isBalanceVisible = !isBalanceVisible
             updateBalanceDisplay()
         }
 
-        setupQuickActions(view)
-        setupToggle(view)
+        binding.flProfile.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+
+        binding.ivProfile.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+
+        loadAvatar()
+        setupQuickActions()
+        setupToggle()
         loadData()
     }
 
-    private fun setupToggle(view: View) {
-        val rg = view.findViewById<RadioGroup>(R.id.rgChartToggle)
-        rg.setOnCheckedChangeListener { _, checkedId ->
+    override fun onResume() {
+        super.onResume()
+        // Refresh data every time user returns to home screen
+        loadData()
+        
+        // Refresh name in case it was changed in ProfileActivity
+        val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val name = prefs.getString("user_name", "")
+        binding.tvUserName.text = name?.uppercase() ?: ""
+    }
+
+    private fun saveAvatarUri(uri: Uri) {
+        val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("avatar_uri", uri.toString()).apply()
+    }
+
+    private fun loadAvatar() {
+        val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val uriString = prefs.getString("avatar_uri", null)
+        if (uriString != null) {
+            binding.ivProfile.setImageURI(Uri.parse(uriString))
+        }
+    }
+
+    private fun setupToggle() {
+        binding.rgChartToggle.setOnCheckedChangeListener { _, checkedId ->
             isExpenseMode = (checkedId == R.id.rbExpense)
-            val rbExp = view.findViewById<RadioButton>(R.id.rbExpense)
-            val rbInc = view.findViewById<RadioButton>(R.id.rbIncome)
             
             if (isExpenseMode) {
-                rbExp.setBackgroundResource(R.drawable.bg_pill_white)
-                rbExp.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_blue))
-                rbInc.background = null
-                rbInc.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_hint))
+                binding.rbExpense.setBackgroundResource(R.drawable.bg_pill_white)
+                binding.rbExpense.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_blue))
+                binding.rbIncome.background = null
+                binding.rbIncome.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_hint))
             } else {
-                rbInc.setBackgroundResource(R.drawable.bg_pill_white)
-                rbInc.setTextColor(ContextCompat.getColor(requireContext(), R.color.income_green))
-                rbExp.background = null
-                rbExp.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_hint))
+                binding.rbIncome.setBackgroundResource(R.drawable.bg_pill_white)
+                binding.rbIncome.setTextColor(ContextCompat.getColor(requireContext(), R.color.income_green))
+                binding.rbExpense.background = null
+                binding.rbExpense.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_hint))
             }
             loadData()
         }
     }
 
-    private fun setupQuickActions(view: View) {
-        view.findViewById<ImageButton>(R.id.btnSettings).setOnClickListener {
+    private fun setupQuickActions() {
+        binding.btnSettings.setOnClickListener {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
         }
         
-        view.findViewById<ImageButton>(R.id.btnMap).setOnClickListener {
+        binding.btnMap.setOnClickListener {
             startActivity(Intent(requireContext(), MapActivity::class.java))
         }
 
-        // btnViewAllTrans
-        view.findViewById<TextView>(R.id.btnViewAllTrans).setOnClickListener {
+        binding.btnViewAllTrans.setOnClickListener {
             startActivity(Intent(requireContext(), AllTransactionsActivity::class.java))
         }
 
-        // btnAddFund
-        view.findViewById<TextView>(R.id.btnAddFund).setOnClickListener {
+        binding.btnAddFund.setOnClickListener {
             startActivity(Intent(requireContext(), AddFundActivity::class.java))
         }
 
         // Quick action pills
-        val add = view.findViewById<View>(R.id.actionAdd)
-        add.findViewById<ImageView>(R.id.actionIcon).setImageResource(android.R.drawable.ic_input_add)
-        add.findViewById<TextView>(R.id.actionText).text = "Thêm/Add"
-        add.setOnClickListener { startActivity(Intent(requireContext(), AddTransactionActivity::class.java)) }
+        binding.actionAdd.root.setOnClickListener { startActivity(Intent(requireContext(), AddTransactionActivity::class.java)) }
+        binding.actionAdd.actionIcon.setImageResource(android.R.drawable.ic_input_add)
+        binding.actionAdd.actionText.text = "Thêm/Add"
 
-        val report = view.findViewById<View>(R.id.actionReport)
-        report.findViewById<ImageView>(R.id.actionIcon).setImageResource(R.drawable.ic_chart)
-        report.findViewById<TextView>(R.id.actionText).text = "Báo cáo/Stats"
-        report.setOnClickListener { startActivity(Intent(requireContext(), StatisticsActivity::class.java)) }
+        binding.actionReport.root.setOnClickListener { startActivity(Intent(requireContext(), StatisticsActivity::class.java)) }
+        binding.actionReport.actionIcon.setImageResource(R.drawable.ic_chart)
+        binding.actionReport.actionText.text = "Báo cáo/Stats"
 
-        val chat = view.findViewById<View>(R.id.actionAIChat)
-        chat.findViewById<ImageView>(R.id.actionIcon).setImageResource(R.drawable.ic_brain)
-        chat.findViewById<TextView>(R.id.actionText).text = "AI Chat"
-        chat.setOnClickListener { startActivity(Intent(requireContext(), AIChatActivity::class.java)) }
+        binding.actionAIChat.root.setOnClickListener { startActivity(Intent(requireContext(), AIChatActivity::class.java)) }
+        binding.actionAIChat.actionIcon.setImageResource(R.drawable.ic_brain)
+        binding.actionAIChat.actionText.text = "AI Chat"
         
-        val goals = view.findViewById<View>(R.id.actionGoals)
-        goals.findViewById<ImageView>(R.id.actionIcon).setImageResource(R.drawable.ic_check_circle)
-        goals.findViewById<TextView>(R.id.actionText).text = "Mục tiêu/Goals"
-        goals.setOnClickListener { startActivity(Intent(requireContext(), AllFundsActivity::class.java)) }
+        binding.actionGoals.root.setOnClickListener { startActivity(Intent(requireContext(), AllFundsActivity::class.java)) }
+        binding.actionGoals.actionIcon.setImageResource(R.drawable.ic_check_circle)
+        binding.actionGoals.actionText.text = "Mục tiêu/Goals"
     }
 
     private fun loadData() {
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
-        tvChartTitle.text = "Phân tích tháng $currentMonth"
+        binding.tvChartTitle.text = "Phân tích tháng $currentMonth"
 
         viewLifecycleOwner.lifecycleScope.launch {
             val db = AppDatabase.getDatabase(requireContext())
@@ -149,7 +176,7 @@ class WalletFragment : Fragment() {
             var totalInc = 0.0
             var totalExp = 0.0
             all.forEach {
-                val amt = AppUtils.parseAmount(it.amount)
+                val amt = it.amount
                 if (it.isExpense) totalExp += amt else totalInc += amt
             }
             actualBalance = totalInc - totalExp
@@ -165,13 +192,13 @@ class WalletFragment : Fragment() {
     private fun updateDonutChart(transactions: List<Transaction>) {
         val filtered = transactions.filter { it.isExpense == isExpenseMode }
         if (filtered.isEmpty()) {
-            pieChart.setSlices(emptyList())
-            chartLegend.removeAllViews()
+            binding.pieChart.setSlices(emptyList())
+            binding.chartLegend.removeAllViews()
             return
         }
 
         val categoryTotals = filtered.groupBy { it.category }
-            .mapValues { entry -> entry.value.sumOf { AppUtils.parseAmount(it.amount) } }
+            .mapValues { entry -> entry.value.sumOf { it.amount } }
 
         val colors = if (isExpenseMode) {
             listOf(0xFF4A5BCC.toInt(), 0xFFEA5455.toInt(), 0xFFD131F5.toInt(), 0xFFFF9F43.toInt(), 0xFF00CFE8.toInt())
@@ -183,15 +210,15 @@ class WalletFragment : Fragment() {
             PieChartView.Slice(entry.value.toFloat(), colors[index % colors.size], entry.key)
         }
 
-        pieChart.setSlices(slices)
-        chartLegend.removeAllViews()
+        binding.pieChart.setSlices(slices)
+        binding.chartLegend.removeAllViews()
         slices.forEach { slice ->
             val v = TextView(requireContext())
-            v.text = "● ${slice.label}: ${AppUtils.formatCurrency(slice.value.toDouble())}"
+            v.text = "● ${slice.label}: ${AppUtils.formatCurrency(slice.value.toDouble(), requireContext())}"
             v.setTextColor(slice.color)
             v.textSize = 11f
             v.setPadding(8, 4, 8, 4)
-            chartLegend.addView(v)
+            binding.chartLegend.addView(v)
         }
     }
 
@@ -208,62 +235,58 @@ class WalletFragment : Fragment() {
                 var dayIdx = cal.get(Calendar.DAY_OF_WEEK) - 2 // Mon=0
                 if (dayIdx < 0) dayIdx = 6 // Sun=6
                 
-                val amt = AppUtils.parseAmount(t.amount).toFloat()
+                val amt = t.amount.toFloat()
                 if (t.isExpense) spendArr[dayIdx] += amt else incomeArr[dayIdx] += amt
             }
         }
-        lineChart.setData(spendArr, incomeArr)
+        binding.lineChart.setData(spendArr, incomeArr)
     }
 
     private fun updateBalanceDisplay() {
         if (isBalanceVisible) {
-            tvTotalBalance.text = AppUtils.formatCurrency(actualBalance)
-            ivToggleBalance.setImageResource(R.drawable.ic_eye)
+            binding.tvTotalBalance.text = AppUtils.formatCurrency(actualBalance, requireContext())
+            binding.ivToggleBalance.setImageResource(R.drawable.ic_eye)
         } else {
-            tvTotalBalance.text = "********"
-            ivToggleBalance.setImageResource(R.drawable.ic_eye_off)
+            binding.tvTotalBalance.text = "********"
+            binding.ivToggleBalance.setImageResource(R.drawable.ic_eye_off)
         }
     }
 
     private fun renderRecent(list: List<Transaction>) {
-        recentList.removeAllViews()
+        binding.recentList.removeAllViews()
         if (list.isEmpty()) {
-            val emptyTv = TextView(requireContext())
-            emptyTv.text = "Chưa có giao dịch nào/No transactions"
-            emptyTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_hint))
-            emptyTv.gravity = android.view.Gravity.CENTER
-            emptyTv.setPadding(0, 40, 0, 40)
-            recentList.addView(emptyTv)
+            val emptyView = LayoutInflater.from(requireContext()).inflate(R.layout.item_empty_state, binding.recentList, false)
+            binding.recentList.addView(emptyView)
             return
         }
         list.forEach { trans ->
-            val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_stats_entry, recentList, false)
+            val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_stats_entry, binding.recentList, false)
             
             // Logic: Show description if available, else show category
             val title = if (trans.description.isNullOrEmpty()) trans.category else trans.description
             item.findViewById<TextView>(R.id.tvTitle).text = title
             
-            val amountVal = AppUtils.parseAmount(trans.amount)
-            item.findViewById<TextView>(R.id.tvAmount).text = "${if (trans.isExpense) "-" else "+"}${AppUtils.formatCurrency(amountVal)}"
+            val amountVal = trans.amount
+            item.findViewById<TextView>(R.id.tvAmount).text = "${if (trans.isExpense) "-" else "+"}${AppUtils.formatCurrency(amountVal, requireContext())}"
             item.findViewById<TextView>(R.id.tvAmount).setTextColor(
                 ContextCompat.getColor(requireContext(), if (trans.isExpense) R.color.expense_red else R.color.income_green)
             )
             
             item.findViewById<TextView>(R.id.tvDateTime).text = trans.date
 
-            recentList.addView(item)
+            binding.recentList.addView(item)
         }
     }
 
     private fun renderFunds() {
-        fundsContainer.removeAllViews()
+        binding.fundsContainer.removeAllViews()
         viewLifecycleOwner.lifecycleScope.launch {
             val db = AppDatabase.getDatabase(requireContext())
             val funds = withContext(Dispatchers.IO) { db.fundDao().getAllFunds() }
             funds.forEach { fund ->
-                val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_fund_premium, fundsContainer, false)
+                val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_fund_premium, binding.fundsContainer, false)
                 item.findViewById<TextView>(R.id.tvGoalName).text = fund.name
-                item.findViewById<TextView>(R.id.tvGoalProgress).text = "${AppUtils.formatCurrency(fund.currentAmount)} / ${AppUtils.formatCurrency(fund.targetAmount)}"
+                item.findViewById<TextView>(R.id.tvGoalProgress).text = "${AppUtils.formatCurrency(fund.currentAmount, requireContext())} / ${AppUtils.formatCurrency(fund.targetAmount, requireContext())}"
                 val percent = if (fund.targetAmount > 0) (fund.currentAmount / fund.targetAmount * 100).toInt() else 0
                 item.findViewById<TextView>(R.id.tvGoalPercent).text = "$percent%"
                 item.findViewById<ProgressBar>(R.id.pbGoal).progress = percent.coerceIn(0, 100)
@@ -291,7 +314,7 @@ class WalletFragment : Fragment() {
                     showAmountDialog(fund, isDeposit = false)
                 }
 
-                fundsContainer.addView(item)
+                binding.fundsContainer.addView(item)
             }
         }
     }
@@ -402,7 +425,7 @@ class WalletFragment : Fragment() {
                 val name = snapshot.child("name").value as? String ?: "Người dùng ẩn"
                 
                 val tv = TextView(requireContext())
-                tv.text = "$name: ${AppUtils.formatCurrency(amount)}"
+                tv.text = "$name: ${AppUtils.formatCurrency(amount, requireContext())}"
                 tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_main))
                 tv.textSize = 16f
                 tv.setPadding(0, 10, 0, 10)
@@ -514,7 +537,7 @@ class WalletFragment : Fragment() {
 
             // 2. Create Transaction
             val trans = Transaction(
-                amount = amount.toLong().toString(),
+                amount = amount,
                 category = if (isDeposit) "Góp quỹ" else "Rút tiền quỹ",
                 description = "${if (isDeposit) "Góp vào" else "Rút từ"} quỹ ${fund.name}",
                 date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
@@ -529,5 +552,10 @@ class WalletFragment : Fragment() {
                 Toast.makeText(context, "Thao tác thành công", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

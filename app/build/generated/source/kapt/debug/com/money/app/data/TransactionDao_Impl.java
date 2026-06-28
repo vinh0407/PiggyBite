@@ -51,11 +51,7 @@ public final class TransactionDao_Impl implements TransactionDao {
         } else {
           statement.bindText(3, entity.getUserId());
         }
-        if (entity.getAmount() == null) {
-          statement.bindNull(4);
-        } else {
-          statement.bindText(4, entity.getAmount());
-        }
+        statement.bindDouble(4, entity.getAmount());
         if (entity.getCategory() == null) {
           statement.bindNull(5);
         } else {
@@ -98,24 +94,26 @@ public final class TransactionDao_Impl implements TransactionDao {
   }
 
   @Override
-  public Object insert(final Transaction transaction, final Continuation<? super Long> arg1) {
+  public Object insert(final Transaction transaction,
+      final Continuation<? super Long> $completion) {
     if (transaction == null) throw new NullPointerException();
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       return __insertAdapterOfTransaction.insertAndReturnId(_connection, transaction);
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object delete(final Transaction transaction, final Continuation<? super Unit> arg1) {
+  public Object delete(final Transaction transaction,
+      final Continuation<? super Unit> $completion) {
     if (transaction == null) throw new NullPointerException();
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       __deleteAdapterOfTransaction.handle(_connection, transaction);
       return Unit.INSTANCE;
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getLatestTransaction(final Continuation<? super Transaction> arg0) {
+  public Object getLatestTransaction(final Continuation<? super Transaction> $completion) {
     final String _sql = "SELECT * FROM transactions ORDER BY timestamp DESC LIMIT 1";
     return DBUtil.performSuspending(__db, true, false, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -147,12 +145,8 @@ public final class TransactionDao_Impl implements TransactionDao {
           } else {
             _tmpUserId = _stmt.getText(_columnIndexOfUserId);
           }
-          final String _tmpAmount;
-          if (_stmt.isNull(_columnIndexOfAmount)) {
-            _tmpAmount = null;
-          } else {
-            _tmpAmount = _stmt.getText(_columnIndexOfAmount);
-          }
+          final double _tmpAmount;
+          _tmpAmount = _stmt.getDouble(_columnIndexOfAmount);
           final String _tmpCategory;
           if (_stmt.isNull(_columnIndexOfCategory)) {
             _tmpCategory = null;
@@ -193,11 +187,11 @@ public final class TransactionDao_Impl implements TransactionDao {
       } finally {
         _stmt.close();
       }
-    }, arg0);
+    }, $completion);
   }
 
   @Override
-  public Object getAllTransactions(final Continuation<? super List<Transaction>> arg0) {
+  public Object getAllTransactions(final Continuation<? super List<Transaction>> $completion) {
     final String _sql = "SELECT * FROM transactions ORDER BY timestamp DESC";
     return DBUtil.performSuspending(__db, true, false, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -230,12 +224,8 @@ public final class TransactionDao_Impl implements TransactionDao {
           } else {
             _tmpUserId = _stmt.getText(_columnIndexOfUserId);
           }
-          final String _tmpAmount;
-          if (_stmt.isNull(_columnIndexOfAmount)) {
-            _tmpAmount = null;
-          } else {
-            _tmpAmount = _stmt.getText(_columnIndexOfAmount);
-          }
+          final double _tmpAmount;
+          _tmpAmount = _stmt.getDouble(_columnIndexOfAmount);
           final String _tmpCategory;
           if (_stmt.isNull(_columnIndexOfCategory)) {
             _tmpCategory = null;
@@ -275,12 +265,12 @@ public final class TransactionDao_Impl implements TransactionDao {
       } finally {
         _stmt.close();
       }
-    }, arg0);
+    }, $completion);
   }
 
   @Override
   public Object getExpensesInTimeRange(final long startTime, final long endTime,
-      final Continuation<? super List<Transaction>> arg2) {
+      final Continuation<? super List<Transaction>> $completion) {
     final String _sql = "SELECT * FROM transactions WHERE isExpense = 1 AND timestamp >= ? AND timestamp <= ?";
     return DBUtil.performSuspending(__db, true, false, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -317,12 +307,8 @@ public final class TransactionDao_Impl implements TransactionDao {
           } else {
             _tmpUserId = _stmt.getText(_columnIndexOfUserId);
           }
-          final String _tmpAmount;
-          if (_stmt.isNull(_columnIndexOfAmount)) {
-            _tmpAmount = null;
-          } else {
-            _tmpAmount = _stmt.getText(_columnIndexOfAmount);
-          }
+          final double _tmpAmount;
+          _tmpAmount = _stmt.getDouble(_columnIndexOfAmount);
           final String _tmpCategory;
           if (_stmt.isNull(_columnIndexOfCategory)) {
             _tmpCategory = null;
@@ -362,12 +348,12 @@ public final class TransactionDao_Impl implements TransactionDao {
       } finally {
         _stmt.close();
       }
-    }, arg2);
+    }, $completion);
   }
 
   @Override
   public Object getTransactionsInTimeRange(final long startTime, final long endTime,
-      final Continuation<? super List<Transaction>> arg2) {
+      final Continuation<? super List<Transaction>> $completion) {
     final String _sql = "SELECT * FROM transactions WHERE timestamp >= ? AND timestamp <= ?";
     return DBUtil.performSuspending(__db, true, false, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -404,12 +390,8 @@ public final class TransactionDao_Impl implements TransactionDao {
           } else {
             _tmpUserId = _stmt.getText(_columnIndexOfUserId);
           }
-          final String _tmpAmount;
-          if (_stmt.isNull(_columnIndexOfAmount)) {
-            _tmpAmount = null;
-          } else {
-            _tmpAmount = _stmt.getText(_columnIndexOfAmount);
-          }
+          final double _tmpAmount;
+          _tmpAmount = _stmt.getDouble(_columnIndexOfAmount);
           final String _tmpCategory;
           if (_stmt.isNull(_columnIndexOfCategory)) {
             _tmpCategory = null;
@@ -449,12 +431,12 @@ public final class TransactionDao_Impl implements TransactionDao {
       } finally {
         _stmt.close();
       }
-    }, arg2);
+    }, $completion);
   }
 
   @Override
   public Object searchTransactions(final String query,
-      final Continuation<? super List<Transaction>> arg1) {
+      final Continuation<? super List<Transaction>> $completion) {
     final String _sql = "SELECT * FROM transactions WHERE category LIKE ? OR description LIKE ?";
     return DBUtil.performSuspending(__db, true, false, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -499,12 +481,8 @@ public final class TransactionDao_Impl implements TransactionDao {
           } else {
             _tmpUserId = _stmt.getText(_columnIndexOfUserId);
           }
-          final String _tmpAmount;
-          if (_stmt.isNull(_columnIndexOfAmount)) {
-            _tmpAmount = null;
-          } else {
-            _tmpAmount = _stmt.getText(_columnIndexOfAmount);
-          }
+          final double _tmpAmount;
+          _tmpAmount = _stmt.getDouble(_columnIndexOfAmount);
           final String _tmpCategory;
           if (_stmt.isNull(_columnIndexOfCategory)) {
             _tmpCategory = null;
@@ -544,11 +522,11 @@ public final class TransactionDao_Impl implements TransactionDao {
       } finally {
         _stmt.close();
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object clearAll(final Continuation<? super Unit> arg0) {
+  public Object clearAll(final Continuation<? super Unit> $completion) {
     final String _sql = "DELETE FROM transactions";
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -558,7 +536,7 @@ public final class TransactionDao_Impl implements TransactionDao {
       } finally {
         _stmt.close();
       }
-    }, arg0);
+    }, $completion);
   }
 
   @NonNull

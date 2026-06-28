@@ -121,7 +121,7 @@ class CalendarFragment : Fragment() {
 
                     allTransactions.forEach { t ->
                         val type = if (t.isExpense) "expense" else "income"
-                        val amount = AppUtils.parseAmount(t.amount).toLong()
+                        val amount = t.amount.toLong()
                         
                         // Convert date format
                         val formattedDate = try {
@@ -175,7 +175,7 @@ class CalendarFragment : Fragment() {
                                     date = formattedDate,
                                     category = parts[3],
                                     description = parts[4],
-                                    amount = parts[2],
+                                    amount = parts[2].toDoubleOrNull() ?: 0.0,
                                     isExpense = parts[1].lowercase() == "expense",
                                     timestamp = try { inFormat.parse(rawDate)?.time ?: System.currentTimeMillis() } catch(e: Exception) { System.currentTimeMillis() }
                                 )
@@ -209,14 +209,14 @@ class CalendarFragment : Fragment() {
             var totalInc = 0.0
             var totalExp = 0.0
             filtered.forEach {
-                val amt = AppUtils.parseAmount(it.amount)
+                val amt = it.amount
                 if (it.isExpense) totalExp += amt else totalInc += amt
             }
 
             withContext(Dispatchers.Main) {
-                tvIncVal.text = AppUtils.formatCurrency(totalInc)
-                tvExpVal.text = AppUtils.formatCurrency(totalExp)
-                tvBalVal.text = AppUtils.formatCurrency(totalInc - totalExp)
+                tvIncVal.text = AppUtils.formatCurrency(totalInc, requireContext())
+                tvExpVal.text = AppUtils.formatCurrency(totalExp, requireContext())
+                tvBalVal.text = AppUtils.formatCurrency(totalInc - totalExp, requireContext())
                 showDailyTransactions(Date()) // Default today
             }
         }
@@ -240,8 +240,8 @@ class CalendarFragment : Fragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val t = list[position]
             holder.tvTitle?.text = if (t.description.isNullOrEmpty()) t.category else t.description
-            val amt = AppUtils.parseAmount(t.amount)
-            holder.tvAmount?.text = "${if (t.isExpense) "-" else "+"}${AppUtils.formatCurrency(amt)}"
+            val amt = t.amount
+            holder.tvAmount?.text = "${if (t.isExpense) "-" else "+"}${AppUtils.formatCurrency(amt, requireContext())}"
             holder.tvAmount?.setTextColor(ContextCompat.getColor(requireContext(), if (t.isExpense) R.color.expense_red else R.color.income_green))
             holder.tvDate?.text = t.date
         }

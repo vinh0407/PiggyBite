@@ -22,6 +22,133 @@
     <string name="cat_flex">Linh hoạt/Flex</string>
     <string name="cat_other">Khác/Other</string>
 
+    <!-- Settings -->
+    <string name="settings_profile">Thông tin cá nhân</string>
+    <string name="settings_theme">Tùy chỉnh giao diện</string>
+    <string name="settings_currency">Tiền tệ</string>
+    <string name="settings_logout">Đăng xuất</string>
+
+    <!-- Login/Register -->
+    <string name="login_tagline">Quản lý tài chính &amp; Tiết kiệm thông minh</string>
+    <string name="login_email">Email</string>
+    <string name="login_phone">Số điện thoại</string>
+    <string name="login_password_hint">Mật khẩu</string>
+    <string name="login_forgot_password">Quên mật khẩu?</string>
+    <string name="login_start">Bắt đầu</string>
+    <string name="login_register_link">Chưa có tài khoản? Đăng ký ngay</string>
+    <string name="register_title">Tạo tài khoản</string>
+    <string name="register_name_hint">Họ và tên</string>
+    <string name="register_balance_hint">Tài sản hiện có (VND)</string>
+    <string name="register_submit">Đăng ký</string>
+
+    <!-- Transactions/Funds -->
+    <string name="trans_add_title">Thêm giao dịch</string>
+    <string name="trans_category_label">DANH MỤC</string>
+    <string name="trans_desc_label">MÔ TẢ</string>
+    <string name="trans_desc_hint">Nhập mô tả...</string>
+    <string name="trans_ai_hint">✨ AI sẽ tự điền danh mục từ mô tả của bạn</string>
+    <string name="trans_save_expense">Lưu Chi tiêu</string>
+    <string name="trans_history">Lịch sử giao dịch/History</string>
+
+    <string name="fund_add_title">Thêm quỹ mới/Add Fund</string>
+    <string name="fund_name_label">TÊN QUỸ/FUND NAME</string>
+    <string name="fund_name_hint">Nhập tên quỹ...</string>
+    <string name="fund_target_label">MỤC TIÊU/TARGET (VND)</string>
+    <string name="fund_current_label">SỐ TIỀN HIỆN CÓ/CURRENT</string>
+    <string name="fund_create_btn">Tạo quỹ/Create</string>
+    <string name="fund_deposit">Góp tiền</string>
+
+    <!-- Profile -->
+    <string name="profile_name_label">Họ tên</string>
+    <string name="profile_email_label">Email</string>
+    <string name="profile_phone_label">Số điện thoại</string>
+    <string name="profile_phone_hint">Chưa cập nhật</string>
+    <string name="profile_pass_label">Mật khẩu</string>
+    <string name="profile_update_btn">Cập nhật thông tin</string>
+    <string name="profile_balance_label">Số tiền đang có</string>
+    <string name="profile_change_pass">Đổi mật khẩu</string>
+
+    <!-- Wallet Analysis -->
+    <string name="wallet_placeholder">---</string>
+    <string name="wallet_slogan">Tích tiểu thành đại, quản lý tương lai</string>
+    <string name="wallet_zero_balance">0đ</string>
+    <string name="wallet_analysis_month">Phân tích tháng</string>
+    <string name="wallet_weekly_flow">Dòng tiền tuần này</string>
+    <string name="wallet_view_more">Xem thêm →</string>
+    <string name="wallet_recent_trans">Giao dịch gần đây</string>
+    <string name="wallet_view_all">Xem tất cả</string>
+    <string name="wallet_manage_funds">Quản lý Quỹ/Goals</string>
+    <string name="wallet_add_fund">+ Thêm quỹ</string>
+
+    <!-- AI Chat -->
+    <string name="ai_assistant_title">PiggyBite AI Assistant</string>
+    <string name="ai_calculating">Đang tính toán...</string>
+    <string name="ai_dots">...</string>
+    <string name="ai_welcome_title">Xin chào! Tôi là PiggyBite AI</string>
+    <string name="ai_welcome_desc">Tôi có thể giúp bạn lập kế hoạch tài chính, phân tích chi tiêu hoặc chỉ là tán gẫu.</string>
+    <string name="ai_sug_food">Ăn uống %?</string>
+    <string name="ai_sug_emergency">Quỹ khẩn cấp?</string>
+    <string name="ai_sug_saving">Tỷ lệ tiết kiệm?</string>
+    <string name="ai_sug_analysis">Phân tích chi tiêu</string>
+    <string name="ai_chat_hint">Nhập tin nhắn...</string>
+
+    <!-- Fund Dialogs -->
+    <string name="fund_options_title">Tùy chọn Quỹ/Options</string>
+    <string name="fund_edit">Chỉnh sửa quỹ/Edit</string>
+    <string name="fund_add_member">Thêm người vào quỹ/Add member</string>
+    <string name="fund_contributions">Chi tiết đóng góp/Contributions</string>
+    <string name="fund_delete">Xóa quỹ/Delete</string>
+
+    <!-- History/Calendar -->
+    <string name="history_title">LỊCH SỬ GIAO DỊCH/HISTORY</string>
+    <string name="history_export_csv">📥 Xuất/Export CSV</string>
+    <string name="history_item_count">%1$d giao dịch</string>
+
+    <!-- Categories & Dialogs -->
+    <string name="cat_create_title">Tạo danh mục mới</string>
+    <string name="cat_name_hint">Tên danh mục</string>
+    <string name="cat_save">Lưu danh mục</string>
+    <string name="cat_selection_title">Danh mục chi tiêu</string>
+    <string name="cat_create_new">+ Tạo mới</string>
+
+    <string name="dialog_voice_status">Đang lắng nghe...</string>
+    <string name="dialog_voice_hint">...</string>
+    <string name="dialog_voice_example">Hãy nói: \'Bún bò 50k\'</string>
+
+    <string name="dialog_pass_security_msg">Để đảm bảo an toàn, vui lòng nhập mật khẩu cũ trước khi thay đổi.</string>
+    <string name="dialog_pass_old_hint">Mật khẩu cũ</string>
+    <string name="dialog_pass_new_hint">Mật khẩu mới (>= 6 ký tự)</string>
+    <string name="dialog_pass_confirm_hint">Xác nhận mật khẩu mới</string>
+
+    <string name="dialog_emoji_title">Chọn biểu tượng</string>
+    <string name="dialog_currency_title">Chọn đơn vị tiền tệ</string>
+
+    <!-- Wallet & Stats Labels -->
+    <string name="label_income_arrow">↘ Thu nhập</string>
+    <string name="label_expense_arrow">↗ Chi tiêu</string>
+    <string name="label_total_spend">Tổng chi</string>
+    <string name="label_description_cat">Mô tả/Danh mục</string>
+    <string name="label_withdraw">Rút tiền</string>
+
+    <!-- Misc -->
+    <string name="currency_symbol_vnd">đ</string>
+    <string name="zero">0</string>
+    <string name="zoom_1x">1x</string>
+    <string name="zoom_2x">2x</string>
+    <string name="zoom_5x">5x</string>
+    <string name="stats_week">Tuần</string>
+    <string name="stats_month">Tháng</string>
+    <string name="stats_year">Năm</string>
+    <string name="stats_all">Tất cả</string>
+
+    <!-- Common -->
+    <string name="btn_save">Lưu</string>
+    <string name="btn_cancel">Hủy</string>
+    <string name="loading">Đang tải...</string>
+    <string name="no_transactions">Chưa có giao dịch nào được ghi lại</string>
+    <string name="camera_ai_title">Máy ảnh AI/Camera</string>
+    <string name="map_title">Bản đồ / Maps</string>
+
     <string-array name="emojis">
         <item>😀</item><item>😃</item><item>😄</item><item>😁</item><item>😆</item><item>😅</item><item>😂</item><item>🤣</item><item>😊</item><item>😇</item>
         <item>🙂</item><item>🙃</item><item>😉</item><item>😌</item><item>😍</item><item>🥰</item><item>😘</item><item>😗</item><item>😙</item><item>😚</item>

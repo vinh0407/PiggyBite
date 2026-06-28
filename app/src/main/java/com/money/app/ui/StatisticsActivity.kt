@@ -157,13 +157,13 @@ class StatisticsActivity : AppCompatActivity() {
             var totalExp = 0.0
             var totalInc = 0.0
             transactions.forEach {
-                val amt = AppUtils.parseAmount(it.amount)
+                val amt = it.amount
                 if (it.isExpense) totalExp += amt else totalInc += amt
             }
 
-            tvTotalExpVal.text = "-${AppUtils.formatCurrency(totalExp)}"
-            tvTotalIncVal.text = "+${AppUtils.formatCurrency(totalInc)}"
-            tvBalanceVal.text = AppUtils.formatCurrency(totalInc - totalExp)
+            tvTotalExpVal.text = "-${AppUtils.formatCurrency(totalExp, this@StatisticsActivity)}"
+            tvTotalIncVal.text = "+${AppUtils.formatCurrency(totalInc, this@StatisticsActivity)}"
+            tvBalanceVal.text = AppUtils.formatCurrency(totalInc - totalExp, this@StatisticsActivity)
 
             val filteredList = transactions.filter { it.isExpense == isExpenseMode }
                 .sortedByDescending { it.timestamp }
@@ -195,7 +195,7 @@ class StatisticsActivity : AppCompatActivity() {
         transactions.forEach {
             cal.timeInMillis = it.timestamp
             val week = cal.get(Calendar.WEEK_OF_MONTH)
-            map[week] = (map[week] ?: 0.0) + AppUtils.parseAmount(it.amount)
+            map[week] = (map[week] ?: 0.0) + it.amount
         }
         val result = mutableListOf<AggregateItem>()
         for (w in 1..5) {
@@ -213,7 +213,7 @@ class StatisticsActivity : AppCompatActivity() {
         transactions.forEach {
             cal.timeInMillis = it.timestamp
             val month = cal.get(Calendar.MONTH)
-            map[month] = (map[month] ?: 0.0) + AppUtils.parseAmount(it.amount)
+            map[month] = (map[month] ?: 0.0) + it.amount
         }
         val result = mutableListOf<AggregateItem>()
         val monthNames = listOf("Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12")
@@ -302,7 +302,7 @@ class StatisticsActivity : AppCompatActivity() {
             val item = items[position]
             holder.tvTitle.text = item.label
             val symbol = "đ"
-            holder.tvAmount.text = "${if (isExpenseMode) "-" else "+"}${AppUtils.formatCurrency(item.amount)}"
+            holder.tvAmount.text = "${if (isExpenseMode) "-" else "+"}${AppUtils.formatCurrency(item.amount, this@StatisticsActivity)}"
             holder.tvAmount.setTextColor(ContextCompat.getColor(this@StatisticsActivity, if (isExpenseMode) R.color.expense_red else R.color.income_green))
             holder.tvDateTime.text = "Tổng $typeLabel"
             holder.itemView.setOnClickListener { onClick(item.timestamp) }
@@ -324,8 +324,8 @@ class StatisticsActivity : AppCompatActivity() {
             val t = list[position]
             holder.tvTitle.text = if (t.description.isNotEmpty()) t.description else t.category
             
-            val amountVal = AppUtils.parseAmount(t.amount)
-            holder.tvAmount.text = "${if (t.isExpense) "-" else "+"}${AppUtils.formatCurrency(amountVal)}"
+            val amountVal = t.amount
+            holder.tvAmount.text = "${if (t.isExpense) "-" else "+"}${AppUtils.formatCurrency(amountVal, this@StatisticsActivity)}"
             holder.tvAmount.setTextColor(ContextCompat.getColor(this@StatisticsActivity, if (t.isExpense) R.color.expense_red else R.color.income_green))
             
             val timeSdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())

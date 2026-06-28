@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp"
-        android:text="Chọn đơn vị tiền tệ"
+        android:text="@string/dialog_currency_title"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold" />

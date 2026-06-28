@@ -91,8 +91,8 @@ class LineChartView @JvmOverloads constructor(
         canvas.drawRoundRect(rect, 16f, 16f, paintTooltip)
         
         val whiteText = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; textSize = 20f; textAlign = Paint.Align.CENTER }
-        canvas.drawText("Chi: ${AppUtils.formatCurrency(spendData[index].toDouble())}", x, 50f, whiteText)
-        canvas.drawText("Thu: ${AppUtils.formatCurrency(incomeData[index].toDouble())}", x, 85f, whiteText)
+        canvas.drawText("Chi: ${AppUtils.formatCurrency(spendData[index].toDouble(), context)}", x, 50f, whiteText)
+        canvas.drawText("Thu: ${AppUtils.formatCurrency(incomeData[index].toDouble(), context)}", x, 85f, whiteText)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {

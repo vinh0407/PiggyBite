@@ -10,10 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.EmailAuthProvider
 import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.util.AppUtils
 import com.money.app.util.FirebaseSyncManager
+import android.view.LayoutInflater
+import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -27,7 +31,6 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var etName: EditText
     private lateinit var etEmail: EditText
     private lateinit var etPhone: EditText
-    private lateinit var etPassword: EditText
     private lateinit var tvBalance: TextView
     private lateinit var btnUpdate: Button
 
@@ -40,9 +43,12 @@ class ProfileActivity : AppCompatActivity() {
         etName = findViewById(R.id.etName)
         etEmail = findViewById(R.id.etEmail)
         etPhone = findViewById(R.id.etPhone)
-        etPassword = findViewById(R.id.etPassword)
         tvBalance = findViewById(R.id.tvBalance)
         btnUpdate = findViewById(R.id.btnUpdateProfile)
+
+        findViewById<TextView>(R.id.tvChangePassword).setOnClickListener {
+            showChangePasswordDialog()
+        }
 
         loadUserData()
 
@@ -75,11 +81,11 @@ class ProfileActivity : AppCompatActivity() {
                 
                 var total = 0.0
                 transactions.forEach {
-                    val amt = AppUtils.parseAmount(it.amount)
+                    val amt = it.amount
                     if (it.isExpense) total -= amt else total += amt
                 }
                 
-                tvBalance.text = AppUtils.formatCurrency(total)
+                tvBalance.text = AppUtils.formatCurrency(total, this@ProfileActivity)
 
             } catch (e: Exception) {
                 Toast.makeText(this@ProfileActivity, "Lỗi khi tải dữ liệu: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -92,7 +98,6 @@ class ProfileActivity : AppCompatActivity() {
         val newName = etName.text.toString().trim()
         val newEmail = etEmail.text.toString().trim()
         val newPhone = etPhone.text.toString().trim()
-        val newPassword = etPassword.text.toString().trim()
 
         if (newName.isEmpty() || newEmail.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập tên và email", Toast.LENGTH_SHORT).show()
@@ -107,17 +112,8 @@ class ProfileActivity : AppCompatActivity() {
                 if (newEmail != user.email) {
                     user.updateEmail(newEmail).await()
                 }
-                
-                // 2. Update Password if not empty
-                if (newPassword.isNotEmpty()) {
-                    if (newPassword.length < 6) {
-                        Toast.makeText(this@ProfileActivity, "Mật khẩu phải >= 6 ký tự", Toast.LENGTH_SHORT).show()
-                        return@launch
-                    }
-                    user.updatePassword(newPassword).await()
-                }
 
-                // 3. Update RTDB
+                // 2. Update RTDB
                 val updates = hashMapOf<String, Any>(
                     "name" to newName,
                     "email" to newEmail,
@@ -136,11 +132,60 @@ class ProfileActivity : AppCompatActivity() {
                 
             } catch (e: Exception) {
                 val msg = if (e.message?.contains("recent login") == true) {
-                    "Vui lòng đăng nhập lại để thực hiện thay đổi email/mật khẩu."
+                    "Vui lòng đăng nhập lại để thực hiện thay đổi email."
                 } else {
                     "Lỗi cập nhật: ${e.message}"
                 }
                 Toast.makeText(this@ProfileActivity, msg, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun showChangePasswordDialog() {
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog_change_password, null)
+        val etOld = view.findViewById<EditText>(R.id.etOldPassword)
+        val etNew = view.findViewById<EditText>(R.id.etNewPassword)
+        val etConfirm = view.findViewById<EditText>(R.id.etConfirmPassword)
+
+        AlertDialog.Builder(this)
+            .setTitle("Đổi mật khẩu")
+            .setView(view)
+            .setPositiveButton("Thay đổi") { dialog, _ ->
+                val oldPass = etOld.text.toString()
+                val newPass = etNew.text.toString()
+                val confirmPass = etConfirm.text.toString()
+
+                if (newPass != confirmPass) {
+                    Toast.makeText(this, "Mật khẩu mới không khớp", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                if (newPass.length < 6) {
+                    Toast.makeText(this, "Mật khẩu phải >= 6 ký tự", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                performPasswordChange(oldPass, newPass)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+
+    private fun performPasswordChange(oldPass: String, newPass: String) {
+        val user = auth.currentUser ?: return
+        val email = user.email ?: return
+        
+        lifecycleScope.launch {
+            try {
+                // Re-authenticate user
+                val credential = EmailAuthProvider.getCredential(email, oldPass)
+                user.reauthenticate(credential).await()
+                
+                // Update password
+                user.updatePassword(newPass).await()
+                Toast.makeText(this@ProfileActivity, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(this@ProfileActivity, "Lỗi: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

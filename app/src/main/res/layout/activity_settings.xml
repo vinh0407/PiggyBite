@@ -32,7 +32,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cài đặt/Settings"
+        android:text="@string/settings"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -61,7 +61,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PiggyBite"
+            android:text="@string/app_name"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -89,24 +89,33 @@
                 style="@style/SettingsItemStyle"
                 android:foreground="?attr/selectableItemBackground">
                 <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_heart" />
-                <TextView style="@style/SettingsTextStyle" android:text="Thông tin cá nhân" />
+                <TextView style="@style/SettingsTextStyle" android:text="@string/settings_profile" />
                 <ImageView style="@style/SettingsArrowStyle" />
             </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
 
-            <LinearLayout style="@style/SettingsItemStyle">
+            <LinearLayout
+                android:id="@+id/btnTheme"
+                style="@style/SettingsItemStyle"
+                android:foreground="?attr/selectableItemBackground">
                 <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_settings" />
-                <TextView style="@style/SettingsTextStyle" android:text="Tùy chỉnh giao diện" />
+                <TextView style="@style/SettingsTextStyle" android:text="@string/settings_theme" />
                 <ImageView style="@style/SettingsArrowStyle" />
             </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
 
-            <LinearLayout style="@style/SettingsItemStyle">
+            <LinearLayout
+                android:id="@+id/btnCurrency"
+                style="@style/SettingsItemStyle"
+                android:foreground="?attr/selectableItemBackground">
                 <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_calendar_nav" />
-                <TextView style="@style/SettingsTextStyle" android:text="Tiền tệ" />
-                <TextView style="@style/SettingsValueStyle" android:text="VND" />
+                <TextView style="@style/SettingsTextStyle" android:text="@string/settings_currency" />
+                <TextView
+                    android:id="@+id/tvCurrencyValue"
+                    style="@style/SettingsValueStyle"
+                    android:text="VND" />
                 <ImageView style="@style/SettingsArrowStyle" />
             </LinearLayout>
 
@@ -125,7 +134,7 @@
                     app:tint="@color/expense_red" />
                 <TextView
                     style="@style/SettingsTextStyle"
-                    android:text="Đăng xuất"
+                    android:text="@string/settings_logout"
                     android:textColor="@color/expense_red" />
                 <ImageView style="@style/SettingsArrowStyle" app:tint="@color/expense_red" />
             </LinearLayout>

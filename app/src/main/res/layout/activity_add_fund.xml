@@ -29,7 +29,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thêm quỹ mới/Add Fund"
+        android:text="@string/fund_add_title"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -56,7 +56,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TÊN QUỸ/FUND NAME"
+                android:text="@string/fund_name_label"
                 android:textColor="@color/text_hint"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -67,14 +67,14 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_pill_grey"
-                android:hint="Nhập tên quỹ..."
+                android:hint="@string/fund_name_hint"
                 android:paddingHorizontal="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="MỤC TIÊU/TARGET (VND)"
+                android:text="@string/fund_target_label"
                 android:textColor="@color/text_hint"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -85,7 +85,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_pill_grey"
-                android:hint="0"
+                android:hint="@string/zero"
                 android:inputType="number"
                 android:paddingHorizontal="20dp" />
 
@@ -93,7 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="SỐ TIỀN HIỆN CÓ/CURRENT"
+                android:text="@string/fund_current_label"
                 android:textColor="@color/text_hint"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -104,7 +104,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_pill_grey"
-                android:hint="0"
+                android:hint="@string/zero"
                 android:inputType="number"
                 android:paddingHorizontal="20dp" />
 
@@ -114,7 +114,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="32dp"
                 android:backgroundTint="@color/primary_blue"
-                android:text="Tạo quỹ/Create"
+                android:text="@string/fund_create_btn"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 app:cornerRadius="28dp" />

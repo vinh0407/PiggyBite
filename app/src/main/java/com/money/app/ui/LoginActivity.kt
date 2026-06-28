@@ -22,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     private var isPhoneMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        com.money.app.util.ThemeHelper.applyTheme(this)
         super.onCreate(savedInstanceState)
         
         if (auth.currentUser != null) {

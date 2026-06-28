@@ -113,7 +113,7 @@ class RegisterActivity : AppCompatActivity() {
 
             if (balance > 0) {
                 val initialTrans = Transaction(
-                    amount = balance.toLong().toString(),
+                    amount = balance,
                     category = "Số dư ban đầu",
                     description = "Tài sản khi khởi tạo tài khoản",
                     date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),

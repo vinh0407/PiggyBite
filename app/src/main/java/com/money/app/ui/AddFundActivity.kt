@@ -63,7 +63,7 @@ class AddFundActivity : AppCompatActivity() {
                 // Deduct initial amount from main wallet
                 if (current > 0) {
                     val trans = Transaction(
-                        amount = current.toLong().toString(),
+                        amount = current,
                         category = "Góp quỹ",
                         description = "Góp vốn ban đầu cho quỹ $name",
                         date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),

@@ -29,7 +29,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thêm giao dịch"
+        android:text="@string/trans_add_title"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -58,7 +58,7 @@
             android:layout_weight="1"
             android:background="@drawable/bg_pill_white"
             android:gravity="center"
-            android:text="Chi tiêu"
+            android:text="@string/expense"
             android:textColor="@color/primary_blue"
             android:textStyle="bold" />
 
@@ -68,7 +68,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Thu nhập"
+            android:text="@string/income"
             android:textColor="@color/white" />
     </LinearLayout>
 
@@ -84,7 +84,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="đ"
+            android:text="@string/currency_symbol_vnd"
             android:textColor="@color/white"
             android:textSize="24sp"
             android:alpha="0.7" />
@@ -94,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="0"
+            android:text="@string/zero"
             android:textColor="@color/white"
             android:textSize="56sp"
             android:textStyle="bold" />
@@ -117,7 +117,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DANH MỤC"
+                android:text="@string/trans_category_label"
                 android:textColor="@color/text_hint"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -140,7 +140,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="MÔ TẢ"
+                android:text="@string/trans_desc_label"
                 android:textColor="@color/text_hint"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -151,7 +151,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/bg_pill_grey"
-                android:hint="Nhập mô tả..."
+                android:hint="@string/trans_desc_hint"
                 android:paddingHorizontal="20dp" />
 
             <!-- AI Suggestion Banner -->
@@ -166,7 +166,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
-                    android:text="✨ AI sẽ tự điền danh mục từ mô tả của bạn"
+                    android:text="@string/trans_ai_hint"
                     android:textColor="@color/primary_blue"
                     android:textSize="12sp" />
             </androidx.cardview.widget.CardView>
@@ -188,7 +188,7 @@
                 android:layout_height="64dp"
                 android:layout_marginTop="24dp"
                 android:backgroundTint="@color/grey_light"
-                android:text="Lưu Chi tiêu"
+                android:text="@string/trans_save_expense"
                 android:textAllCaps="false"
                 android:textColor="@color/text_hint"
                 android:textSize="18sp"

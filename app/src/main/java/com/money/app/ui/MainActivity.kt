@@ -1,6 +1,7 @@
 package com.money.app.ui
 
 import com.money.app.R
+import com.money.app.databinding.ActivityMainBinding
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -37,10 +38,16 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/**
+ * Main Entry activity of the application after authentication.
+ * Handles primary navigation (Calendar, Home/Wallet, AI Camera) and global sync triggers.
+ * 
+ * Architecture: AppCompatActivity with ViewBinding
+ */
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var cameraExecutor: ExecutorService
-    private var viewFinder: PreviewView? = null
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -63,6 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        com.money.app.util.ThemeHelper.applyTheme(this)
         super.onCreate(savedInstanceState)
 
         if (auth.currentUser == null) {
@@ -71,26 +79,30 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         currentActiveNavId = prefs.getInt("last_nav_id", R.id.btnNavHome)
 
         lifecycleScope.launch {
-            val syncManager = FirebaseSyncManager(this@MainActivity)
-            
-            // Check for new invitations for current email
-            val userEmail = auth.currentUser?.email
-            val userId = auth.currentUser?.uid
-            if (!userEmail.isNullOrEmpty() && userId != null) {
-                syncManager.checkPendingInvitations(userEmail, userId)
+            try {
+                val syncManager = FirebaseSyncManager(this@MainActivity)
+                
+                // Check for new invitations for current email
+                val userEmail = auth.currentUser?.email
+                val userId = auth.currentUser?.uid
+                if (!userEmail.isNullOrEmpty() && userId != null) {
+                    syncManager.checkPendingInvitations(userEmail, userId)
+                }
+
+                syncManager.syncTransactions()
+                syncManager.syncFunds()
+            } catch (e: Exception) {
+                Log.e("Sync", "Initial sync failed: ${e.message}")
+                Toast.makeText(this@MainActivity, "Đồng bộ dữ liệu không thành công. Vui lòng kiểm tra mạng.", Toast.LENGTH_SHORT).show()
             }
-
-            syncManager.syncTransactions()
-            syncManager.syncFunds()
         }
-
-        viewFinder = findViewById(R.id.viewFinder)
 
         setupNavigation()
         
@@ -99,31 +111,31 @@ class MainActivity : AppCompatActivity() {
         // Restore last fragment
         when (currentActiveNavId) {
             R.id.btnNavCalendar -> {
-                findViewById<View>(R.id.homeContent)?.visibility = View.GONE
-                findViewById<View>(R.id.fragmentContainer)?.visibility = View.VISIBLE
+                binding.homeContent.visibility = View.GONE
+                binding.fragmentContainer.visibility = View.VISIBLE
                 supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, CalendarFragment()).commit()
             }
             R.id.btnNavWallet -> {
-                findViewById<View>(R.id.homeContent)?.visibility = View.VISIBLE
-                findViewById<View>(R.id.fragmentContainer)?.visibility = View.GONE
+                binding.homeContent.visibility = View.VISIBLE
+                binding.fragmentContainer.visibility = View.GONE
                 if (allPermissionsGranted()) startCamera()
             }
             else -> {
-                findViewById<View>(R.id.homeContent)?.visibility = View.GONE
-                findViewById<View>(R.id.fragmentContainer)?.visibility = View.VISIBLE
+                binding.homeContent.visibility = View.GONE
+                binding.fragmentContainer.visibility = View.VISIBLE
                 supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, WalletFragment()).commit()
             }
         }
 
-        findViewById<View>(R.id.btnCapture)?.setOnClickListener {
+        binding.btnCapture.setOnClickListener {
             takePhotoAndRecognizeText()
         }
 
-        findViewById<View>(R.id.btnGallery)?.setOnClickListener {
+        binding.btnGallery.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
-        findViewById<View>(R.id.btnFlip)?.setOnClickListener {
+        binding.btnFlip.setOnClickListener {
             cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
                 CameraSelector.DEFAULT_FRONT_CAMERA
             } else {
@@ -132,7 +144,7 @@ class MainActivity : AppCompatActivity() {
             if (currentActiveNavId == R.id.btnNavWallet) startCamera()
         }
 
-        findViewById<View>(R.id.btnFlash)?.setOnClickListener {
+        binding.btnFlash.setOnClickListener {
             flashMode = when (flashMode) {
                 ImageCapture.FLASH_MODE_OFF -> ImageCapture.FLASH_MODE_ON
                 ImageCapture.FLASH_MODE_ON -> ImageCapture.FLASH_MODE_AUTO
@@ -142,7 +154,7 @@ class MainActivity : AppCompatActivity() {
             imageCapture?.flashMode = flashMode
         }
 
-        findViewById<View>(R.id.btnVoice)?.setOnClickListener {
+        binding.btnVoice.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 20)
             } else {
@@ -242,38 +254,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupZoomControls() {
-        val z1 = findViewById<TextView>(R.id.tvZoom1)
-        val z2 = findViewById<TextView>(R.id.tvZoom2)
-        val z5 = findViewById<TextView>(R.id.tvZoom5)
-
         val updateZoomUI = { zoom: Float ->
             currentZoom = zoom
             camera?.cameraControl?.setZoomRatio(currentZoom)
-            z1?.setTextColor(if (zoom == 1.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
-            z2?.setTextColor(if (zoom == 2.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
-            z5?.setTextColor(if (zoom == 5.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
+            binding.tvZoom1.setTextColor(if (zoom == 1.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
+            binding.tvZoom2.setTextColor(if (zoom == 2.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
+            binding.tvZoom5.setTextColor(if (zoom == 5.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
         }
 
-        z1?.setOnClickListener { updateZoomUI(1.0f) }
-        z2?.setOnClickListener { updateZoomUI(2.0f) }
-        z5?.setOnClickListener { updateZoomUI(5.0f) }
+        binding.tvZoom1.setOnClickListener { updateZoomUI(1.0f) }
+        binding.tvZoom2.setOnClickListener { updateZoomUI(2.0f) }
+        binding.tvZoom5.setOnClickListener { updateZoomUI(5.0f) }
     }
 
     private fun updateFlashIcon() {
-        val btnFlash = findViewById<ImageButton>(R.id.btnFlash) ?: return
         when (flashMode) {
-            ImageCapture.FLASH_MODE_OFF -> btnFlash.setImageResource(R.drawable.ic_flash_off)
-            ImageCapture.FLASH_MODE_ON -> btnFlash.setImageResource(R.drawable.ic_flash_on)
-            else -> btnFlash.setImageResource(R.drawable.ic_flash_on)
+            ImageCapture.FLASH_MODE_OFF -> binding.btnFlash.setImageResource(R.drawable.ic_flash_off)
+            ImageCapture.FLASH_MODE_ON -> binding.btnFlash.setImageResource(R.drawable.ic_flash_on)
+            else -> binding.btnFlash.setImageResource(R.drawable.ic_flash_on)
         }
     }
 
     private fun setupNavigation() {
-        val btnNavCalendar: View = findViewById(R.id.btnNavCalendar)
-        val btnNavHome: View = findViewById(R.id.btnNavHome)
-        val btnNavWallet: View = findViewById(R.id.btnNavWallet)
-        
-        btnNavCalendar.setOnClickListener {
+        binding.btnNavCalendar.setOnClickListener {
             if (currentActiveNavId != R.id.btnNavCalendar) {
                 stopCamera()
                 supportFragmentManager.beginTransaction()
@@ -282,12 +285,12 @@ class MainActivity : AppCompatActivity() {
                     .commit()
                 currentActiveNavId = R.id.btnNavCalendar
                 updateNavUI(currentActiveNavId)
-                findViewById<View>(R.id.homeContent)?.visibility = View.GONE
-                findViewById<View>(R.id.fragmentContainer)?.visibility = View.VISIBLE
+                binding.homeContent.visibility = View.GONE
+                binding.fragmentContainer.visibility = View.VISIBLE
             }
         }
 
-        btnNavHome.setOnClickListener {
+        binding.btnNavHome.setOnClickListener {
             if (currentActiveNavId != R.id.btnNavHome) {
                 stopCamera()
                 val animIn = if (currentActiveNavId == R.id.btnNavCalendar) R.anim.slide_in_right else R.anim.slide_in_left
@@ -300,21 +303,18 @@ class MainActivity : AppCompatActivity() {
                 
                 currentActiveNavId = R.id.btnNavHome
                 updateNavUI(currentActiveNavId)
-                findViewById<View>(R.id.homeContent)?.visibility = View.GONE
-                findViewById<View>(R.id.fragmentContainer)?.visibility = View.VISIBLE
+                binding.homeContent.visibility = View.GONE
+                binding.fragmentContainer.visibility = View.VISIBLE
             }
         }
 
-        btnNavWallet.setOnClickListener {
+        binding.btnNavWallet.setOnClickListener {
             if (currentActiveNavId != R.id.btnNavWallet) {
-                val homeContent = findViewById<View>(R.id.homeContent)
-                val fragContainer = findViewById<View>(R.id.fragmentContainer)
+                binding.homeContent.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.slide_in_right))
+                binding.fragmentContainer.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.slide_out_left))
                 
-                homeContent?.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.slide_in_right))
-                fragContainer?.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.slide_out_left))
-                
-                homeContent?.visibility = View.VISIBLE
-                fragContainer?.visibility = View.GONE
+                binding.homeContent.visibility = View.VISIBLE
+                binding.fragmentContainer.visibility = View.GONE
                 
                 currentActiveNavId = R.id.btnNavWallet
                 updateNavUI(currentActiveNavId)
@@ -326,28 +326,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateNavUI(activeId: Int) {
-        val ivNavCalendar: ImageView = findViewById(R.id.ivNavCalendar)
-        val ivNavHome: ImageView = findViewById(R.id.ivNavHome)
-        val ivNavWallet: ImageView = findViewById(R.id.ivNavWallet)
-        val btnNavCalendar: View = findViewById(R.id.btnNavCalendar)
-        val btnNavHome: View = findViewById(R.id.btnNavHome)
-        val btnNavWallet: View = findViewById(R.id.btnNavWallet)
-
-        ivNavCalendar.setColorFilter(if (activeId == R.id.btnNavCalendar) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
-        ivNavHome.setColorFilter(if (activeId == R.id.btnNavHome) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
-        ivNavWallet.setColorFilter(if (activeId == R.id.btnNavWallet) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
+        binding.ivNavCalendar.setColorFilter(if (activeId == R.id.btnNavCalendar) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
+        binding.ivNavHome.setColorFilter(if (activeId == R.id.btnNavHome) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
+        binding.ivNavWallet.setColorFilter(if (activeId == R.id.btnNavWallet) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
         
-        btnNavCalendar.background = if (activeId == R.id.btnNavCalendar) ContextCompat.getDrawable(this, R.drawable.bg_nav_active) else null
-        btnNavHome.background = if (activeId == R.id.btnNavHome) ContextCompat.getDrawable(this, R.drawable.bg_nav_active) else null
-        btnNavWallet.background = if (activeId == R.id.btnNavWallet) ContextCompat.getDrawable(this, R.drawable.bg_nav_active) else null
+        binding.btnNavCalendar.background = if (activeId == R.id.btnNavCalendar) ContextCompat.getDrawable(this, R.drawable.bg_nav_active) else null
+        binding.btnNavHome.background = if (activeId == R.id.btnNavHome) ContextCompat.getDrawable(this, R.drawable.bg_nav_active) else null
+        binding.btnNavWallet.background = if (activeId == R.id.btnNavWallet) ContextCompat.getDrawable(this, R.drawable.bg_nav_active) else null
     }
 
     private fun startCamera() {
-        val viewFinder = viewFinder ?: return
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder().build().also { it.setSurfaceProvider(viewFinder.surfaceProvider) }
+            val preview = Preview.Builder().build().also { it.setSurfaceProvider(binding.viewFinder.surfaceProvider) }
             imageCapture = ImageCapture.Builder().setFlashMode(flashMode).setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build()
             try {
                 cameraProvider.unbindAll()
@@ -385,21 +377,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun recognizeText(photoFile: java.io.File) {
-        val image = InputImage.fromFilePath(this, android.net.Uri.fromFile(photoFile))
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        try {
+            val image = InputImage.fromFilePath(this, android.net.Uri.fromFile(photoFile))
+            val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-        recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                val intent = Intent(this, AddTransactionActivity::class.java)
-                intent.putExtra("EXTRA_FROM_CAPTURE", true)
-                intent.putExtra("EXTRA_IMAGE_PATH", photoFile.absolutePath)
-                intent.putExtra("EXTRA_OCR_TEXT", visionText.text)
-                startActivity(intent)
-            }
-            .addOnFailureListener { e ->
-                Log.e("OCR", "Text recognition failed", e)
-                Toast.makeText(this, "Không thể nhận diện văn bản", Toast.LENGTH_SHORT).show()
-            }
+            recognizer.process(image)
+                .addOnSuccessListener { visionText ->
+                    val intent = Intent(this, AddTransactionActivity::class.java)
+                    intent.putExtra("EXTRA_FROM_CAPTURE", true)
+                    intent.putExtra("EXTRA_IMAGE_PATH", photoFile.absolutePath)
+                    intent.putExtra("EXTRA_OCR_TEXT", visionText.text)
+                    startActivity(intent)
+                }
+                .addOnFailureListener { e ->
+                    Log.e("OCR", "Text recognition failed", e)
+                    Toast.makeText(this, "Không thể nhận diện văn bản: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        } catch (e: Exception) {
+            Log.e("OCR", "Error opening image file", e)
+            Toast.makeText(this, "Lỗi khi mở ảnh: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {

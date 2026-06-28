@@ -12,7 +12,7 @@
         android:id="@+id/tvVoiceStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Đang lắng nghe..."
+        android:text="@string/dialog_voice_status"
         android:textColor="@color/primary_blue"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:hint="..."
+        android:hint="@string/dialog_voice_hint"
         android:minHeight="60dp"
         android:textColor="@color/text_main"
         android:textSize="22sp"
@@ -50,7 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Hãy nói: 'Bún bò 50k'"
+        android:text="@string/dialog_voice_example"
         android:textColor="@color/text_hint"
         android:textSize="14sp" />
 

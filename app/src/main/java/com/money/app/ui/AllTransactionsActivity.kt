@@ -15,18 +15,25 @@ import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.Transaction
 import com.money.app.util.AppUtils
+import android.widget.PopupMenu
+import android.widget.Toast
+import com.money.app.util.FirebaseSyncManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AllTransactionsActivity : AppCompatActivity() {
+    private lateinit var rv: RecyclerView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_transactions)
 
         findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
 
-        val rv = findViewById<RecyclerView>(R.id.rvAllTransactions)
+        rv = findViewById<RecyclerView>(R.id.rvAllTransactions)
         rv.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {
@@ -45,8 +52,8 @@ class AllTransactionsActivity : AppCompatActivity() {
             val t = list[position]
             holder.tvTitle.text = if (t.description.isNotEmpty()) t.description else t.category
             
-            val amountVal = AppUtils.parseAmount(t.amount)
-            holder.tvAmount.text = "${if (t.isExpense) "-" else "+"}${AppUtils.formatCurrency(amountVal)}"
+            val amountVal = t.amount
+            holder.tvAmount.text = "${if (t.isExpense) "-" else "+"}${AppUtils.formatCurrency(amountVal, this@AllTransactionsActivity)}"
             holder.tvAmount.setTextColor(ContextCompat.getColor(this@AllTransactionsActivity, if (t.isExpense) R.color.expense_red else R.color.income_green))
             
             val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
@@ -58,6 +65,41 @@ class AllTransactionsActivity : AppCompatActivity() {
                 holder.ivPhoto.setImageURI(android.net.Uri.fromFile(java.io.File(t.imagePath)))
             } else {
                 holder.cvPhoto.visibility = View.GONE
+            }
+
+            holder.itemView.setOnLongClickListener {
+                showPopupMenu(it, t)
+                true
+            }
+        }
+
+        private fun showPopupMenu(view: View, transaction: Transaction) {
+            val popup = PopupMenu(this@AllTransactionsActivity, view)
+            popup.menu.add("Xóa giao dịch")
+            
+            popup.setOnMenuItemClickListener { item ->
+                if (item.title == "Xóa giao dịch") {
+                    deleteTransaction(transaction)
+                }
+                true
+            }
+            popup.show()
+        }
+
+        private fun deleteTransaction(transaction: Transaction) {
+            lifecycleScope.launch {
+                val db = AppDatabase.getDatabase(this@AllTransactionsActivity)
+                withContext(Dispatchers.IO) {
+                    db.transactionDao().delete(transaction)
+                    // Optional: sync delete to Firebase
+                }
+                Toast.makeText(this@AllTransactionsActivity, "Đã xóa giao dịch", Toast.LENGTH_SHORT).show()
+                // Refresh list
+                val newList = db.transactionDao().getAllTransactions().sortedByDescending { it.timestamp }
+                (rv.adapter as? TransactionsAdapter)?.let {
+                    finish()
+                    startActivity(intent)
+                }
             }
         }
         override fun getItemCount() = list.size

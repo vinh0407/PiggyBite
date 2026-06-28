@@ -32,16 +32,16 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected RoomOpenDelegate createOpenDelegate() {
-    final RoomOpenDelegate _openDelegate = new RoomOpenDelegate(15, "71bff5b1d18368c90e989aae75179ca1", "0c76d4b9ef9d9657125e091085a8600e") {
+    final RoomOpenDelegate _openDelegate = new RoomOpenDelegate(15, "6d0a527241a8c45a7aad5597438d20a0", "ab461fbb1e866f033f3e5a2c83a33108") {
       @Override
       public void createAllTables(@NonNull final SQLiteConnection connection) {
-        SQLite.execSQL(connection, "CREATE TABLE IF NOT EXISTS `transactions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `syncId` TEXT NOT NULL, `userId` TEXT NOT NULL, `amount` TEXT NOT NULL, `category` TEXT NOT NULL, `date` TEXT NOT NULL, `description` TEXT NOT NULL, `imagePath` TEXT, `isExpense` INTEGER NOT NULL, `rating` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL)");
+        SQLite.execSQL(connection, "CREATE TABLE IF NOT EXISTS `transactions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `syncId` TEXT NOT NULL, `userId` TEXT NOT NULL, `amount` REAL NOT NULL, `category` TEXT NOT NULL, `date` TEXT NOT NULL, `description` TEXT NOT NULL, `imagePath` TEXT, `isExpense` INTEGER NOT NULL, `rating` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL)");
         SQLite.execSQL(connection, "CREATE UNIQUE INDEX IF NOT EXISTS `index_transactions_syncId` ON `transactions` (`syncId`)");
         SQLite.execSQL(connection, "CREATE TABLE IF NOT EXISTS `funds` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `syncId` TEXT NOT NULL, `ownerId` TEXT NOT NULL, `name` TEXT NOT NULL, `currentAmount` REAL NOT NULL, `targetAmount` REAL NOT NULL, `icon` TEXT NOT NULL, `createdDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, `isPinned` INTEGER NOT NULL, `isShared` INTEGER NOT NULL, `members` TEXT NOT NULL, `memberContributions` TEXT NOT NULL)");
         SQLite.execSQL(connection, "CREATE UNIQUE INDEX IF NOT EXISTS `index_funds_syncId` ON `funds` (`syncId`)");
         SQLite.execSQL(connection, "CREATE TABLE IF NOT EXISTS `chat_messages` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `text` TEXT NOT NULL, `isUser` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL)");
         SQLite.execSQL(connection, "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        SQLite.execSQL(connection, "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '71bff5b1d18368c90e989aae75179ca1')");
+        SQLite.execSQL(connection, "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d0a527241a8c45a7aad5597438d20a0')");
       }
 
       @Override
@@ -77,7 +77,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsTransactions.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTransactions.put("syncId", new TableInfo.Column("syncId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTransactions.put("userId", new TableInfo.Column("userId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsTransactions.put("amount", new TableInfo.Column("amount", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTransactions.put("amount", new TableInfo.Column("amount", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTransactions.put("category", new TableInfo.Column("category", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTransactions.put("date", new TableInfo.Column("date", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTransactions.put("description", new TableInfo.Column("description", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));

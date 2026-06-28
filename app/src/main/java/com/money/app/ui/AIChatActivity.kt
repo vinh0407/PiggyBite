@@ -100,7 +100,7 @@ class AIChatActivity : AppCompatActivity() {
             all.filter { it.isExpense }.forEach { t ->
                 cal.timeInMillis = t.timestamp
                 val week = cal.get(Calendar.WEEK_OF_YEAR)
-                val amt = AppUtils.parseAmount(t.amount)
+                val amt = t.amount
                 if (week == currentWeek) thisWeekExp += amt
                 else if (week == lastWeek) lastWeekExp += amt
             }
@@ -207,7 +207,7 @@ class AIChatActivity : AppCompatActivity() {
                 FirebaseSyncManager(this@AIChatActivity).createFund(fund)
             }
             
-            val response = "Tuyệt vời! Tôi đã tạo quỹ '$lastProposedFundName' với mục tiêu ${AppUtils.formatCurrency(lastProposedAmount)} cho bạn rồi nhé. Hãy cố gắng đạt được mục tiêu này! 🚀"
+            val response = "Tuyệt vời! Tôi đã tạo quỹ '$lastProposedFundName' với mục tiêu ${AppUtils.formatCurrency(lastProposedAmount, this@AIChatActivity)} cho bạn rồi nhé. Hãy cố gắng đạt được mục tiêu này! 🚀"
             val aiMsg = ChatMessage(text = response, isUser = false, timestamp = System.currentTimeMillis())
             addMessageToUI(aiMsg)
             saveMessageToDB(aiMsg)
@@ -231,13 +231,13 @@ class AIChatActivity : AppCompatActivity() {
                 }
                 
                 val total = db.transactionDao().getAllTransactions().sumOf { 
-                    if(it.isExpense) -AppUtils.parseAmount(it.amount) else AppUtils.parseAmount(it.amount)
+                    if(it.isExpense) -it.amount else it.amount
                 }
 
                 val system = """
                     Bạn là PiggyBite AI Assistant (3.5 Flash).
                     Dữ liệu thực tế của người dùng:
-                    - Số dư: ${AppUtils.formatCurrency(total)}
+                    - Số dư: ${AppUtils.formatCurrency(total, this@AIChatActivity)}
                     - Lịch sử khớp: $context
                     
                     Yêu cầu:

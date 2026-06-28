@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Tùy chọn Quỹ/Options"
+        android:text="@string/fund_options_title"
         android:textColor="@color/text_main"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Chỉnh sửa quỹ/Edit"
+            android:text="@string/fund_edit"
             android:textColor="@color/text_main"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Thêm người vào quỹ/Add member"
+            android:text="@string/fund_add_member"
             android:textColor="@color/text_main"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Chi tiết đóng góp/Contributions"
+            android:text="@string/fund_contributions"
             android:textColor="@color/text_main"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -118,7 +118,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Xóa quỹ/Delete"
+            android:text="@string/fund_delete"
             android:textColor="@color/expense_red"
             android:textSize="16sp"
             android:textStyle="bold" />

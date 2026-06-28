@@ -22,9 +22,15 @@ public final class AddTransactionActivity extends androidx.appcompat.app.AppComp
     android.os.Bundle savedInstanceState) {
     }
     
+    /**
+     * Kotlin String & Logic Handling: Parses Vietnamese voice input into amount and description
+     */
     private final void parseVoiceText(java.lang.String text) {
     }
     
+    /**
+     * Kotlin String & Number Handling: Extracts numbers from OCR text using patterns
+     */
     private final void parseOCRText(java.lang.String text) {
     }
     

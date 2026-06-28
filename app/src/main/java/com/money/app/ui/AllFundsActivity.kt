@@ -42,7 +42,7 @@ class AllFundsActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val fund = list[position]
             holder.tvName.text = fund.name
-            holder.tvProgress.text = "${AppUtils.formatCurrency(fund.currentAmount)} / ${AppUtils.formatCurrency(fund.targetAmount)}"
+            holder.tvProgress.text = "${AppUtils.formatCurrency(fund.currentAmount, this@AllFundsActivity)} / ${AppUtils.formatCurrency(fund.targetAmount, this@AllFundsActivity)}"
             val percent = if (fund.targetAmount > 0) (fund.currentAmount / fund.targetAmount * 100).toInt() else 0
             holder.tvPercent.text = "$percent%"
             holder.progressBar.progress = percent.coerceIn(0, 100)

@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="32dp"
-            android:text="Máy ảnh AI/Camera"
+            android:text="@string/camera_ai_title"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -48,9 +48,9 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingHorizontal="12dp">
-                <TextView android:id="@+id/tvZoom1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1x" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:id="@+id/tvZoom2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="2x" android:textColor="@color/text_hint" android:textSize="12sp" />
-                <TextView android:id="@+id/tvZoom5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="5x" android:textColor="@color/text_hint" android:textSize="12sp" />
+                <TextView android:id="@+id/tvZoom1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/zoom_1x" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
+                <TextView android:id="@+id/tvZoom2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="@string/zoom_2x" android:textColor="@color/text_hint" android:textSize="12sp" />
+                <TextView android:id="@+id/tvZoom5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="@string/zoom_5x" android:textColor="@color/text_hint" android:textSize="12sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -71,6 +71,7 @@
                 android:layout_height="48dp"
                 android:background="@drawable/circle_bg_dark"
                 android:src="@drawable/ic_flash_off"
+                android:contentDescription="@string/ai_feature"
                 app:tint="@color/white" />
 
             <ImageButton
@@ -80,6 +81,7 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/circle_bg_dark"
                 android:src="@drawable/ic_flip_camera"
+                android:contentDescription="@string/ai_feature"
                 app:tint="@color/white" />
         </LinearLayout>
 
@@ -111,9 +113,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Thư viện"
+                    android:text="@string/gallery"
                     android:textColor="@color/white"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <androidx.cardview.widget.CardView
@@ -155,9 +157,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Ghi âm"
+                    android:text="@string/record"
                     android:textColor="@color/white"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
