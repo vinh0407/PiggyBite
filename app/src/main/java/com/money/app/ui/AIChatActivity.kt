@@ -18,9 +18,11 @@ import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.ChatMessage
 import com.money.app.data.Transaction
+import com.money.app.databinding.ActivityAiChatBinding
 import com.money.app.util.AppUtils
 import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -30,11 +32,11 @@ import java.util.*
 
 class AIChatActivity : AppCompatActivity() {
 
-    private lateinit var rvChat: RecyclerView
-    private lateinit var etChat: EditText
-    private lateinit var btnSend: ImageButton
+    private lateinit var binding: ActivityAiChatBinding
     private val chatMessages = mutableListOf<ChatMessage>()
     private lateinit var adapter: ChatAdapter
+    
+    // Note: In production, these should be in local.properties -> BuildConfig
     private val GEMINI_API_KEY = "AQ.Ab8RN6LYB28S5p69FS6i0gyOO9ZWSmCDSSBGhKS_SWoGCpzVag"
     private val CHATGPT_API_KEY = "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"
     
@@ -44,32 +46,29 @@ class AIChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ai_chat)
+        binding = ActivityAiChatBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
-
-        rvChat = findViewById(R.id.rvChat)
-        etChat = findViewById(R.id.etChat)
-        btnSend = findViewById(R.id.btnSend)
+        binding.btnBack.setOnClickListener { finish() }
 
         adapter = ChatAdapter(chatMessages)
-        rvChat.layoutManager = LinearLayoutManager(this)
-        rvChat.adapter = adapter
+        binding.rvChat.layoutManager = LinearLayoutManager(this)
+        binding.rvChat.adapter = adapter
 
         setupSuggestions()
         loadChatHistory()
         calculateStats()
 
-        btnSend.setOnClickListener {
-            sendMessage(etChat.text.toString())
+        binding.btnSend.setOnClickListener {
+            sendMessage(binding.etChat.text.toString())
         }
     }
 
     private fun setupSuggestions() {
-        findViewById<TextView>(R.id.sug1).setOnClickListener { sendMessage((it as TextView).text.toString()) }
-        findViewById<TextView>(R.id.sug2).setOnClickListener { sendMessage((it as TextView).text.toString()) }
-        findViewById<TextView>(R.id.sug3).setOnClickListener { sendMessage((it as TextView).text.toString()) }
-        findViewById<TextView>(R.id.sug4).setOnClickListener { sendMessage((it as TextView).text.toString()) }
+        binding.sug1.setOnClickListener { sendMessage(binding.sug1.text.toString()) }
+        binding.sug2.setOnClickListener { sendMessage(binding.sug2.text.toString()) }
+        binding.sug3.setOnClickListener { sendMessage(binding.sug3.text.toString()) }
+        binding.sug4.setOnClickListener { sendMessage(binding.sug4.text.toString()) }
     }
 
     private fun sendMessage(query: String) {
@@ -77,11 +76,11 @@ class AIChatActivity : AppCompatActivity() {
             val userMsg = ChatMessage(text = query, isUser = true, timestamp = System.currentTimeMillis())
             addMessageToUI(userMsg)
             saveMessageToDB(userMsg)
-            etChat.text.clear()
+            binding.etChat.text.clear()
             processAI(query)
             
-            findViewById<androidx.cardview.widget.CardView>(R.id.welcomeCard)?.visibility = View.GONE
-            rvChat.visibility = View.VISIBLE
+            binding.welcomeCard.visibility = View.GONE
+            binding.rvChat.visibility = View.VISIBLE
         }
     }
 
@@ -105,30 +104,27 @@ class AIChatActivity : AppCompatActivity() {
                 else if (week == lastWeek) lastWeekExp += amt
             }
             
-            val pillSaving = findViewById<TextView>(R.id.pillSaving)
-            val pillRating = findViewById<TextView>(R.id.pillRating)
-            
             if (lastWeekExp > 0) {
                 val savingPercent = ((lastWeekExp - thisWeekExp) / lastWeekExp * 100).toInt()
-                pillSaving.text = "Tiết kiệm $savingPercent% so với tuần trước"
+                binding.pillSaving.text = "Tiết kiệm $savingPercent% so với tuần trước"
                 
                 when {
                     savingPercent > 50 -> {
-                        pillRating.text = "🏆 Xuất sắc"
-                        pillRating.setTextColor(Color.parseColor("#28C76F"))
+                        binding.pillRating.text = "🏆 Xuất sắc"
+                        binding.pillRating.setTextColor(Color.parseColor("#28C76F"))
                     }
                     savingPercent > 0 -> {
-                        pillRating.text = "👍 Tốt"
-                        pillRating.setTextColor(Color.parseColor("#4A5BCC"))
+                        binding.pillRating.text = "👍 Tốt"
+                        binding.pillRating.setTextColor(Color.parseColor("#4A5BCC"))
                     }
                     else -> {
-                        pillRating.text = "⚠️ Chưa tốt"
-                        pillRating.setTextColor(Color.parseColor("#EA5455"))
+                        binding.pillRating.text = "⚠️ Chưa tốt"
+                        binding.pillRating.setTextColor(Color.parseColor("#EA5455"))
                     }
                 }
             } else {
-                pillSaving.text = "Tuần đầu tiên trải nghiệm"
-                pillRating.text = "✨ Đang tích lũy"
+                binding.pillSaving.text = "Tuần đầu tiên trải nghiệm"
+                binding.pillRating.text = "✨ Đang tích lũy"
             }
         }
     }
@@ -140,9 +136,9 @@ class AIChatActivity : AppCompatActivity() {
             if (history.isNotEmpty()) {
                 chatMessages.addAll(history)
                 adapter.notifyDataSetChanged()
-                rvChat.scrollToPosition(chatMessages.size - 1)
-                findViewById<androidx.cardview.widget.CardView>(R.id.welcomeCard)?.visibility = View.GONE
-                rvChat.visibility = View.VISIBLE
+                binding.rvChat.scrollToPosition(chatMessages.size - 1)
+                binding.welcomeCard.visibility = View.GONE
+                binding.rvChat.visibility = View.VISIBLE
             }
         }
     }
@@ -150,7 +146,7 @@ class AIChatActivity : AppCompatActivity() {
     private fun addMessageToUI(msg: ChatMessage) {
         chatMessages.add(msg)
         adapter.notifyItemInserted(chatMessages.size - 1)
-        rvChat.scrollToPosition(chatMessages.size - 1)
+        binding.rvChat.scrollToPosition(chatMessages.size - 1)
     }
 
     private fun saveMessageToDB(msg: ChatMessage) {
@@ -175,8 +171,9 @@ class AIChatActivity : AppCompatActivity() {
 
         for ((q, a) in quickAnswers) {
             if (lower == q) {
-                addMessageToUI(ChatMessage(text = a, isUser = false, timestamp = System.currentTimeMillis()))
-                saveMessageToDB(ChatMessage(text = a, isUser = false, timestamp = System.currentTimeMillis()))
+                val aiMsg = ChatMessage(text = a, isUser = false, timestamp = System.currentTimeMillis())
+                addMessageToUI(aiMsg)
+                saveMessageToDB(aiMsg)
                 return
             }
         }
@@ -216,7 +213,8 @@ class AIChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun callGeminiAPI(prompt: String) {
+    private fun callGeminiAPI(prompt: String, retryCount: Int = 1) {
+        binding.progressBar?.visibility = View.VISIBLE
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val db = AppDatabase.getDatabase(this@AIChatActivity)
@@ -224,7 +222,11 @@ class AIChatActivity : AppCompatActivity() {
                 // --- RAG: Search context ---
                 val terms = prompt.lowercase().split(" ").filter { it.length > 2 }
                 val results = mutableListOf<Transaction>()
-                terms.forEach { results.addAll(db.transactionDao().searchTransactions(it)) }
+                if (terms.isEmpty()) {
+                    results.addAll(db.transactionDao().getAllTransactions().take(10))
+                } else {
+                    terms.forEach { results.addAll(db.transactionDao().searchTransactions(it)) }
+                }
                 
                 val context = results.distinctBy { it.id }.take(10).joinToString("\n") { 
                     "${it.date}: ${if(it.isExpense) "-" else "+"}${it.amount} [${it.category}] ${it.description}"
@@ -241,13 +243,12 @@ class AIChatActivity : AppCompatActivity() {
                     - Lịch sử khớp: $context
                     
                     Yêu cầu:
-                    1. Trả lời dựa trên số liệu nếu có thể.
+                    1. Trả lời ngắn gọn, thân thiện bằng tiếng Việt.
                     2. Nếu đề xuất quỹ, dùng: [FUND_ACTION: Tên|Số Tiền|Emoji]
                 """.trimIndent()
 
                 val escaped = JSONObject.quote("$system\n\nNgười dùng hỏi: $prompt")
                 
-                // Route to ChatGPT for rules/general, Gemini for personal/RAG
                 val useChatGPT = prompt.contains("quy tắc") || prompt.contains("nên") || prompt.contains("phần trăm")
                 
                 val url = if (useChatGPT) URL("https://api.openai.com/v1/chat/completions") 
@@ -262,8 +263,8 @@ class AIChatActivity : AppCompatActivity() {
                     conn.setRequestProperty("X-goog-api-key", GEMINI_API_KEY)
                 }
                 conn.doOutput = true
-                conn.connectTimeout = 8000
-                conn.readTimeout = 12000
+                conn.connectTimeout = 20000
+                conn.readTimeout = 30000
 
                 val payload = if (useChatGPT) {
                     "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": $escaped}]}"
@@ -277,12 +278,15 @@ class AIChatActivity : AppCompatActivity() {
                     val raw = conn.inputStream.bufferedReader().use { it.readText() }
                     val json = JSONObject(raw)
                     var text = if (useChatGPT) {
-                        json.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
+                        if (json.has("choices")) {
+                            json.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
+                        } else "Xin lỗi, tôi không tìm thấy câu trả lời."
                     } else {
-                        json.getJSONArray("candidates").getJSONObject(0).getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text")
+                        if (json.has("candidates")) {
+                            json.getJSONArray("candidates").getJSONObject(0).getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text")
+                        } else "Hệ thống đang bận, hãy thử lại sau."
                     }
 
-                    // Handle Actions
                     val regex = Regex("\\[FUND_ACTION: (.+?)\\|(.+?)\\|(.+?)\\]")
                     regex.find(text)?.let {
                         lastProposedFundName = it.groupValues[1]
@@ -292,19 +296,22 @@ class AIChatActivity : AppCompatActivity() {
                     }
 
                     withContext(Dispatchers.Main) {
+                        binding.progressBar?.visibility = View.GONE
                         val aiMsg = ChatMessage(text = text, isUser = false, timestamp = System.currentTimeMillis())
                         addMessageToUI(aiMsg)
                         saveMessageToDB(aiMsg)
                     }
+                } else if (retryCount > 0) {
+                    conn.disconnect()
+                    delay(2000)
+                    callGeminiAPI(prompt, retryCount - 1)
                 } else {
-                    val errorLog = conn.errorStream?.bufferedReader()?.use { it.readText() }
-                    Log.e("AI_API", "Code ${conn.responseCode}: $errorLog")
-                    throw Exception("API Error")
+                    throw Exception("API Error ${conn.responseCode}")
                 }
             } catch (e: Exception) {
-                Log.e("AI_CHAT", "Error: ${e.message}", e)
                 withContext(Dispatchers.Main) {
-                    addMessageToUI(ChatMessage(text = "Hệ thống đang bận một chút (${e.message}), bạn nhắn lại sau nhé!", isUser = false, timestamp = System.currentTimeMillis()))
+                    binding.progressBar?.visibility = View.GONE
+                    addMessageToUI(ChatMessage(text = "Hệ thống đang bận một chút, bạn nhắn lại sau nhé!", isUser = false, timestamp = System.currentTimeMillis()))
                 }
             }
         }

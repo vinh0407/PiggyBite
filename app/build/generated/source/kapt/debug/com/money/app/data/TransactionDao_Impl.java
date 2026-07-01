@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.EntityDeleteOrUpdateAdapter;
 import androidx.room.EntityInsertAdapter;
 import androidx.room.RoomDatabase;
+import androidx.room.coroutines.FlowUtil;
 import androidx.room.util.DBUtil;
 import androidx.room.util.SQLiteStatementUtil;
 import androidx.sqlite.SQLiteStatement;
@@ -17,9 +18,12 @@ import java.lang.SuppressWarnings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.processing.Generated;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
+import kotlinx.coroutines.flow.Flow;
 
+@Generated("androidx.room.RoomProcessor")
 @SuppressWarnings({"unchecked", "deprecation", "removal"})
 public final class TransactionDao_Impl implements TransactionDao {
   private final RoomDatabase __db;
@@ -266,6 +270,84 @@ public final class TransactionDao_Impl implements TransactionDao {
         _stmt.close();
       }
     }, $completion);
+  }
+
+  @Override
+  public Flow<List<Transaction>> getAllTransactionsFlow() {
+    final String _sql = "SELECT * FROM transactions ORDER BY timestamp DESC";
+    return FlowUtil.createFlow(__db, false, new String[] {"transactions"}, (_connection) -> {
+      final SQLiteStatement _stmt = _connection.prepare(_sql);
+      try {
+        final int _columnIndexOfId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "id");
+        final int _columnIndexOfSyncId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "syncId");
+        final int _columnIndexOfUserId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "userId");
+        final int _columnIndexOfAmount = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "amount");
+        final int _columnIndexOfCategory = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "category");
+        final int _columnIndexOfDate = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "date");
+        final int _columnIndexOfDescription = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "description");
+        final int _columnIndexOfImagePath = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "imagePath");
+        final int _columnIndexOfIsExpense = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "isExpense");
+        final int _columnIndexOfRating = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "rating");
+        final int _columnIndexOfTimestamp = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, "timestamp");
+        final List<Transaction> _result = new ArrayList<Transaction>();
+        while (_stmt.step()) {
+          final Transaction _item;
+          final long _tmpId;
+          _tmpId = _stmt.getLong(_columnIndexOfId);
+          final String _tmpSyncId;
+          if (_stmt.isNull(_columnIndexOfSyncId)) {
+            _tmpSyncId = null;
+          } else {
+            _tmpSyncId = _stmt.getText(_columnIndexOfSyncId);
+          }
+          final String _tmpUserId;
+          if (_stmt.isNull(_columnIndexOfUserId)) {
+            _tmpUserId = null;
+          } else {
+            _tmpUserId = _stmt.getText(_columnIndexOfUserId);
+          }
+          final double _tmpAmount;
+          _tmpAmount = _stmt.getDouble(_columnIndexOfAmount);
+          final String _tmpCategory;
+          if (_stmt.isNull(_columnIndexOfCategory)) {
+            _tmpCategory = null;
+          } else {
+            _tmpCategory = _stmt.getText(_columnIndexOfCategory);
+          }
+          final String _tmpDate;
+          if (_stmt.isNull(_columnIndexOfDate)) {
+            _tmpDate = null;
+          } else {
+            _tmpDate = _stmt.getText(_columnIndexOfDate);
+          }
+          final String _tmpDescription;
+          if (_stmt.isNull(_columnIndexOfDescription)) {
+            _tmpDescription = null;
+          } else {
+            _tmpDescription = _stmt.getText(_columnIndexOfDescription);
+          }
+          final String _tmpImagePath;
+          if (_stmt.isNull(_columnIndexOfImagePath)) {
+            _tmpImagePath = null;
+          } else {
+            _tmpImagePath = _stmt.getText(_columnIndexOfImagePath);
+          }
+          final boolean _tmpIsExpense;
+          final int _tmp;
+          _tmp = (int) (_stmt.getLong(_columnIndexOfIsExpense));
+          _tmpIsExpense = _tmp != 0;
+          final int _tmpRating;
+          _tmpRating = (int) (_stmt.getLong(_columnIndexOfRating));
+          final long _tmpTimestamp;
+          _tmpTimestamp = _stmt.getLong(_columnIndexOfTimestamp);
+          _item = new Transaction(_tmpId,_tmpSyncId,_tmpUserId,_tmpAmount,_tmpCategory,_tmpDate,_tmpDescription,_tmpImagePath,_tmpIsExpense,_tmpRating,_tmpTimestamp);
+          _result.add(_item);
+        }
+        return _result;
+      } finally {
+        _stmt.close();
+      }
+    });
   }
 
   @Override

@@ -8,6 +8,10 @@
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\bg_pill_grey.xml"
     },
     {
+        "merged": "com.money.app-debug-80:/layout_fragment_wallet.xml.flat",
+        "source": "com.money.app-main-82:/layout/fragment_wallet.xml"
+    },
+    {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_ic_flash_off.xml.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\ic_flash_off.xml"
     },
@@ -48,6 +52,10 @@
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_stats_entry.xml"
     },
     {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\layout_item_calendar_day.xml.flat",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_calendar_day.xml"
+    },
+    {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_ic_waves.xml.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\ic_waves.xml"
     },
@@ -60,12 +68,12 @@
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\ic_heart.xml"
     },
     {
-        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\anim_slide_in_left.xml.flat",
-        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\anim\\slide_in_left.xml"
-    },
-    {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_capture_ring.xml.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\capture_ring.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\anim_slide_in_left.xml.flat",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\anim\\slide_in_left.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\color_chip_background_selector.xml.flat",
@@ -98,6 +106,10 @@
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_ic_camera.xml.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\ic_camera.xml"
+    },
+    {
+        "merged": "com.money.app-debug-80:/layout_activity_main.xml.flat",
+        "source": "com.money.app-main-82:/layout/activity_main.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\layout_activity_register.xml.flat",
@@ -166,6 +178,10 @@
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\anim_slide_out_right.xml.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\anim\\slide_out_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\layout_item_empty_state.xml.flat",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_empty_state.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_icon_app_money_dark.jpg.flat",
@@ -242,6 +258,10 @@
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\layout_activity_statistics.xml.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\activity_statistics.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_circle_bg_selection.xml.flat",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\circle_bg_selection.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
@@ -350,10 +370,6 @@
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_bg_income_card.xml.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\bg_income_card.xml"
-    },
-    {
-        "merged": "com.money.app-debug-80:/layout_item_empty_state.xml.flat",
-        "source": "com.money.app-main-82:/layout/item_empty_state.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\layout_activity_map.xml.flat",

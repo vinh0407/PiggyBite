@@ -13,6 +13,9 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions ORDER BY timestamp DESC")
     suspend fun getAllTransactions(): List<Transaction>
 
+    @Query("SELECT * FROM transactions ORDER BY timestamp DESC")
+    fun getAllTransactionsFlow(): kotlinx.coroutines.flow.Flow<List<Transaction>>
+
     @Delete
     suspend fun delete(transaction: Transaction)
 

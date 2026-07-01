@@ -4,6 +4,10 @@
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\dialog_emoji_picker.xml"
     },
     {
+        "merged": "com.money.app-mergeDebugResources-79:/layout/fragment_wallet.xml",
+        "source": "com.money.app-main-82:/layout/fragment_wallet.xml"
+    },
+    {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\activity_ai_chat.xml",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\activity_ai_chat.xml"
     },
@@ -16,12 +20,12 @@
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\activity_add_fund.xml"
     },
     {
-        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\activity_all_funds.xml",
-        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\activity_all_funds.xml"
-    },
-    {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\activity_statistics.xml",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\activity_statistics.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\activity_all_funds.xml",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\activity_all_funds.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\item_stats_entry.xml",
@@ -32,12 +36,12 @@
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\activity_add_transaction.xml"
     },
     {
-        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\item_stats_summary_card.xml",
-        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_stats_summary_card.xml"
-    },
-    {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\dialog_voice_input.xml",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\dialog_voice_input.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\item_stats_summary_card.xml",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_stats_summary_card.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\activity_profile.xml",
@@ -46,6 +50,10 @@
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\item_quick_action.xml",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_quick_action.xml"
+    },
+    {
+        "merged": "com.money.app-mergeDebugResources-79:/layout/activity_main.xml",
+        "source": "com.money.app-main-82:/layout/activity_main.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\activity_all_transactions.xml",
@@ -58,6 +66,14 @@
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\item_emoji.xml",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_emoji.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\item_empty_state.xml",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_empty_state.xml"
+    },
+    {
+        "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\item_calendar_day.xml",
+        "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\item_calendar_day.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\activity_register.xml",
@@ -106,10 +122,6 @@
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\dialog_currency_selection.xml",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\layout\\dialog_currency_selection.xml"
-    },
-    {
-        "merged": "com.money.app-mergeDebugResources-79:/layout/item_empty_state.xml",
-        "source": "com.money.app-main-82:/layout/item_empty_state.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-mergeDebugResources-79:\\layout\\dialog_change_password.xml",

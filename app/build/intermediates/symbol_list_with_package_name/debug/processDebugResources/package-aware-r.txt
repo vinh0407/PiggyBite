@@ -3089,6 +3089,7 @@ drawable btn_radio_on_to_off_mtrl_animation
 drawable capture_ring
 drawable circle_bg_accent
 drawable circle_bg_dark
+drawable circle_bg_selection
 drawable circle_white
 drawable common_full_open_on_phone
 drawable common_google_signin_btn_icon_dark
@@ -3388,8 +3389,10 @@ id btnNavCalendar
 id btnNavHome
 id btnNavWallet
 id btnNext
+id btnNextAnalysis
 id btnNextMonth
 id btnPrev
+id btnPrevAnalysis
 id btnPrevMonth
 id btnProfile
 id btnRegister
@@ -3409,7 +3412,6 @@ id btnVoice
 id btnWithdraw
 id buttonPanel
 id cache_measures
-id calendarView
 id callMeasure
 id cancel_button
 id captureCard
@@ -3753,6 +3755,7 @@ id position
 id postLayout
 id pressed
 id profileArea
+id progressBar
 id progress_circular
 id progress_horizontal
 id radio
@@ -3784,6 +3787,7 @@ id rounded
 id row_index_key
 id rvAllFunds
 id rvAllTransactions
+id rvCalendarGrid
 id rvChat
 id rvDailyList
 id rvStatsList
@@ -3908,14 +3912,17 @@ id transition_transform
 id triangle
 id tvAmount
 id tvBalance
+id tvCalendarMonth
 id tvChangePassword
 id tvChartTitle
 id tvChatTitle
 id tvCurrencyValue
 id tvCurrentMonth
+id tvDailyAmount
 id tvDailyCount
 id tvDateRange
 id tvDateTime
+id tvDay
 id tvEmptyMessage
 id tvForgotPassword
 id tvGoalName
@@ -3949,6 +3956,7 @@ id useLogo
 id vertical
 id vertical_only
 id viewFinder
+id viewSelection
 id view_offset_helper
 id view_transition
 id view_tree_lifecycle_owner
@@ -4128,6 +4136,7 @@ layout fragment_wallet
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_cal_summary
+layout item_calendar_day
 layout item_chat_ai
 layout item_chat_user
 layout item_emoji

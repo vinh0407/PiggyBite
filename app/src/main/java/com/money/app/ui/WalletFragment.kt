@@ -50,6 +50,7 @@ class WalletFragment : Fragment() {
     private var isExpenseMode = true
     private var isBalanceVisible = true
     private var actualBalance = 0.0
+    private var analysisMonth = Calendar.getInstance()
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) {
@@ -90,26 +91,33 @@ class WalletFragment : Fragment() {
         }
 
         val clickListener = View.OnClickListener {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                // On Android 13+, PickVisualMedia doesn't need permissions, but we can request READ_MEDIA_IMAGES if we want to be safe
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            } else {
-                // On older versions, request READ_EXTERNAL_STORAGE
-                if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                } else {
-                    requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-            }
+            // PickVisualMedia doesn't need permissions as it uses the system picker
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
         binding.flProfile.setOnClickListener(clickListener)
         binding.ivProfile.setOnClickListener(clickListener)
 
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        
+        binding.btnPrevAnalysis.setOnClickListener {
+            if (analysisMonth.get(Calendar.MONTH) > Calendar.JANUARY) {
+                analysisMonth.add(Calendar.MONTH, -1)
+                updateAnalysisUI()
+            }
+        }
+
+        binding.btnNextAnalysis.setOnClickListener {
+            if (analysisMonth.get(Calendar.MONTH) < Calendar.DECEMBER) {
+                analysisMonth.add(Calendar.MONTH, 1)
+                updateAnalysisUI()
+            }
+        }
+
         loadAvatar()
         setupQuickActions()
         setupToggle()
-        loadData()
+        updateAnalysisUI()
     }
 
     override fun onResume() {
@@ -158,7 +166,12 @@ class WalletFragment : Fragment() {
                     binding.ivProfile.setImageResource(R.drawable.ic_piggy_bank)
                 }
             } else {
-                binding.ivProfile.setImageURI(uri)
+                // If it's a content URI, try to use it directly, but it might fail if permission is lost
+                try {
+                    binding.ivProfile.setImageURI(uri)
+                } catch (e: Exception) {
+                    binding.ivProfile.setImageResource(R.drawable.ic_piggy_bank)
+                }
             }
         }
     }
@@ -221,27 +234,52 @@ class WalletFragment : Fragment() {
         binding.actionGoals.actionText.text = "Mục tiêu/Goals"
     }
 
+    private fun updateAnalysisUI() {
+        val monthNum = analysisMonth.get(Calendar.MONTH) + 1
+        binding.tvChartTitle.text = "Phân tích tháng $monthNum"
+        
+        // Limit to current year
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        analysisMonth.set(Calendar.YEAR, currentYear)
+
+        val isFirstMonth = analysisMonth.get(Calendar.MONTH) == Calendar.JANUARY
+        val isLastMonth = analysisMonth.get(Calendar.MONTH) == Calendar.DECEMBER
+        
+        binding.btnPrevAnalysis.visibility = if (isFirstMonth) View.INVISIBLE else View.VISIBLE
+        binding.btnNextAnalysis.visibility = if (isLastMonth) View.INVISIBLE else View.VISIBLE
+
+        loadData()
+    }
+
+    private var loadDataJob: kotlinx.coroutines.Job? = null
     private fun loadData() {
-        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
-        binding.tvChartTitle.text = "Phân tích tháng $currentMonth"
+        loadDataJob?.cancel()
+        
+        val selectedMonth = analysisMonth.get(Calendar.MONTH) + 1
+        val selectedYear = analysisMonth.get(Calendar.YEAR)
+        val monthStr = String.format("%02d/%04d", selectedMonth, selectedYear)
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        loadDataJob = viewLifecycleOwner.lifecycleScope.launch {
             val db = AppDatabase.getDatabase(requireContext())
-            val all = withContext(Dispatchers.IO) { db.transactionDao().getAllTransactions() }
-            
-            var totalInc = 0.0
-            var totalExp = 0.0
-            all.forEach {
-                val amt = it.amount
-                if (it.isExpense) totalExp += amt else totalInc += amt
+            db.transactionDao().getAllTransactionsFlow().collect { all ->
+                val filteredForMonth = all.filter { it.date.endsWith(monthStr) }
+                
+                var totalInc = 0.0
+                var totalExp = 0.0
+                all.forEach {
+                    val amt = it.amount
+                    if (it.isExpense) totalExp += amt else totalInc += amt
+                }
+                actualBalance = totalInc - totalExp
+                
+                withContext(Dispatchers.Main) {
+                    updateBalanceDisplay()
+                    updateDonutChart(filteredForMonth)
+                    updateLineChart(all)
+                    renderRecent(all.take(10))
+                    renderFunds()
+                }
             }
-            actualBalance = totalInc - totalExp
-            updateBalanceDisplay()
-
-            updateDonutChart(all)
-            updateLineChart(all)
-            renderRecent(all.take(10))
-            renderFunds()
         }
     }
 

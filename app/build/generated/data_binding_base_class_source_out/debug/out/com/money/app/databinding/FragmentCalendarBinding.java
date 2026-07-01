@@ -4,7 +4,7 @@ package com.money.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CalendarView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -28,7 +28,10 @@ public final class FragmentCalendarBinding implements ViewBinding {
   public final AppCompatButton btnExport;
 
   @NonNull
-  public final CalendarView calendarView;
+  public final ImageView btnNextMonth;
+
+  @NonNull
+  public final ImageView btnPrevMonth;
 
   @NonNull
   public final CardView cvCalendar;
@@ -38,6 +41,9 @@ public final class FragmentCalendarBinding implements ViewBinding {
 
   @NonNull
   public final View headerBg;
+
+  @NonNull
+  public final RecyclerView rvCalendarGrid;
 
   @NonNull
   public final RecyclerView rvDailyList;
@@ -55,6 +61,9 @@ public final class FragmentCalendarBinding implements ViewBinding {
   public final LinearLayout summaryRow;
 
   @NonNull
+  public final TextView tvCalendarMonth;
+
+  @NonNull
   public final TextView tvCurrentMonth;
 
   @NonNull
@@ -67,24 +76,29 @@ public final class FragmentCalendarBinding implements ViewBinding {
   public final TextView tvSelectedDateLabel;
 
   private FragmentCalendarBinding(@NonNull ConstraintLayout rootView,
-      @NonNull AppCompatButton btnExport, @NonNull CalendarView calendarView,
-      @NonNull CardView cvCalendar, @NonNull LinearLayout dailyHeader, @NonNull View headerBg,
-      @NonNull RecyclerView rvDailyList, @NonNull ItemCalSummaryBinding summaryBal,
-      @NonNull ItemCalSummaryBinding summaryExp, @NonNull ItemCalSummaryBinding summaryInc,
-      @NonNull LinearLayout summaryRow, @NonNull TextView tvCurrentMonth,
+      @NonNull AppCompatButton btnExport, @NonNull ImageView btnNextMonth,
+      @NonNull ImageView btnPrevMonth, @NonNull CardView cvCalendar,
+      @NonNull LinearLayout dailyHeader, @NonNull View headerBg,
+      @NonNull RecyclerView rvCalendarGrid, @NonNull RecyclerView rvDailyList,
+      @NonNull ItemCalSummaryBinding summaryBal, @NonNull ItemCalSummaryBinding summaryExp,
+      @NonNull ItemCalSummaryBinding summaryInc, @NonNull LinearLayout summaryRow,
+      @NonNull TextView tvCalendarMonth, @NonNull TextView tvCurrentMonth,
       @NonNull TextView tvDailyCount, @NonNull TextView tvLabelHistory,
       @NonNull TextView tvSelectedDateLabel) {
     this.rootView = rootView;
     this.btnExport = btnExport;
-    this.calendarView = calendarView;
+    this.btnNextMonth = btnNextMonth;
+    this.btnPrevMonth = btnPrevMonth;
     this.cvCalendar = cvCalendar;
     this.dailyHeader = dailyHeader;
     this.headerBg = headerBg;
+    this.rvCalendarGrid = rvCalendarGrid;
     this.rvDailyList = rvDailyList;
     this.summaryBal = summaryBal;
     this.summaryExp = summaryExp;
     this.summaryInc = summaryInc;
     this.summaryRow = summaryRow;
+    this.tvCalendarMonth = tvCalendarMonth;
     this.tvCurrentMonth = tvCurrentMonth;
     this.tvDailyCount = tvDailyCount;
     this.tvLabelHistory = tvLabelHistory;
@@ -124,9 +138,15 @@ public final class FragmentCalendarBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.calendarView;
-      CalendarView calendarView = ViewBindings.findChildViewById(rootView, id);
-      if (calendarView == null) {
+      id = R.id.btnNextMonth;
+      ImageView btnNextMonth = ViewBindings.findChildViewById(rootView, id);
+      if (btnNextMonth == null) {
+        break missingId;
+      }
+
+      id = R.id.btnPrevMonth;
+      ImageView btnPrevMonth = ViewBindings.findChildViewById(rootView, id);
+      if (btnPrevMonth == null) {
         break missingId;
       }
 
@@ -145,6 +165,12 @@ public final class FragmentCalendarBinding implements ViewBinding {
       id = R.id.headerBg;
       View headerBg = ViewBindings.findChildViewById(rootView, id);
       if (headerBg == null) {
+        break missingId;
+      }
+
+      id = R.id.rvCalendarGrid;
+      RecyclerView rvCalendarGrid = ViewBindings.findChildViewById(rootView, id);
+      if (rvCalendarGrid == null) {
         break missingId;
       }
 
@@ -181,6 +207,12 @@ public final class FragmentCalendarBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvCalendarMonth;
+      TextView tvCalendarMonth = ViewBindings.findChildViewById(rootView, id);
+      if (tvCalendarMonth == null) {
+        break missingId;
+      }
+
       id = R.id.tvCurrentMonth;
       TextView tvCurrentMonth = ViewBindings.findChildViewById(rootView, id);
       if (tvCurrentMonth == null) {
@@ -205,10 +237,10 @@ public final class FragmentCalendarBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentCalendarBinding((ConstraintLayout) rootView, btnExport, calendarView,
-          cvCalendar, dailyHeader, headerBg, rvDailyList, binding_summaryBal, binding_summaryExp,
-          binding_summaryInc, summaryRow, tvCurrentMonth, tvDailyCount, tvLabelHistory,
-          tvSelectedDateLabel);
+      return new FragmentCalendarBinding((ConstraintLayout) rootView, btnExport, btnNextMonth,
+          btnPrevMonth, cvCalendar, dailyHeader, headerBg, rvCalendarGrid, rvDailyList,
+          binding_summaryBal, binding_summaryExp, binding_summaryInc, summaryRow, tvCalendarMonth,
+          tvCurrentMonth, tvDailyCount, tvLabelHistory, tvSelectedDateLabel);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

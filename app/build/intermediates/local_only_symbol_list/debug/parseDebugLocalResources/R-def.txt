@@ -56,6 +56,7 @@ drawable bg_transaction_card
 drawable capture_ring
 drawable circle_bg_accent
 drawable circle_bg_dark
+drawable circle_bg_selection
 drawable circle_white
 drawable ic_arrow_down
 drawable ic_backspace
@@ -123,8 +124,10 @@ id btnNavCalendar
 id btnNavHome
 id btnNavWallet
 id btnNext
+id btnNextAnalysis
 id btnNextMonth
 id btnPrev
+id btnPrevAnalysis
 id btnPrevMonth
 id btnProfile
 id btnRegister
@@ -142,7 +145,6 @@ id btnViewContributionsOption
 id btnViewFlowMore
 id btnVoice
 id btnWithdraw
-id calendarView
 id captureCard
 id cardBalance
 id cardTotalExpense
@@ -216,6 +218,7 @@ id pieChart
 id pillRating
 id pillSaving
 id profileArea
+id progressBar
 id rbAll
 id rbEmail
 id rbExpense
@@ -234,6 +237,7 @@ id rgPeriodTabs
 id rgRegisterMethod
 id rvAllFunds
 id rvAllTransactions
+id rvCalendarGrid
 id rvChat
 id rvDailyList
 id rvStatsList
@@ -248,14 +252,17 @@ id summaryInc
 id summaryRow
 id tvAmount
 id tvBalance
+id tvCalendarMonth
 id tvChangePassword
 id tvChartTitle
 id tvChatTitle
 id tvCurrencyValue
 id tvCurrentMonth
+id tvDailyAmount
 id tvDailyCount
 id tvDateRange
 id tvDateTime
+id tvDay
 id tvEmptyMessage
 id tvForgotPassword
 id tvGoalName
@@ -282,6 +289,7 @@ id tvZoom2
 id tvZoom5
 id typeToggle
 id viewFinder
+id viewSelection
 id webView
 id welcomeCard
 layout activity_add_fund
@@ -306,6 +314,7 @@ layout dialog_voice_input
 layout fragment_calendar
 layout fragment_wallet
 layout item_cal_summary
+layout item_calendar_day
 layout item_chat_ai
 layout item_chat_user
 layout item_emoji

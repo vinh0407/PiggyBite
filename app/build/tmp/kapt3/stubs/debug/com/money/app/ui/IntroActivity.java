@@ -4,7 +4,7 @@ package com.money.app.ui;
 public final class IntroActivity extends androidx.activity.ComponentActivity {
     
     public IntroActivity() {
-        super(0);
+        super();
     }
     
     @java.lang.Override()

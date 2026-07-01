@@ -79,6 +79,9 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // Start logout service
+        startService(Intent(this, com.money.app.util.LogoutService::class.java))
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

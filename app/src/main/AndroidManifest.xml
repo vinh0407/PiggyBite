@@ -7,8 +7,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
@@ -79,6 +77,12 @@
             android:exported="true"
             android:theme="@style/Theme.Money">
         </activity>
+
+        <service
+            android:name=".util.LogoutService"
+            android:stopWithTask="false"
+            android:enabled="true"
+            android:exported="false" />
 
         <receiver
             android:name=".util.NetworkMonitor"

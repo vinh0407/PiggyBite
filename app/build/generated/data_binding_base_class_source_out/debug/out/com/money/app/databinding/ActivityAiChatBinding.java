@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +51,9 @@ public final class ActivityAiChatBinding implements ViewBinding {
   public final TextView pillSaving;
 
   @NonNull
+  public final ProgressBar progressBar;
+
+  @NonNull
   public final RecyclerView rvChat;
 
   @NonNull
@@ -73,9 +77,10 @@ public final class ActivityAiChatBinding implements ViewBinding {
   private ActivityAiChatBinding(@NonNull ConstraintLayout rootView, @NonNull ImageButton btnBack,
       @NonNull ImageButton btnSend, @NonNull ConstraintLayout chatHeader, @NonNull EditText etChat,
       @NonNull LinearLayout inputArea, @NonNull HorizontalScrollView permanentSuggestions,
-      @NonNull TextView pillRating, @NonNull TextView pillSaving, @NonNull RecyclerView rvChat,
-      @NonNull TextView sug1, @NonNull TextView sug2, @NonNull TextView sug3,
-      @NonNull TextView sug4, @NonNull TextView tvChatTitle, @NonNull CardView welcomeCard) {
+      @NonNull TextView pillRating, @NonNull TextView pillSaving, @NonNull ProgressBar progressBar,
+      @NonNull RecyclerView rvChat, @NonNull TextView sug1, @NonNull TextView sug2,
+      @NonNull TextView sug3, @NonNull TextView sug4, @NonNull TextView tvChatTitle,
+      @NonNull CardView welcomeCard) {
     this.rootView = rootView;
     this.btnBack = btnBack;
     this.btnSend = btnSend;
@@ -85,6 +90,7 @@ public final class ActivityAiChatBinding implements ViewBinding {
     this.permanentSuggestions = permanentSuggestions;
     this.pillRating = pillRating;
     this.pillSaving = pillSaving;
+    this.progressBar = progressBar;
     this.rvChat = rvChat;
     this.sug1 = sug1;
     this.sug2 = sug2;
@@ -169,6 +175,12 @@ public final class ActivityAiChatBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.progressBar;
+      ProgressBar progressBar = ViewBindings.findChildViewById(rootView, id);
+      if (progressBar == null) {
+        break missingId;
+      }
+
       id = R.id.rvChat;
       RecyclerView rvChat = ViewBindings.findChildViewById(rootView, id);
       if (rvChat == null) {
@@ -212,8 +224,8 @@ public final class ActivityAiChatBinding implements ViewBinding {
       }
 
       return new ActivityAiChatBinding((ConstraintLayout) rootView, btnBack, btnSend, chatHeader,
-          etChat, inputArea, permanentSuggestions, pillRating, pillSaving, rvChat, sug1, sug2, sug3,
-          sug4, tvChatTitle, welcomeCard);
+          etChat, inputArea, permanentSuggestions, pillRating, pillSaving, progressBar, rvChat,
+          sug1, sug2, sug3, sug4, tvChatTitle, welcomeCard);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -27,14 +27,26 @@ import java.util.*
 class CalendarFragment : Fragment() {
 
     private lateinit var rvDailyList: RecyclerView
+    private lateinit var rvCalendarGrid: RecyclerView
     private lateinit var tvIncVal: TextView
     private lateinit var tvExpVal: TextView
     private lateinit var tvBalVal: TextView
-    private lateinit var calendarView: android.widget.CalendarView
+    private lateinit var tvCalendarMonth: TextView
     private lateinit var tvSelectedDateLabel: TextView
     private lateinit var tvDailyCount: TextView
 
     private var allTransactions = listOf<Transaction>()
+    private val displayedMonth = Calendar.getInstance()
+    private var selectedDate = Calendar.getInstance()
+    
+    data class CalendarDay(
+        val day: Int, 
+        val month: Int, 
+        val year: Int, 
+        val isCurrentMonth: Boolean,
+        var totalAmount: Double = 0.0,
+        var hasTransactions: Boolean = false
+    )
 
     private val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
         uri?.let { exportToCsv(it) }
@@ -52,11 +64,13 @@ class CalendarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         
         rvDailyList = view.findViewById(R.id.rvDailyList)
-        calendarView = view.findViewById(R.id.calendarView)
+        rvCalendarGrid = view.findViewById(R.id.rvCalendarGrid)
+        tvCalendarMonth = view.findViewById(R.id.tvCalendarMonth)
         tvSelectedDateLabel = view.findViewById(R.id.tvSelectedDateLabel)
         tvDailyCount = view.findViewById(R.id.tvDailyCount)
 
         rvDailyList.layoutManager = LinearLayoutManager(requireContext())
+        rvCalendarGrid.layoutManager = androidx.recyclerview.widget.GridLayoutManager(requireContext(), 7)
         
         val summaryInc = view.findViewById<View>(R.id.summaryInc)
         val summaryExp = view.findViewById<View>(R.id.summaryExp)
@@ -74,13 +88,134 @@ class CalendarFragment : Fragment() {
             showExportImportDialog()
         }
 
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val cal = Calendar.getInstance()
-            cal.set(year, month, dayOfMonth)
-            showDailyTransactions(cal.time)
+        view.findViewById<View>(R.id.btnPrevMonth)?.setOnClickListener {
+            displayedMonth.add(Calendar.MONTH, -1)
+            updateCalendar()
+        }
+
+        view.findViewById<View>(R.id.btnNextMonth)?.setOnClickListener {
+            displayedMonth.add(Calendar.MONTH, 1)
+            updateCalendar()
         }
 
         loadMonthData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadMonthData()
+    }
+
+    private fun updateCalendar() {
+        val sdf = SimpleDateFormat("'Tháng' MM 'năm' yyyy", Locale("vi", "VN"))
+        tvCalendarMonth.text = sdf.format(displayedMonth.time)
+        
+        val days = generateCalendarDays(displayedMonth)
+        
+        // Calculate totals for each day
+        days.forEach { day ->
+            val dateStr = String.format("%02d/%02d/%04d", day.day, day.month + 1, day.year)
+            val dailyTrans = allTransactions.filter { it.date == dateStr }
+            if (dailyTrans.isNotEmpty()) {
+                day.hasTransactions = true
+                var total = 0.0
+                dailyTrans.forEach { total += if (it.isExpense) -it.amount else it.amount }
+                day.totalAmount = total
+            }
+        }
+        
+        rvCalendarGrid.adapter = CalendarGridAdapter(days)
+        
+        // Update summary for the displayed month
+        val monthStr = SimpleDateFormat("/MM/yyyy", Locale.getDefault()).format(displayedMonth.time)
+        val filtered = allTransactions.filter { it.date.endsWith(monthStr) }
+        var totalInc = 0.0
+        var totalExp = 0.0
+        filtered.forEach {
+            if (it.isExpense) totalExp += it.amount else totalInc += it.amount
+        }
+        tvIncVal.text = AppUtils.formatCurrency(totalInc, requireContext())
+        tvExpVal.text = AppUtils.formatCurrency(totalExp, requireContext())
+        tvBalVal.text = AppUtils.formatCurrency(totalInc - totalExp, requireContext())
+        
+        val currentMonthHeader = SimpleDateFormat("MMMM, yyyy", Locale("vi", "VN")).format(displayedMonth.time)
+        view?.findViewById<TextView>(R.id.tvCurrentMonth)?.text = currentMonthHeader.replaceFirstChar { it.uppercase() }
+    }
+
+    private fun generateCalendarDays(month: Calendar): List<CalendarDay> {
+        val days = mutableListOf<CalendarDay>()
+        val cal = month.clone() as Calendar
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        
+        // Get the day of week for the 1st (Mon=2, Tue=3... Sun=1)
+        // Adjust for T2-CN (Mon-Sun) where Mon=0
+        var firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 2
+        if (firstDayOfWeek < 0) firstDayOfWeek = 6 // Sunday
+        
+        // Add days from previous month to fill the first row
+        val prevMonth = cal.clone() as Calendar
+        prevMonth.add(Calendar.MONTH, -1)
+        val daysInPrevMonth = prevMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
+        for (i in firstDayOfWeek - 1 downTo 0) {
+            days.add(CalendarDay(daysInPrevMonth - i, prevMonth.get(Calendar.MONTH), prevMonth.get(Calendar.YEAR), false))
+        }
+        
+        // Add days of current month
+        val daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+        for (i in 1..daysInMonth) {
+            days.add(CalendarDay(i, cal.get(Calendar.MONTH), cal.get(Calendar.YEAR), true))
+        }
+        
+        // Add days from next month to fill the grid (total 42 days for 6 rows)
+        val nextMonth = cal.clone() as Calendar
+        nextMonth.add(Calendar.MONTH, 1)
+        val remaining = 42 - days.size
+        for (i in 1..remaining) {
+            days.add(CalendarDay(i, nextMonth.get(Calendar.MONTH), nextMonth.get(Calendar.YEAR), false))
+        }
+        
+        return days
+    }
+
+    inner class CalendarGridAdapter(private val days: List<CalendarDay>) : RecyclerView.Adapter<CalendarGridAdapter.ViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val v = LayoutInflater.from(parent.context).inflate(R.layout.item_calendar_day, parent, false)
+            return ViewHolder(v)
+        }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val d = days[position]
+            holder.tvDay.text = d.day.toString()
+            holder.tvDay.alpha = if (d.isCurrentMonth) 1.0f else 0.3f
+            
+            if (d.hasTransactions) {
+                holder.tvAmount.visibility = View.VISIBLE
+                val formatted = AppUtils.formatCurrency(Math.abs(d.totalAmount), requireContext())
+                holder.tvAmount.text = "${if (d.totalAmount >= 0) "+" else "-"}$formatted"
+                holder.tvAmount.setTextColor(ContextCompat.getColor(requireContext(), 
+                    if (d.totalAmount >= 0) R.color.income_green else R.color.expense_red))
+            } else {
+                holder.tvAmount.visibility = View.INVISIBLE
+            }
+            
+            val isSelected = d.day == selectedDate.get(Calendar.DAY_OF_MONTH) && 
+                             d.month == selectedDate.get(Calendar.MONTH) && 
+                             d.year == selectedDate.get(Calendar.YEAR)
+            holder.viewSelection.visibility = if (isSelected) View.VISIBLE else View.GONE
+            
+            holder.itemView.setOnClickListener {
+                selectedDate.set(d.year, d.month, d.day)
+                notifyDataSetChanged()
+                val cal = Calendar.getInstance()
+                cal.set(d.year, d.month, d.day)
+                showDailyTransactions(cal.time)
+            }
+        }
+        override fun getItemCount() = days.size
+        inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+            val tvDay = v.findViewById<TextView>(R.id.tvDay)
+            val tvAmount = v.findViewById<TextView>(R.id.tvDailyAmount)
+            val viewSelection = v.findViewById<View>(R.id.viewSelection)
+        }
     }
 
     private fun showExportImportDialog() {
@@ -198,26 +333,14 @@ class CalendarFragment : Fragment() {
     }
 
     private fun loadMonthData() {
-        val cal = Calendar.getInstance()
-        val currentMonthStr = SimpleDateFormat("/MM/yyyy", Locale.getDefault()).format(cal.time)
-
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             val db = AppDatabase.getDatabase(requireContext())
-            allTransactions = db.transactionDao().getAllTransactions()
-            val filtered = allTransactions.filter { it.date.endsWith(currentMonthStr) }
-            
-            var totalInc = 0.0
-            var totalExp = 0.0
-            filtered.forEach {
-                val amt = it.amount
-                if (it.isExpense) totalExp += amt else totalInc += amt
-            }
-
-            withContext(Dispatchers.Main) {
-                tvIncVal.text = AppUtils.formatCurrency(totalInc, requireContext())
-                tvExpVal.text = AppUtils.formatCurrency(totalExp, requireContext())
-                tvBalVal.text = AppUtils.formatCurrency(totalInc - totalExp, requireContext())
-                showDailyTransactions(Date()) // Default today
+            db.transactionDao().getAllTransactionsFlow().collect { all ->
+                allTransactions = all
+                withContext(Dispatchers.Main) {
+                    updateCalendar()
+                    showDailyTransactions(selectedDate.time)
+                }
             }
         }
     }

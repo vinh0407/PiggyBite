@@ -49,6 +49,12 @@ public final class FragmentWalletBinding implements ViewBinding {
   public final ImageButton btnMap;
 
   @NonNull
+  public final ImageView btnNextAnalysis;
+
+  @NonNull
+  public final ImageView btnPrevAnalysis;
+
+  @NonNull
   public final ImageButton btnSettings;
 
   @NonNull
@@ -108,7 +114,8 @@ public final class FragmentWalletBinding implements ViewBinding {
   private FragmentWalletBinding(@NonNull NestedScrollView rootView,
       @NonNull ItemQuickActionBinding actionAIChat, @NonNull ItemQuickActionBinding actionAdd,
       @NonNull ItemQuickActionBinding actionGoals, @NonNull ItemQuickActionBinding actionReport,
-      @NonNull TextView btnAddFund, @NonNull ImageButton btnMap, @NonNull ImageButton btnSettings,
+      @NonNull TextView btnAddFund, @NonNull ImageButton btnMap, @NonNull ImageView btnNextAnalysis,
+      @NonNull ImageView btnPrevAnalysis, @NonNull ImageButton btnSettings,
       @NonNull TextView btnViewAllTrans, @NonNull TextView btnViewFlowMore,
       @NonNull GridLayout chartLegend, @NonNull FrameLayout flProfile,
       @NonNull LinearLayout fundsContainer, @NonNull ShapeableImageView ivProfile,
@@ -125,6 +132,8 @@ public final class FragmentWalletBinding implements ViewBinding {
     this.actionReport = actionReport;
     this.btnAddFund = btnAddFund;
     this.btnMap = btnMap;
+    this.btnNextAnalysis = btnNextAnalysis;
+    this.btnPrevAnalysis = btnPrevAnalysis;
     this.btnSettings = btnSettings;
     this.btnViewAllTrans = btnViewAllTrans;
     this.btnViewFlowMore = btnViewFlowMore;
@@ -210,6 +219,18 @@ public final class FragmentWalletBinding implements ViewBinding {
       id = R.id.btnMap;
       ImageButton btnMap = ViewBindings.findChildViewById(rootView, id);
       if (btnMap == null) {
+        break missingId;
+      }
+
+      id = R.id.btnNextAnalysis;
+      ImageView btnNextAnalysis = ViewBindings.findChildViewById(rootView, id);
+      if (btnNextAnalysis == null) {
+        break missingId;
+      }
+
+      id = R.id.btnPrevAnalysis;
+      ImageView btnPrevAnalysis = ViewBindings.findChildViewById(rootView, id);
+      if (btnPrevAnalysis == null) {
         break missingId;
       }
 
@@ -329,9 +350,10 @@ public final class FragmentWalletBinding implements ViewBinding {
 
       return new FragmentWalletBinding((NestedScrollView) rootView, binding_actionAIChat,
           binding_actionAdd, binding_actionGoals, binding_actionReport, btnAddFund, btnMap,
-          btnSettings, btnViewAllTrans, btnViewFlowMore, chartLegend, flProfile, fundsContainer,
-          ivProfile, ivToggleBalance, lineChart, pieChart, profileArea, rbExpense, rbIncome,
-          recentList, rgChartToggle, tvChartTitle, tvSlogan, tvTotalBalance, tvUserName);
+          btnNextAnalysis, btnPrevAnalysis, btnSettings, btnViewAllTrans, btnViewFlowMore,
+          chartLegend, flProfile, fundsContainer, ivProfile, ivToggleBalance, lineChart, pieChart,
+          profileArea, rbExpense, rbIncome, recentList, rgChartToggle, tvChartTitle, tvSlogan,
+          tvTotalBalance, tvUserName);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
