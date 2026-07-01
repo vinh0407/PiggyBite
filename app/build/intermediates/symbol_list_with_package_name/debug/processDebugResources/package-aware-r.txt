@@ -3376,6 +3376,7 @@ id btnDeleteOption
 id btnDeposit
 id btnDone
 id btnEditOption
+id btnEmptyAdd
 id btnExpense
 id btnExport
 id btnFlash
@@ -3614,6 +3615,8 @@ id jumpToStart
 id keypad
 id labeled
 id layout
+id layoutEmptyAnalysis
+id layoutEmptyStats
 id layoutExpense
 id layoutIncome
 id layoutSummaryCards
@@ -4323,6 +4326,11 @@ string dialog_voice_example
 string dialog_voice_hint
 string dialog_voice_status
 string dropdown_menu
+string empty_analysis_btn
+string empty_analysis_desc
+string empty_analysis_title
+string empty_stats_desc
+string empty_stats_title
 string error_a11y_label
 string error_icon_content_description
 string expense

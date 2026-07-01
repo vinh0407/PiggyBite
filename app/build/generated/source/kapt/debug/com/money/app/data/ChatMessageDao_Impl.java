@@ -52,16 +52,16 @@ public final class ChatMessageDao_Impl implements ChatMessageDao {
   }
 
   @Override
-  public Object insert(final ChatMessage message, final Continuation<? super Unit> arg1) {
+  public Object insert(final ChatMessage message, final Continuation<? super Unit> $completion) {
     if (message == null) throw new NullPointerException();
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       __insertAdapterOfChatMessage.insert(_connection, message);
       return Unit.INSTANCE;
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getAllMessages(final Continuation<? super List<ChatMessage>> arg0) {
+  public Object getAllMessages(final Continuation<? super List<ChatMessage>> $completion) {
     final String _sql = "SELECT * FROM chat_messages ORDER BY timestamp ASC";
     return DBUtil.performSuspending(__db, true, false, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -94,11 +94,11 @@ public final class ChatMessageDao_Impl implements ChatMessageDao {
       } finally {
         _stmt.close();
       }
-    }, arg0);
+    }, $completion);
   }
 
   @Override
-  public Object clearHistory(final Continuation<? super Unit> arg0) {
+  public Object clearHistory(final Continuation<? super Unit> $completion) {
     final String _sql = "DELETE FROM chat_messages";
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -108,7 +108,7 @@ public final class ChatMessageDao_Impl implements ChatMessageDao {
       } finally {
         _stmt.close();
       }
-    }, arg0);
+    }, $completion);
   }
 
   @NonNull

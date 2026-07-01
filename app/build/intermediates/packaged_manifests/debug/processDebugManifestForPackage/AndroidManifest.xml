@@ -88,12 +88,6 @@
             android:theme="@style/Theme.Money" >
         </activity>
 
-        <service
-            android:name="com.money.app.util.LogoutService"
-            android:enabled="true"
-            android:exported="false"
-            android:stopWithTask="false" />
-
         <receiver
             android:name="com.money.app.util.NetworkMonitor"
             android:exported="true" >

@@ -17,6 +17,10 @@ import com.money.app.util.AppUtils
 import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.launch
 
+/**
+ * Màn hình Tất cả các quỹ: Hiển thị danh sách đầy đủ các mục tiêu tiết kiệm và quỹ chung.
+ * Cho phép người dùng theo dõi tiến độ và mời người khác tham gia vào quỹ chung qua Email.
+ */
 class AllFundsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +31,7 @@ class AllFundsActivity : AppCompatActivity() {
         val rv = findViewById<RecyclerView>(R.id.rvAllFunds)
         rv.layoutManager = LinearLayoutManager(this)
 
+        // Tải danh sách quỹ từ cơ sở dữ liệu Room
         lifecycleScope.launch {
             val db = AppDatabase.getDatabase(this@AllFundsActivity)
             val funds = db.fundDao().getAllFunds()
@@ -34,6 +39,9 @@ class AllFundsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Adapter để hiển thị danh sách các thẻ Quỹ.
+     */
     inner class FundsAdapter(private val list: List<Fund>) : RecyclerView.Adapter<FundsAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_fund_premium, parent, false)
@@ -43,17 +51,24 @@ class AllFundsActivity : AppCompatActivity() {
             val fund = list[position]
             holder.tvName.text = fund.name
             holder.tvProgress.text = "${AppUtils.formatCurrency(fund.currentAmount, this@AllFundsActivity)} / ${AppUtils.formatCurrency(fund.targetAmount, this@AllFundsActivity)}"
+            
+            // Tính toán phần trăm hoàn thành mục tiêu
             val percent = if (fund.targetAmount > 0) (fund.currentAmount / fund.targetAmount * 100).toInt() else 0
             holder.tvPercent.text = "$percent%"
             holder.progressBar.progress = percent.coerceIn(0, 100)
             holder.ivIcon.setImageResource(R.drawable.ic_piggy_bank)
 
+            // Nút mời thành viên vào quỹ chung
             holder.btnShare.setOnClickListener {
                 showShareDialog(fund)
             }
         }
         override fun getItemCount() = list.size
 
+        /**
+         * Hiển thị hộp thoại nhập Email để mời thành viên tham gia quỹ.
+         * Lời mời sẽ được gửi lên Firebase và người nhận sẽ thấy quỹ này trong ứng dụng của họ.
+         */
         private fun showShareDialog(fund: Fund) {
             val etEmail = EditText(this@AllFundsActivity)
             etEmail.hint = "Email thành viên gia đình"
@@ -67,10 +82,10 @@ class AllFundsActivity : AppCompatActivity() {
                     if (email.isNotEmpty()) {
                         lifecycleScope.launch {
                             val syncManager = FirebaseSyncManager(this@AllFundsActivity)
-                            // Note: In a production app, use the syncId saved when creating the fund
+                            // Sử dụng syncId để định danh quỹ trên Firebase
                             val fid = fund.syncId
                             syncManager.shareFund(fid, email)
-                            Toast.makeText(this@AllFundsActivity, "Đã gửi lời mời", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@AllFundsActivity, "Đã gửi lời mời tới $email", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

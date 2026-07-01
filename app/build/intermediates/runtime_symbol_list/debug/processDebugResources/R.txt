@@ -3375,6 +3375,7 @@ int id btnDeleteOption 0x7f09007e
 int id btnDeposit 0x7f09007f
 int id btnDone 0x7f090080
 int id btnEditOption 0x7f090081
+int id btnEmptyAdd 0x7f0902dd
 int id btnExpense 0x7f090082
 int id btnExport 0x7f090083
 int id btnFlash 0x7f090084
@@ -3613,6 +3614,8 @@ int id jumpToStart 0x7f09016b
 int id keypad 0x7f09016c
 int id labeled 0x7f09016d
 int id layout 0x7f09016e
+int id layoutEmptyAnalysis 0x7f0902de
+int id layoutEmptyStats 0x7f0902df
 int id layoutExpense 0x7f09016f
 int id layoutIncome 0x7f090170
 int id layoutSummaryCards 0x7f090171
@@ -4322,6 +4325,11 @@ int string dialog_voice_example 0x7f12006a
 int string dialog_voice_hint 0x7f12006b
 int string dialog_voice_status 0x7f12006c
 int string dropdown_menu 0x7f12006d
+int string empty_analysis_btn 0x7f12018a
+int string empty_analysis_desc 0x7f12018b
+int string empty_analysis_title 0x7f12018c
+int string empty_stats_desc 0x7f12018d
+int string empty_stats_title 0x7f12018e
 int string error_a11y_label 0x7f12006e
 int string error_icon_content_description 0x7f12006f
 int string expense 0x7f120070

@@ -111,6 +111,7 @@ id btnDeleteOption
 id btnDeposit
 id btnDone
 id btnEditOption
+id btnEmptyAdd
 id btnExpense
 id btnExport
 id btnFlash
@@ -201,6 +202,8 @@ id ivProfile
 id ivStatsCardIcon
 id ivToggleBalance
 id keypad
+id layoutEmptyAnalysis
+id layoutEmptyStats
 id layoutExpense
 id layoutIncome
 id layoutSummaryCards
@@ -364,6 +367,11 @@ string dialog_pass_security_msg
 string dialog_voice_example
 string dialog_voice_hint
 string dialog_voice_status
+string empty_analysis_btn
+string empty_analysis_desc
+string empty_analysis_title
+string empty_stats_desc
+string empty_stats_title
 string expense
 string fund_add_member
 string fund_add_title

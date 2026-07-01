@@ -1,5 +1,12 @@
 package com.money.app.ui;
 
+/**
+ * Màn hình Lịch sử Giao dịch: Hiển thị toàn bộ các khoản thu/chi đã thực hiện.
+ * Cho phép người dùng:
+ * - Xem danh sách chi tiết tất cả giao dịch theo thứ tự thời gian mới nhất.
+ * - Xem ảnh hóa đơn đính kèm.
+ * - Nhấn giữ để Xóa một giao dịch khỏi hệ thống.
+ */
 @kotlin.Metadata(mv = {2, 2, 0}, k = 1, xi = 48, d1 = {"\u0000 \n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\u0018\u00002\u00020\u0001:\u0001\nB\u0007\u00a2\u0006\u0004\b\u0002\u0010\u0003J\u0012\u0010\u0006\u001a\u00020\u00072\b\u0010\b\u001a\u0004\u0018\u00010\tH\u0014R\u000e\u0010\u0004\u001a\u00020\u0005X\u0082.\u00a2\u0006\u0002\n\u0000\u00a8\u0006\u000b"}, d2 = {"Lcom/money/app/ui/AllTransactionsActivity;", "Landroidx/appcompat/app/AppCompatActivity;", "<init>", "()V", "rv", "Landroidx/recyclerview/widget/RecyclerView;", "onCreate", "", "savedInstanceState", "Landroid/os/Bundle;", "TransactionsAdapter", "app_debug"})
 public final class AllTransactionsActivity extends androidx.appcompat.app.AppCompatActivity {
     private androidx.recyclerview.widget.RecyclerView rv;
@@ -35,9 +42,15 @@ public final class AllTransactionsActivity extends androidx.appcompat.app.AppCom
         com.money.app.ui.AllTransactionsActivity.TransactionsAdapter.ViewHolder holder, int position) {
         }
         
+        /**
+         * Hiển thị Menu tùy chọn khi nhấn giữ một dòng giao dịch
+         */
         private final void showPopupMenu(android.view.View view, com.money.app.data.Transaction transaction) {
         }
         
+        /**
+         * Xử lý xóa giao dịch khỏi database cục bộ
+         */
         private final void deleteTransaction(com.money.app.data.Transaction transaction) {
         }
         

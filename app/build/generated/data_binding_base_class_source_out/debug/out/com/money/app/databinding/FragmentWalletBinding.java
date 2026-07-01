@@ -18,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.money.app.R;
 import com.money.app.ui.LineChartView;
@@ -44,6 +45,9 @@ public final class FragmentWalletBinding implements ViewBinding {
 
   @NonNull
   public final TextView btnAddFund;
+
+  @NonNull
+  public final MaterialButton btnEmptyAdd;
 
   @NonNull
   public final ImageButton btnMap;
@@ -77,6 +81,9 @@ public final class FragmentWalletBinding implements ViewBinding {
 
   @NonNull
   public final ImageView ivToggleBalance;
+
+  @NonNull
+  public final LinearLayout layoutEmptyAnalysis;
 
   @NonNull
   public final LineChartView lineChart;
@@ -114,23 +121,25 @@ public final class FragmentWalletBinding implements ViewBinding {
   private FragmentWalletBinding(@NonNull NestedScrollView rootView,
       @NonNull ItemQuickActionBinding actionAIChat, @NonNull ItemQuickActionBinding actionAdd,
       @NonNull ItemQuickActionBinding actionGoals, @NonNull ItemQuickActionBinding actionReport,
-      @NonNull TextView btnAddFund, @NonNull ImageButton btnMap, @NonNull ImageView btnNextAnalysis,
+      @NonNull TextView btnAddFund, @NonNull MaterialButton btnEmptyAdd,
+      @NonNull ImageButton btnMap, @NonNull ImageView btnNextAnalysis,
       @NonNull ImageView btnPrevAnalysis, @NonNull ImageButton btnSettings,
       @NonNull TextView btnViewAllTrans, @NonNull TextView btnViewFlowMore,
       @NonNull GridLayout chartLegend, @NonNull FrameLayout flProfile,
       @NonNull LinearLayout fundsContainer, @NonNull ShapeableImageView ivProfile,
-      @NonNull ImageView ivToggleBalance, @NonNull LineChartView lineChart,
-      @NonNull PieChartView pieChart, @NonNull ConstraintLayout profileArea,
-      @NonNull RadioButton rbExpense, @NonNull RadioButton rbIncome,
-      @NonNull LinearLayout recentList, @NonNull RadioGroup rgChartToggle,
-      @NonNull TextView tvChartTitle, @NonNull TextView tvSlogan, @NonNull TextView tvTotalBalance,
-      @NonNull TextView tvUserName) {
+      @NonNull ImageView ivToggleBalance, @NonNull LinearLayout layoutEmptyAnalysis,
+      @NonNull LineChartView lineChart, @NonNull PieChartView pieChart,
+      @NonNull ConstraintLayout profileArea, @NonNull RadioButton rbExpense,
+      @NonNull RadioButton rbIncome, @NonNull LinearLayout recentList,
+      @NonNull RadioGroup rgChartToggle, @NonNull TextView tvChartTitle, @NonNull TextView tvSlogan,
+      @NonNull TextView tvTotalBalance, @NonNull TextView tvUserName) {
     this.rootView = rootView;
     this.actionAIChat = actionAIChat;
     this.actionAdd = actionAdd;
     this.actionGoals = actionGoals;
     this.actionReport = actionReport;
     this.btnAddFund = btnAddFund;
+    this.btnEmptyAdd = btnEmptyAdd;
     this.btnMap = btnMap;
     this.btnNextAnalysis = btnNextAnalysis;
     this.btnPrevAnalysis = btnPrevAnalysis;
@@ -142,6 +151,7 @@ public final class FragmentWalletBinding implements ViewBinding {
     this.fundsContainer = fundsContainer;
     this.ivProfile = ivProfile;
     this.ivToggleBalance = ivToggleBalance;
+    this.layoutEmptyAnalysis = layoutEmptyAnalysis;
     this.lineChart = lineChart;
     this.pieChart = pieChart;
     this.profileArea = profileArea;
@@ -216,6 +226,12 @@ public final class FragmentWalletBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnEmptyAdd;
+      MaterialButton btnEmptyAdd = ViewBindings.findChildViewById(rootView, id);
+      if (btnEmptyAdd == null) {
+        break missingId;
+      }
+
       id = R.id.btnMap;
       ImageButton btnMap = ViewBindings.findChildViewById(rootView, id);
       if (btnMap == null) {
@@ -279,6 +295,12 @@ public final class FragmentWalletBinding implements ViewBinding {
       id = R.id.ivToggleBalance;
       ImageView ivToggleBalance = ViewBindings.findChildViewById(rootView, id);
       if (ivToggleBalance == null) {
+        break missingId;
+      }
+
+      id = R.id.layoutEmptyAnalysis;
+      LinearLayout layoutEmptyAnalysis = ViewBindings.findChildViewById(rootView, id);
+      if (layoutEmptyAnalysis == null) {
         break missingId;
       }
 
@@ -349,11 +371,11 @@ public final class FragmentWalletBinding implements ViewBinding {
       }
 
       return new FragmentWalletBinding((NestedScrollView) rootView, binding_actionAIChat,
-          binding_actionAdd, binding_actionGoals, binding_actionReport, btnAddFund, btnMap,
-          btnNextAnalysis, btnPrevAnalysis, btnSettings, btnViewAllTrans, btnViewFlowMore,
-          chartLegend, flProfile, fundsContainer, ivProfile, ivToggleBalance, lineChart, pieChart,
-          profileArea, rbExpense, rbIncome, recentList, rgChartToggle, tvChartTitle, tvSlogan,
-          tvTotalBalance, tvUserName);
+          binding_actionAdd, binding_actionGoals, binding_actionReport, btnAddFund, btnEmptyAdd,
+          btnMap, btnNextAnalysis, btnPrevAnalysis, btnSettings, btnViewAllTrans, btnViewFlowMore,
+          chartLegend, flProfile, fundsContainer, ivProfile, ivToggleBalance, layoutEmptyAnalysis,
+          lineChart, pieChart, profileArea, rbExpense, rbIncome, recentList, rgChartToggle,
+          tvChartTitle, tvSlogan, tvTotalBalance, tvUserName);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

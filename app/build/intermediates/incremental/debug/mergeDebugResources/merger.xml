@@ -11649,7 +11649,7 @@
         <item>🏍</item><item>🛺</item><item>🚆</item><item>🚄</item><item>🚄</item><item>🚇</item><item>✈️</item><item>🚢</item><item>⛵️</item><item>🛶</item>
         <item>⚽️</item><item>🏀</item><item>🏈</item><item>⚾️</item><item>🥎</item><item>🎾</item><item>🏐</item><item>🏉</item><item>🎱</item><item>🏓</item>
         <item>🥊</item><item>🥋</item><item>🥅</item><item>⛳️</item><item>⛸</item><item>🎣</item><item>🚣</item><item>🏊</item><item>🏄</item><item>🛀</item>
-    </string-array></file><file path="E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\res\values\themes.xml" qualifiers=""><style name="Theme.Money" parent="Theme.MaterialComponents.Light.NoActionBar">
+    </string-array><string name="empty_analysis_btn">Thêm giao dịch ngay</string><string name="empty_stats_desc">Vui lòng chọn khoảng thời gian khác hoặc thêm mới</string><string name="empty_analysis_desc">Hãy thêm giao dịch để xem phân tích</string><string name="empty_stats_title">Không có giao dịch nào</string><string name="empty_analysis_title">Chưa có dữ liệu tháng này</string></file><file path="E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\res\values\themes.xml" qualifiers=""><style name="Theme.Money" parent="Theme.MaterialComponents.Light.NoActionBar">
         
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>

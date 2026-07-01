@@ -17,6 +17,10 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Màn hình Thêm Quỹ (Add Fund): Cho phép người dùng tạo mục tiêu tiết kiệm hoặc quỹ chung mới.
+ * Khi tạo quỹ với một số tiền ban đầu, ứng dụng sẽ tự động tạo một giao dịch chi tiêu trong ví chính.
+ */
 class AddFundActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,31 +47,34 @@ class AddFundActivity : AppCompatActivity() {
                 val db = AppDatabase.getDatabase(this@AddFundActivity)
                 val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
                 
+                // Khởi tạo đối tượng Quỹ mới
                 val fund = Fund(
                     name = name,
                     targetAmount = target,
                     currentAmount = current,
-                    icon = "🏦",
+                    icon = "🏦", // Icon mặc định
                     createdDate = System.currentTimeMillis(),
-                    endDate = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000),
+                    endDate = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000), // Mặc định thời hạn 30 ngày
                     ownerId = currentUserId,
-                    members = listOf(currentUserId),
+                    members = listOf(currentUserId), // Người tạo là thành viên đầu tiên
                     memberContributions = if (current > 0) mapOf(currentUserId to current) else mapOf()
                 )
                 
+                // Đồng bộ lên Firebase Realtime Database
                 val syncManager = FirebaseSyncManager(this@AddFundActivity)
                 syncManager.createFund(fund)
                 
+                // Lưu vào database Room cục bộ
                 db.fundDao().insert(fund)
 
-                // Deduct initial amount from main wallet
+                // Nếu có số tiền ban đầu, trừ số tiền đó khỏi ví chính bằng một giao dịch
                 if (current > 0) {
                     val trans = Transaction(
                         amount = current,
                         category = "Góp quỹ",
                         description = "Góp vốn ban đầu cho quỹ $name",
                         date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
-                        isExpense = true,
+                        isExpense = true, // Góp vào quỹ được coi là chi tiêu từ ví chính
                         timestamp = System.currentTimeMillis()
                     )
                     db.transactionDao().insert(trans)

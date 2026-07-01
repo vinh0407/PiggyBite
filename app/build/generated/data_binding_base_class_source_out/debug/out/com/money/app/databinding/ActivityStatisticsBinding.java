@@ -50,6 +50,9 @@ public final class ActivityStatisticsBinding implements ViewBinding {
   public final View headerBg;
 
   @NonNull
+  public final LinearLayout layoutEmptyStats;
+
+  @NonNull
   public final LinearLayout layoutSummaryCards;
 
   @NonNull
@@ -90,7 +93,8 @@ public final class ActivityStatisticsBinding implements ViewBinding {
       @NonNull ItemStatsSummaryCardBinding cardBalance,
       @NonNull ItemStatsSummaryCardBinding cardTotalExpense,
       @NonNull ItemStatsSummaryCardBinding cardTotalIncome, @NonNull LinearLayout dateNav,
-      @NonNull View headerBg, @NonNull LinearLayout layoutSummaryCards, @NonNull RadioButton rbAll,
+      @NonNull View headerBg, @NonNull LinearLayout layoutEmptyStats,
+      @NonNull LinearLayout layoutSummaryCards, @NonNull RadioButton rbAll,
       @NonNull RadioButton rbModeExpense, @NonNull RadioButton rbModeIncome,
       @NonNull RadioButton rbMonth, @NonNull RadioButton rbWeek, @NonNull RadioButton rbYear,
       @NonNull RadioGroup rgModeToggle, @NonNull RadioGroup rgPeriodTabs,
@@ -104,6 +108,7 @@ public final class ActivityStatisticsBinding implements ViewBinding {
     this.cardTotalIncome = cardTotalIncome;
     this.dateNav = dateNav;
     this.headerBg = headerBg;
+    this.layoutEmptyStats = layoutEmptyStats;
     this.layoutSummaryCards = layoutSummaryCards;
     this.rbAll = rbAll;
     this.rbModeExpense = rbModeExpense;
@@ -196,6 +201,12 @@ public final class ActivityStatisticsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.layoutEmptyStats;
+      LinearLayout layoutEmptyStats = ViewBindings.findChildViewById(rootView, id);
+      if (layoutEmptyStats == null) {
+        break missingId;
+      }
+
       id = R.id.layoutSummaryCards;
       LinearLayout layoutSummaryCards = ViewBindings.findChildViewById(rootView, id);
       if (layoutSummaryCards == null) {
@@ -270,8 +281,8 @@ public final class ActivityStatisticsBinding implements ViewBinding {
 
       return new ActivityStatisticsBinding((ConstraintLayout) rootView, btnBack, btnNext, btnPrev,
           binding_cardBalance, binding_cardTotalExpense, binding_cardTotalIncome, dateNav, headerBg,
-          layoutSummaryCards, rbAll, rbModeExpense, rbModeIncome, rbMonth, rbWeek, rbYear,
-          rgModeToggle, rgPeriodTabs, rvStatsList, tvDateRange, tvTitle);
+          layoutEmptyStats, layoutSummaryCards, rbAll, rbModeExpense, rbModeIncome, rbMonth, rbWeek,
+          rbYear, rgModeToggle, rgPeriodTabs, rvStatsList, tvDateRange, tvTitle);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

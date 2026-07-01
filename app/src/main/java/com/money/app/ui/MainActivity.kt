@@ -39,10 +39,12 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 /**
- * Main Entry activity of the application after authentication.
- * Handles primary navigation (Calendar, Home/Wallet, AI Camera) and global sync triggers.
- * 
- * Architecture: AppCompatActivity with ViewBinding
+ * Hoạt động chính (Main Activity): Màn hình chính sau khi đăng nhập.
+ * Đóng vai trò là trung tâm điều hướng và xử lý các tính năng thông minh:
+ * - Điều hướng giữa các Fragment: Lịch (Calendar), Trang chủ (Home), Camera AI.
+ * - Tích hợp CameraX để quét hóa đơn và nhận diện văn bản (OCR).
+ * - Nhận diện giọng nói để thêm nhanh giao dịch.
+ * - Kích hoạt đồng bộ dữ liệu Firebase khi khởi chạy ứng dụng.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -53,10 +55,11 @@ class MainActivity : AppCompatActivity() {
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var flashMode = ImageCapture.FLASH_MODE_OFF
     private var currentZoom = 1.0f
-    private var currentActiveNavId: Int = R.id.btnNavHome
+    private var currentActiveNavId: Int = R.id.btnNavHome // ID của Tab đang hoạt động
     private var speechRecognizer: SpeechRecognizer? = null
     private val auth = FirebaseAuth.getInstance()
 
+    // Bộ chọn ảnh từ thư viện để quét OCR
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             lifecycleScope.launch {
@@ -64,54 +67,71 @@ class MainActivity : AppCompatActivity() {
                 contentResolver.openInputStream(uri)?.use { input ->
                     photoFile.outputStream().use { output -> input.copyTo(output) }
                 }
-                recognizeText(photoFile)
+                recognizeText(photoFile) // Nhận diện văn bản từ ảnh được chọn
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        com.money.app.util.ThemeHelper.applyTheme(this)
+        com.money.app.util.ThemeHelper.applyTheme(this) // Áp dụng chủ đề người dùng đã chọn
         super.onCreate(savedInstanceState)
 
+        // Kiểm tra đăng nhập
         if (auth.currentUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
-        // Start logout service
-        startService(Intent(this, com.money.app.util.LogoutService::class.java))
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Tải lại Tab cuối cùng mà người dùng đã mở
         val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         currentActiveNavId = prefs.getInt("last_nav_id", R.id.btnNavHome)
 
+        // Đồng bộ hóa dữ liệu từ Firebase
         lifecycleScope.launch {
             try {
                 val syncManager = FirebaseSyncManager(this@MainActivity)
-                
-                // Check for new invitations for current email
                 val userEmail = auth.currentUser?.email
                 val userId = auth.currentUser?.uid
                 if (!userEmail.isNullOrEmpty() && userId != null) {
                     syncManager.checkPendingInvitations(userEmail, userId)
                 }
-
                 syncManager.syncTransactions()
                 syncManager.syncFunds()
             } catch (e: Exception) {
                 Log.e("Sync", "Initial sync failed: ${e.message}")
-                Toast.makeText(this@MainActivity, "Đồng bộ dữ liệu không thành công. Vui lòng kiểm tra mạng.", Toast.LENGTH_SHORT).show()
             }
         }
 
-        setupNavigation()
+        setupNavigation() // Cài đặt sự kiện cho thanh Bottom Navigation
+        updateNavUI(currentActiveNavId) // Cập nhật trạng thái hiển thị của nút Nav
         
-        updateNavUI(currentActiveNavId)
-        
-        // Restore last fragment
+        // Hiển thị Fragment tương ứng với Tab được chọn
+        restoreLastFragment()
+
+        // Các nút điều khiển Camera AI
+        binding.btnCapture.setOnClickListener { takePhotoAndRecognizeText() }
+        binding.btnGallery.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+        binding.btnFlip.setOnClickListener { flipCamera() }
+        binding.btnFlash.setOnClickListener { toggleFlash() }
+
+        // Nút thêm giao dịch bằng giọng nói
+        binding.btnVoice.setOnClickListener { checkAudioPermissionAndShowVoiceDialog() }
+
+        setupZoomControls() // Cài đặt các mức Zoom (1x, 2x, 5x)
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
+    }
+
+    /**
+     * Khôi phục Fragment gần nhất mà người dùng sử dụng
+     */
+    private fun restoreLastFragment() {
         when (currentActiveNavId) {
             R.id.btnNavCalendar -> {
                 binding.homeContent.visibility = View.GONE
@@ -129,50 +149,14 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, WalletFragment()).commit()
             }
         }
-
-        binding.btnCapture.setOnClickListener {
-            takePhotoAndRecognizeText()
-        }
-
-        binding.btnGallery.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
-
-        binding.btnFlip.setOnClickListener {
-            cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-                CameraSelector.DEFAULT_FRONT_CAMERA
-            } else {
-                CameraSelector.DEFAULT_BACK_CAMERA
-            }
-            if (currentActiveNavId == R.id.btnNavWallet) startCamera()
-        }
-
-        binding.btnFlash.setOnClickListener {
-            flashMode = when (flashMode) {
-                ImageCapture.FLASH_MODE_OFF -> ImageCapture.FLASH_MODE_ON
-                ImageCapture.FLASH_MODE_ON -> ImageCapture.FLASH_MODE_AUTO
-                else -> ImageCapture.FLASH_MODE_OFF
-            }
-            updateFlashIcon()
-            imageCapture?.flashMode = flashMode
-        }
-
-        binding.btnVoice.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 20)
-            } else {
-                showVoiceInputDialog()
-            }
-        }
-
-        setupZoomControls()
-        cameraExecutor = Executors.newSingleThreadExecutor()
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
     }
 
+    /**
+     * Hiển thị BottomSheet ghi âm và xử lý nhận diện giọng nói tiếng Việt
+     */
     private fun showVoiceInputDialog() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            Toast.makeText(this, "Thiết bị không hỗ trợ nhận diện giọng nói. Vui lòng cài đặt ứng dụng Google.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Thiết bị không hỗ trợ nhận diện giọng nói.", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -185,45 +169,14 @@ class MainActivity : AppCompatActivity() {
 
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN") // Nhận diện tiếng Việt
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-            putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)
-        }
-
-        // Explicitly try to use Google recognition service for best stability
-        speechRecognizer?.destroy()
-        speechRecognizer = try {
-            SpeechRecognizer.createSpeechRecognizer(this, android.content.ComponentName.unflattenFromString("com.google.android.googlequicksearchbox/com.google.android.voicesearch.service.SpeechRecognitionService"))
-        } catch (e: Exception) {
-            SpeechRecognizer.createSpeechRecognizer(this)
         }
 
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {
-                tvStatus.text = "PiggyBite đang nghe..."
-            }
-            override fun onBeginningOfSpeech() {}
-            override fun onRmsChanged(rmsdB: Float) {}
-            override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {
-                tvStatus.text = "Đang xử lý dữ liệu..."
-            }
-            override fun onError(error: Int) {
-                val message = when (error) {
-                    SpeechRecognizer.ERROR_AUDIO -> "Lỗi âm thanh. Hãy thử lại."
-                    SpeechRecognizer.ERROR_CLIENT -> "Lỗi kết nối. Hãy kiểm tra mạng."
-                    SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Cần quyền Micro trong cài đặt."
-                    SpeechRecognizer.ERROR_NETWORK -> "Lỗi mạng Internet."
-                    SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Kết nối mạng quá chậm."
-                    SpeechRecognizer.ERROR_NO_MATCH -> "Không nghe rõ, hãy thử lại."
-                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Hệ thống đang bận."
-                    SpeechRecognizer.ERROR_SERVER -> "Lỗi máy chủ nhận diện."
-                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Bạn chưa nói gì cả."
-                    else -> "Lỗi hệ thống ($error)"
-                }
-                tvStatus.text = message
-                Log.e("Voice", "Error: $error - $message")
-            }
+            override fun onReadyForSpeech(params: Bundle?) { tvStatus.text = "PiggyBite đang nghe..." }
+            override fun onEndOfSpeech() { tvStatus.text = "Đang xử lý dữ liệu..." }
+            override fun onError(error: Int) { tvStatus.text = "Không nghe rõ, hãy thử lại." }
             override fun onResults(results: Bundle?) {
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (!matches.isNullOrEmpty()) {
@@ -232,6 +185,7 @@ class MainActivity : AppCompatActivity() {
                     view.postDelayed({
                         if (dialog.isShowing) {
                             dialog.dismiss()
+                            // Mở màn hình Thêm giao dịch với văn bản đã nói
                             val addIntent = Intent(this@MainActivity, AddTransactionActivity::class.java)
                             addIntent.putExtra("EXTRA_VOICE_TEXT", text)
                             startActivity(addIntent)
@@ -241,19 +195,40 @@ class MainActivity : AppCompatActivity() {
             }
             override fun onPartialResults(partialResults: Bundle?) {
                 val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (!matches.isNullOrEmpty()) {
-                    tvLiveText.text = matches[0]
-                }
+                if (!matches.isNullOrEmpty()) tvLiveText.text = matches[0]
             }
+            override fun onBeginningOfSpeech() {}
+            override fun onRmsChanged(rmsdB: Float) {}
+            override fun onBufferReceived(buffer: ByteArray?) {}
             override fun onEvent(eventType: Int, params: Bundle?) {}
         })
 
         speechRecognizer?.startListening(intent)
         dialog.show()
+        dialog.setOnDismissListener { speechRecognizer?.stopListening() }
+    }
 
-        dialog.setOnDismissListener {
-            speechRecognizer?.stopListening()
+    private fun checkAudioPermissionAndShowVoiceDialog() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 20)
+        } else {
+            showVoiceInputDialog()
         }
+    }
+
+    private fun flipCamera() {
+        cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
+        if (currentActiveNavId == R.id.btnNavWallet) startCamera()
+    }
+
+    private fun toggleFlash() {
+        flashMode = when (flashMode) {
+            ImageCapture.FLASH_MODE_OFF -> ImageCapture.FLASH_MODE_ON
+            ImageCapture.FLASH_MODE_ON -> ImageCapture.FLASH_MODE_AUTO
+            else -> ImageCapture.FLASH_MODE_OFF
+        }
+        updateFlashIcon()
+        imageCapture?.flashMode = flashMode
     }
 
     private fun setupZoomControls() {
@@ -264,7 +239,6 @@ class MainActivity : AppCompatActivity() {
             binding.tvZoom2.setTextColor(if (zoom == 2.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
             binding.tvZoom5.setTextColor(if (zoom == 5.0f) Color.WHITE else ContextCompat.getColor(this, R.color.text_hint))
         }
-
         binding.tvZoom1.setOnClickListener { updateZoomUI(1.0f) }
         binding.tvZoom2.setOnClickListener { updateZoomUI(2.0f) }
         binding.tvZoom5.setOnClickListener { updateZoomUI(5.0f) }
@@ -278,53 +252,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Cài đặt logic chuyển đổi giữa các màn hình chính (Navigation)
+     */
     private fun setupNavigation() {
-        binding.btnNavCalendar.setOnClickListener {
-            if (currentActiveNavId != R.id.btnNavCalendar) {
-                stopCamera()
-                supportFragmentManager.beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-                    .replace(R.id.fragmentContainer, CalendarFragment())
-                    .commit()
-                currentActiveNavId = R.id.btnNavCalendar
-                updateNavUI(currentActiveNavId)
-                binding.homeContent.visibility = View.GONE
-                binding.fragmentContainer.visibility = View.VISIBLE
-            }
-        }
-
-        binding.btnNavHome.setOnClickListener {
-            if (currentActiveNavId != R.id.btnNavHome) {
-                stopCamera()
-                val animIn = if (currentActiveNavId == R.id.btnNavCalendar) R.anim.slide_in_right else R.anim.slide_in_left
-                val animOut = if (currentActiveNavId == R.id.btnNavCalendar) R.anim.slide_out_left else R.anim.slide_out_right
-                
-                supportFragmentManager.beginTransaction()
-                    .setCustomAnimations(animIn, animOut)
-                    .replace(R.id.fragmentContainer, WalletFragment())
-                    .commit()
-                
-                currentActiveNavId = R.id.btnNavHome
-                updateNavUI(currentActiveNavId)
-                binding.homeContent.visibility = View.GONE
-                binding.fragmentContainer.visibility = View.VISIBLE
-            }
-        }
-
-        binding.btnNavWallet.setOnClickListener {
+        binding.btnNavCalendar.setOnClickListener { switchFragment(R.id.btnNavCalendar, CalendarFragment()) }
+        binding.btnNavHome.setOnClickListener { switchFragment(R.id.btnNavHome, WalletFragment()) }
+        binding.btnNavWallet.setOnClickListener { 
             if (currentActiveNavId != R.id.btnNavWallet) {
-                binding.homeContent.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.slide_in_right))
-                binding.fragmentContainer.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.slide_out_left))
-                
+                stopCamera()
                 binding.homeContent.visibility = View.VISIBLE
                 binding.fragmentContainer.visibility = View.GONE
-                
                 currentActiveNavId = R.id.btnNavWallet
                 updateNavUI(currentActiveNavId)
-                
                 if (allPermissionsGranted()) startCamera()
                 else ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 10)
             }
+        }
+    }
+
+    private fun switchFragment(id: Int, fragment: androidx.fragment.app.Fragment) {
+        if (currentActiveNavId != id) {
+            stopCamera()
+            supportFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                .replace(R.id.fragmentContainer, fragment)
+                .commit()
+            currentActiveNavId = id
+            updateNavUI(currentActiveNavId)
+            binding.homeContent.visibility = View.GONE
+            binding.fragmentContainer.visibility = View.VISIBLE
         }
     }
 
@@ -338,6 +295,9 @@ class MainActivity : AppCompatActivity() {
         binding.btnNavWallet.background = if (activeId == R.id.btnNavWallet) ContextCompat.getDrawable(this, R.drawable.bg_nav_active) else null
     }
 
+    /**
+     * Khởi tạo luồng Camera bằng CameraX
+     */
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
@@ -355,10 +315,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopCamera() {
-        ProcessCameraProvider.getInstance(this).get().unbindAll()
+        try {
+            ProcessCameraProvider.getInstance(this).get().unbindAll()
+        } catch (e: Exception) {}
         camera = null
     }
 
+    /**
+     * Chụp ảnh hóa đơn và gửi đi nhận diện văn bản (OCR)
+     */
     private fun takePhotoAndRecognizeText() {
         val imageCapture = imageCapture ?: return
         val photoFile = java.io.File(externalCacheDir, "ocr_image_${System.currentTimeMillis()}.jpg")
@@ -368,17 +333,15 @@ class MainActivity : AppCompatActivity() {
             outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e("OCR", "Photo capture failed: ${exc.message}", exc)
-                }
-
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    recognizeText(photoFile)
-                }
+                override fun onError(exc: ImageCaptureException) { Log.e("OCR", "Capture failed: ${exc.message}") }
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) { recognizeText(photoFile) }
             }
         )
     }
 
+    /**
+     * Sử dụng Google ML Kit Text Recognition để trích xuất chữ từ ảnh hóa đơn
+     */
     private fun recognizeText(photoFile: java.io.File) {
         try {
             val image = InputImage.fromFilePath(this, android.net.Uri.fromFile(photoFile))
@@ -386,19 +349,17 @@ class MainActivity : AppCompatActivity() {
 
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
+                    // Chuyển sang màn hình Thêm giao dịch kèm theo văn bản đã quét được
                     val intent = Intent(this, AddTransactionActivity::class.java)
-                    intent.putExtra("EXTRA_FROM_CAPTURE", true)
                     intent.putExtra("EXTRA_IMAGE_PATH", photoFile.absolutePath)
                     intent.putExtra("EXTRA_OCR_TEXT", visionText.text)
                     startActivity(intent)
                 }
                 .addOnFailureListener { e ->
-                    Log.e("OCR", "Text recognition failed", e)
-                    Toast.makeText(this, "Không thể nhận diện văn bản: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Không nhận diện được hóa đơn.", Toast.LENGTH_SHORT).show()
                 }
         } catch (e: Exception) {
             Log.e("OCR", "Error opening image file", e)
-            Toast.makeText(this, "Lỗi khi mở ảnh: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -412,24 +373,13 @@ class MainActivity : AppCompatActivity() {
         speechRecognizer?.destroy()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 10 && allPermissionsGranted()) startCamera()
-        if (requestCode == 20 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) showVoiceInputDialog()
-    }
-
     override fun onPause() {
         super.onPause()
+        // Lưu lại Tab hiện tại khi ứng dụng vào trạng thái Pause
         getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().putInt("last_nav_id", currentActiveNavId).apply()
     }
 
-    override fun onResume() {
-        super.onResume()
-        updateNavUI(currentActiveNavId)
-    }
-
     companion object {
-        private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
 }

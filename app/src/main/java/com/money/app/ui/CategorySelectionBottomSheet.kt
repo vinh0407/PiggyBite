@@ -22,21 +22,31 @@ import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * BottomSheetDialogFragment: Hộp thoại lựa chọn hạng mục giao dịch (Thu nhập/Chi tiêu).
+ * Tính năng chính:
+ * - Hiển thị danh sách hạng mục phân loại theo nhóm (Cố định, Thiết yếu, Giải trí, Giáo dục...).
+ * - Hiển thị tổng số tiền đã chi tiêu cho từng nhóm trong tháng hiện tại ngay trên tiêu đề nhóm.
+ * - Cho phép người dùng tạo thêm hạng mục tùy chỉnh kèm Emoji.
+ * - Hỗ trợ chọn nhiều hạng mục cùng lúc.
+ */
 class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
 
+    // Giao diện để truyền hạng mục đã chọn về Activity/Fragment gọi nó
     interface OnCategorySelectedListener {
         fun onCategorySelected(categories: List<String>)
     }
 
     private var listener: OnCategorySelectedListener? = null
-    private var isExpense: Boolean = true
-    private var initialSelectedCategories: List<String>? = null
+    private var isExpense: Boolean = true // Chế độ Chi tiêu hoặc Thu nhập
+    private var initialSelectedCategories: List<String>? = null // Các hạng mục đã chọn sẵn
 
     private lateinit var groupOther: ChipGroup
     private lateinit var headerOther: View
     private lateinit var layoutExpense: View
     private lateinit var layoutIncome: View
     
+    // Các tiêu đề nhóm để hiển thị tổng tiền
     private lateinit var headerFixed: TextView
     private lateinit var headerEssential: TextView
     private lateinit var headerFun: TextView
@@ -75,12 +85,14 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Nhận tham số truyền vào
         isExpense = arguments?.getBoolean("isExpense") ?: true
         initialSelectedCategories = arguments?.getStringArrayList("selected")
 
         tvTitle = view.findViewById(R.id.tvTitle)
         tvTitle.text = if (isExpense) "Danh mục chi tiêu" else "Danh mục thu nhập"
 
+        // Hiển thị layout tương ứng với chế độ Thu nhập/Chi tiêu
         layoutExpense = view.findViewById(R.id.layoutExpense)
         layoutIncome = view.findViewById(R.id.layoutIncome)
         layoutExpense.visibility = if (isExpense) View.VISIBLE else View.GONE
@@ -103,11 +115,12 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
         val btnDone: ImageButton = view.findViewById(R.id.btnDone)
         val btnCreateNew: Button = view.findViewById(R.id.btnCreateNew)
 
-        loadCustomCategories()
-        setupExistingCategoryLongClicks()
-        updateMonthDisplay()
-        calculateAndDisplayTotals()
+        loadCustomCategories() // Tải các hạng mục do người dùng tự tạo
+        setupExistingCategoryLongClicks() // Nhấn giữ để xóa hạng mục
+        updateMonthDisplay() // Cập nhật nhãn tháng
+        calculateAndDisplayTotals() // Tính toán tổng tiền theo nhóm
         
+        // Khôi phục trạng thái các Chip đã chọn trước đó
         initialSelectedCategories?.let { restoreSelection(it) }
 
         btnClose.setOnClickListener { dismiss() }
@@ -120,6 +133,7 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
 
         btnCreateNew.setOnClickListener { showCreateCategoryDialog() }
 
+        // Cho phép chuyển đổi tháng để xem báo cáo nhanh ngay trong hộp thoại này
         btnPrevMonth.setOnClickListener {
             displayedMonth.add(Calendar.MONTH, -1)
             updateMonthDisplay()
@@ -138,6 +152,9 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
         tvCurrentMonth.text = sdf.format(displayedMonth.time)
     }
 
+    /**
+     * Tự động duyệt qua tất cả các Chip có sẵn trong Layout để gán sự kiện nhấn giữ
+     */
     private fun setupExistingCategoryLongClicks() {
         fun findAndSetup(view: View) {
             if (view is Chip) {
@@ -152,55 +169,46 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
         findAndSetup(requireView())
     }
 
+    /**
+     * Truy vấn Database Room để tính tổng số tiền của từng nhóm hạng mục trong tháng
+     */
     private fun calculateAndDisplayTotals() {
         viewLifecycleOwner.lifecycleScope.launch {
             val context = context ?: return@launch
             val db = AppDatabase.getDatabase(context)
             
+            // Xác định khoảng thời gian của tháng đang hiển thị
             val calendar = displayedMonth.clone() as Calendar
             calendar.set(Calendar.DAY_OF_MONTH, 1)
-            calendar.set(Calendar.HOUR_OF_DAY, 0)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(Calendar.MINUTE, 0); calendar.set(Calendar.SECOND, 0)
             val startTime = calendar.timeInMillis
             
-            calendar.add(Calendar.MONTH, 1)
-            calendar.add(Calendar.SECOND, -1)
+            calendar.add(Calendar.MONTH, 1); calendar.add(Calendar.SECOND, -1)
             val endTime = calendar.timeInMillis
 
             val transactions = db.transactionDao().getTransactionsInTimeRange(startTime, endTime)
             val filteredTransactions = transactions.filter { it.isExpense == isExpense }
             
+            // Cập nhật nhãn tiêu đề kèm tổng tiền
             if (isExpense) {
-                val fixedTotal = calculateGroupTotal(filteredTransactions, listOf("🏠 Thuê nhà", "❤️ Hiếu hỉ", "Cố định"))
+                val fixedTotal = calculateGroupTotal(filteredTransactions, listOf("🏠 Thuê nhà", "❤️ Hiếu hỉ"))
                 headerFixed.text = "Cố định (${df.format(fixedTotal)}đ)"
 
-                val essentialTotal = calculateGroupTotal(filteredTransactions, listOf("☕ Cafe", "🥐 Ăn uống", "🥦 Đi chợ", "💡 Điện/ Nước", "🛵 Di chuyển", "⛽ Xăng", "Nhu cầu thiết yếu"))
+                val essentialTotal = calculateGroupTotal(filteredTransactions, listOf("☕ Cafe", "🥐 Ăn uống", "🥦 Đi chợ", "💡 Điện/ Nước", "🛵 Di chuyển", "⛽ Xăng"))
                 headerEssential.text = "Nhu cầu thiết yếu (${df.format(essentialTotal)}đ)"
 
-                val funTotal = calculateGroupTotal(filteredTransactions, listOf("🛍️ Mua sắm", "🤪 Shoppee/ Tiktok", "🛫 Du lịch", "Hưởng thụ và giải trí"))
+                val funTotal = calculateGroupTotal(filteredTransactions, listOf("🛍️ Mua sắm", "🤪 Shoppee/ Tiktok", "🛫 Du lịch"))
                 headerFun.text = "Hưởng thụ & Giải trí (${df.format(funTotal)}đ)"
 
-                val educationTotal = calculateGroupTotal(filteredTransactions, listOf("📚 Học tập", "Giáo dục"))
+                val educationTotal = calculateGroupTotal(filteredTransactions, listOf("📚 Học tập"))
                 headerEducation.text = "Giáo dục (${df.format(educationTotal)}đ)"
-
-                val otherTotal = calculateGroupTotal(filteredTransactions, listOf("❓ Khác", "Khác"))
-                (headerOther as TextView).text = "Khác (${df.format(otherTotal)}đ)"
             } else {
-                val incomeFixed = calculateGroupTotal(filteredTransactions, listOf("💵 Lương", "🤝 Cho thuê nhà", "Cố định"))
+                val incomeFixed = calculateGroupTotal(filteredTransactions, listOf("💵 Lương", "🤝 Cho thuê nhà"))
                 headerIncomeFixed.text = "Cố định (${df.format(incomeFixed)}đ)"
 
-                val incomeFlex = calculateGroupTotal(filteredTransactions, listOf("💹 Đầu tư", "💻 Freelance", "🌹 Tiếp thị liên kết", "💰 Thu nhập khác", "Linh hoạt"))
+                val incomeFlex = calculateGroupTotal(filteredTransactions, listOf("💹 Đầu tư", "💻 Freelance", "🌹 Tiếp thị liên kết", "💰 Thu nhập khác"))
                 headerIncomeFlex.text = "Linh hoạt (${df.format(incomeFlex)}đ)"
-
-                val otherTotal = calculateGroupTotal(filteredTransactions, listOf("❓ Khác", "Khác"))
-                (headerOther as TextView).text = "Khác (${df.format(otherTotal)}đ)"
             }
-            
-            headerOther.visibility = View.VISIBLE
-            val customCategories = requireContext().getSharedPreferences("custom_categories", Context.MODE_PRIVATE)
-                .getStringSet("categories", emptySet()) ?: emptySet()
-            // Custom categories can be further combined or kept as separate logic if needed.
         }
     }
 
@@ -215,6 +223,9 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
         return total
     }
 
+    /**
+     * Tải các hạng mục tùy chỉnh từ SharedPreferences
+     */
     private fun loadCustomCategories() {
         val prefs = requireContext().getSharedPreferences("custom_categories", Context.MODE_PRIVATE)
         val categories = prefs.getStringSet("categories", emptySet()) ?: emptySet()
@@ -256,15 +267,12 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun showDeleteConfirmation(category: String, isBuiltIn: Boolean, view: View? = null) {
-        AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_DayNight_Dialog_Alert)
+        AlertDialog.Builder(requireContext())
             .setTitle("Xóa danh mục")
-            .setMessage("Bạn có chắc chắn muốn xóa danh mục '$category'?")
+            .setMessage("Bạn có chắc muốn ẩn/xóa '$category'?")
             .setPositiveButton("Xóa") { _, _ -> 
-                if (isBuiltIn) {
-                    view?.visibility = View.GONE
-                } else {
-                    deleteCustomCategory(category)
-                }
+                if (isBuiltIn) view?.visibility = View.GONE
+                else deleteCustomCategory(category)
             }
             .setNegativeButton("Hủy", null)
             .show()
@@ -293,6 +301,9 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
         return selected
     }
 
+    /**
+     * Hiển thị hộp thoại tạo hạng mục mới kèm bộ chọn Emoji
+     */
     private fun showCreateCategoryDialog() {
         val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_create_category, null)
@@ -344,6 +355,4 @@ class CategorySelectionBottomSheet : BottomSheetDialogFragment() {
         }
         dialog.show()
     }
-    
-    override fun getTheme(): Int = R.style.CustomBottomSheetDialog
 }

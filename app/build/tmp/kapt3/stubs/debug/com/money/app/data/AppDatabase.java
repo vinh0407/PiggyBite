@@ -1,5 +1,10 @@
 package com.money.app.data;
 
+/**
+ * Lớp cơ sở dữ liệu Room chính của ứng dụng.
+ * Quản lý các bảng (Entities): Giao dịch (Transaction), Quỹ (Fund), và Tin nhắn Chat (ChatMessage).
+ * Sử dụng TypeConverters để chuyển đổi các kiểu dữ liệu phức tạp (như Map) sang dạng Room có thể lưu trữ.
+ */
 @kotlin.Metadata(mv = {2, 2, 0}, k = 1, xi = 48, d1 = {"\u0000 \n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\b\'\u0018\u0000 \n2\u00020\u0001:\u0001\nB\u0007\u00a2\u0006\u0004\b\u0002\u0010\u0003J\b\u0010\u0004\u001a\u00020\u0005H&J\b\u0010\u0006\u001a\u00020\u0007H&J\b\u0010\b\u001a\u00020\tH&\u00a8\u0006\u000b"}, d2 = {"Lcom/money/app/data/AppDatabase;", "Landroidx/room/RoomDatabase;", "<init>", "()V", "transactionDao", "Lcom/money/app/data/TransactionDao;", "fundDao", "Lcom/money/app/data/FundDao;", "chatMessageDao", "Lcom/money/app/data/ChatMessageDao;", "Companion", "app_debug"})
 @androidx.room.Database(entities = {com.money.app.data.Transaction.class, com.money.app.data.Fund.class, com.money.app.data.ChatMessage.class}, version = 15, exportSchema = false)
 @androidx.room.TypeConverters(value = {com.money.app.data.Converters.class})
@@ -30,6 +35,9 @@ public abstract class AppDatabase extends androidx.room.RoomDatabase {
             super();
         }
         
+        /**
+         * Singleton pattern: Đảm bảo chỉ có một instance của Database duy nhất trong toàn bộ vòng đời ứng dụng.
+         */
         @org.jetbrains.annotations.NotNull()
         public final com.money.app.data.AppDatabase getDatabase(@org.jetbrains.annotations.NotNull()
         android.content.Context context) {

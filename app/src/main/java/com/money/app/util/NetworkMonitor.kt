@@ -6,6 +6,10 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.widget.Toast
 
+/**
+ * Giám sát Mạng (Network Monitor): Lắng nghe sự thay đổi trạng thái kết nối Internet của thiết bị.
+ * Cảnh báo cho người dùng khi mất mạng để họ biết rằng dữ liệu sẽ không được đồng bộ lên Firebase lúc đó.
+ */
 class NetworkMonitor : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -13,10 +17,8 @@ class NetworkMonitor : BroadcastReceiver() {
         val isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting
         
         if (!isConnected) {
+            // Hiển thị thông báo khi mất kết nối
             Toast.makeText(context, "Mất kết nối Internet. PiggyBite đang ở chế độ ngoại tuyến.", Toast.LENGTH_LONG).show()
-        } else {
-            // Optional: notify when back online
-            // Toast.makeText(context, "Đã kết nối lại Internet. Dữ liệu sẽ được đồng bộ.", Toast.LENGTH_SHORT).show()
         }
     }
 }

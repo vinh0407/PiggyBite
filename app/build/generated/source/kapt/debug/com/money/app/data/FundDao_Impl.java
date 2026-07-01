@@ -157,34 +157,34 @@ public final class FundDao_Impl implements FundDao {
   }
 
   @Override
-  public Object insert(final Fund fund, final Continuation<? super Unit> arg1) {
+  public Object insert(final Fund fund, final Continuation<? super Unit> $completion) {
     if (fund == null) throw new NullPointerException();
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       __insertAdapterOfFund.insert(_connection, fund);
       return Unit.INSTANCE;
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object delete(final Fund fund, final Continuation<? super Unit> arg1) {
+  public Object delete(final Fund fund, final Continuation<? super Unit> $completion) {
     if (fund == null) throw new NullPointerException();
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       __deleteAdapterOfFund.handle(_connection, fund);
       return Unit.INSTANCE;
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object update(final Fund fund, final Continuation<? super Unit> arg1) {
+  public Object update(final Fund fund, final Continuation<? super Unit> $completion) {
     if (fund == null) throw new NullPointerException();
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       __updateAdapterOfFund.handle(_connection, fund);
       return Unit.INSTANCE;
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getAllFunds(final Continuation<? super List<Fund>> arg0) {
+  public Object getAllFunds(final Continuation<? super List<Fund>> $completion) {
     final String _sql = "SELECT * FROM funds ORDER BY isPinned DESC, createdDate DESC";
     return DBUtil.performSuspending(__db, true, false, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -270,11 +270,11 @@ public final class FundDao_Impl implements FundDao {
       } finally {
         _stmt.close();
       }
-    }, arg0);
+    }, $completion);
   }
 
   @Override
-  public Object clearAll(final Continuation<? super Unit> arg0) {
+  public Object clearAll(final Continuation<? super Unit> $completion) {
     final String _sql = "DELETE FROM funds";
     return DBUtil.performSuspending(__db, false, true, (_connection) -> {
       final SQLiteStatement _stmt = _connection.prepare(_sql);
@@ -284,7 +284,7 @@ public final class FundDao_Impl implements FundDao {
       } finally {
         _stmt.close();
       }
-    }, arg0);
+    }, $completion);
   }
 
   @NonNull

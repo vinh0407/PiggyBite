@@ -1,5 +1,12 @@
 package com.money.app.ui;
 
+/**
+ * Fragment Lịch (Calendar): Hiển thị giao dịch dưới dạng lịch biểu hàng tháng.
+ * Tính năng chính:
+ * - Xem tổng quan thu/chi theo từng ngày trên lưới lịch.
+ * - Xem chi tiết danh sách giao dịch của một ngày cụ thể khi nhấn chọn.
+ * - Xuất và Nhập dữ liệu giao dịch dưới định dạng CSV (Sao lưu thủ công).
+ */
 @kotlin.Metadata(mv = {2, 2, 0}, k = 1, xi = 48, d1 = {"\u0000v\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0011\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0002\b\u0004\u0018\u00002\u00020\u0001:\u0003345B\u0007\u00a2\u0006\u0004\b\u0002\u0010\u0003J&\u0010\u001a\u001a\u0004\u0018\u00010\u001b2\u0006\u0010\u001c\u001a\u00020\u001d2\b\u0010\u001e\u001a\u0004\u0018\u00010\u001f2\b\u0010 \u001a\u0004\u0018\u00010!H\u0016J\u001a\u0010\"\u001a\u00020#2\u0006\u0010$\u001a\u00020\u001b2\b\u0010 \u001a\u0004\u0018\u00010!H\u0016J\b\u0010%\u001a\u00020#H\u0016J\b\u0010&\u001a\u00020#H\u0002J\u0016\u0010\'\u001a\b\u0012\u0004\u0012\u00020(0\u000f2\u0006\u0010)\u001a\u00020\u0012H\u0002J\b\u0010*\u001a\u00020#H\u0002J\u0010\u0010+\u001a\u00020#2\u0006\u0010,\u001a\u00020-H\u0002J\u0010\u0010.\u001a\u00020#2\u0006\u0010,\u001a\u00020-H\u0002J\b\u0010/\u001a\u00020#H\u0002J\u0010\u00100\u001a\u00020#2\u0006\u00101\u001a\u000202H\u0002R\u000e\u0010\u0004\u001a\u00020\u0005X\u0082.\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0006\u001a\u00020\u0005X\u0082.\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0007\u001a\u00020\bX\u0082.\u00a2\u0006\u0002\n\u0000R\u000e\u0010\t\u001a\u00020\bX\u0082.\u00a2\u0006\u0002\n\u0000R\u000e\u0010\n\u001a\u00020\bX\u0082.\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u000b\u001a\u00020\bX\u0082.\u00a2\u0006\u0002\n\u0000R\u000e\u0010\f\u001a\u00020\bX\u0082.\u00a2\u0006\u0002\n\u0000R\u000e\u0010\r\u001a\u00020\bX\u0082.\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u000e\u001a\b\u0012\u0004\u0012\u00020\u00100\u000fX\u0082\u000e\u00a2\u0006\u0002\n\u0000R\u0016\u0010\u0011\u001a\n \u0013*\u0004\u0018\u00010\u00120\u0012X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0016\u0010\u0014\u001a\n \u0013*\u0004\u0018\u00010\u00120\u0012X\u0082\u000e\u00a2\u0006\u0002\n\u0000R\u001c\u0010\u0015\u001a\u0010\u0012\f\u0012\n \u0013*\u0004\u0018\u00010\u00170\u00170\u0016X\u0082\u0004\u00a2\u0006\u0002\n\u0000R(\u0010\u0018\u001a\u001c\u0012\u0018\u0012\u0016\u0012\u0004\u0012\u00020\u0017 \u0013*\n\u0012\u0004\u0012\u00020\u0017\u0018\u00010\u00190\u00190\u0016X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u00066"}, d2 = {"Lcom/money/app/ui/CalendarFragment;", "Landroidx/fragment/app/Fragment;", "<init>", "()V", "rvDailyList", "Landroidx/recyclerview/widget/RecyclerView;", "rvCalendarGrid", "tvIncVal", "Landroid/widget/TextView;", "tvExpVal", "tvBalVal", "tvCalendarMonth", "tvSelectedDateLabel", "tvDailyCount", "allTransactions", "", "Lcom/money/app/data/Transaction;", "displayedMonth", "Ljava/util/Calendar;", "kotlin.jvm.PlatformType", "selectedDate", "createDocument", "Landroidx/activity/result/ActivityResultLauncher;", "", "openDocument", "", "onCreateView", "Landroid/view/View;", "inflater", "Landroid/view/LayoutInflater;", "container", "Landroid/view/ViewGroup;", "savedInstanceState", "Landroid/os/Bundle;", "onViewCreated", "", "view", "onResume", "updateCalendar", "generateCalendarDays", "Lcom/money/app/ui/CalendarFragment$CalendarDay;", "month", "showExportImportDialog", "exportToCsv", "uri", "Landroid/net/Uri;", "importFromCsv", "loadMonthData", "showDailyTransactions", "date", "Ljava/util/Date;", "CalendarDay", "CalendarGridAdapter", "DailyAdapter", "app_debug"})
 public final class CalendarFragment extends androidx.fragment.app.Fragment {
     private androidx.recyclerview.widget.RecyclerView rvDailyList;
@@ -42,25 +49,46 @@ public final class CalendarFragment extends androidx.fragment.app.Fragment {
     public void onResume() {
     }
     
+    /**
+     * Cập nhật giao diện lưới lịch và các thông số tóm tắt của tháng đang xem
+     */
     private final void updateCalendar() {
     }
     
+    /**
+     * Thuật toán tạo danh sách các ngày để hiển thị lên lưới 7x6 (42 ô)
+     */
     private final java.util.List<com.money.app.ui.CalendarFragment.CalendarDay> generateCalendarDays(java.util.Calendar month) {
         return null;
     }
     
+    /**
+     * Hiển thị menu chọn Xuất hoặc Nhập file CSV
+     */
     private final void showExportImportDialog() {
     }
     
+    /**
+     * Logic xuất toàn bộ giao dịch ra file CSV
+     */
     private final void exportToCsv(android.net.Uri uri) {
     }
     
+    /**
+     * Logic nhập dữ liệu từ file CSV vào ứng dụng và đồng bộ lên Firebase
+     */
     private final void importFromCsv(android.net.Uri uri) {
     }
     
+    /**
+     * Tải dữ liệu giao dịch từ Database cục bộ
+     */
     private final void loadMonthData() {
     }
     
+    /**
+     * Cập nhật danh sách giao dịch bên dưới lịch cho ngày đang chọn
+     */
     private final void showDailyTransactions(java.util.Date date) {
     }
     
@@ -154,6 +182,9 @@ public final class CalendarFragment extends androidx.fragment.app.Fragment {
         }
     }
     
+    /**
+     * Adapter cho lưới lịch
+     */
     @kotlin.Metadata(mv = {2, 2, 0}, k = 1, xi = 48, d1 = {"\u00002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0005\b\u0086\u0004\u0018\u00002\u0010\u0012\f\u0012\n0\u0002R\u00060\u0000R\u00020\u00030\u0001:\u0001\u0013B\u0015\u0012\f\u0010\u0004\u001a\b\u0012\u0004\u0012\u00020\u00060\u0005\u00a2\u0006\u0004\b\u0007\u0010\bJ \u0010\t\u001a\n0\u0002R\u00060\u0000R\u00020\u00032\u0006\u0010\n\u001a\u00020\u000b2\u0006\u0010\f\u001a\u00020\rH\u0016J \u0010\u000e\u001a\u00020\u000f2\u000e\u0010\u0010\u001a\n0\u0002R\u00060\u0000R\u00020\u00032\u0006\u0010\u0011\u001a\u00020\rH\u0016J\b\u0010\u0012\u001a\u00020\rH\u0016R\u0014\u0010\u0004\u001a\b\u0012\u0004\u0012\u00020\u00060\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006\u0014"}, d2 = {"Lcom/money/app/ui/CalendarFragment$CalendarGridAdapter;", "Landroidx/recyclerview/widget/RecyclerView$Adapter;", "Lcom/money/app/ui/CalendarFragment$CalendarGridAdapter$ViewHolder;", "Lcom/money/app/ui/CalendarFragment;", "days", "", "Lcom/money/app/ui/CalendarFragment$CalendarDay;", "<init>", "(Lcom/money/app/ui/CalendarFragment;Ljava/util/List;)V", "onCreateViewHolder", "parent", "Landroid/view/ViewGroup;", "viewType", "", "onBindViewHolder", "", "holder", "position", "getItemCount", "ViewHolder", "app_debug"})
     public final class CalendarGridAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<com.money.app.ui.CalendarFragment.CalendarGridAdapter.ViewHolder> {
         @org.jetbrains.annotations.NotNull()
@@ -206,6 +237,9 @@ public final class CalendarFragment extends androidx.fragment.app.Fragment {
         }
     }
     
+    /**
+     * Adapter hiển thị từng dòng giao dịch trong ngày
+     */
     @kotlin.Metadata(mv = {2, 2, 0}, k = 1, xi = 48, d1 = {"\u00002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0005\b\u0086\u0004\u0018\u00002\u0010\u0012\f\u0012\n0\u0002R\u00060\u0000R\u00020\u00030\u0001:\u0001\u0013B\u0015\u0012\f\u0010\u0004\u001a\b\u0012\u0004\u0012\u00020\u00060\u0005\u00a2\u0006\u0004\b\u0007\u0010\bJ \u0010\t\u001a\n0\u0002R\u00060\u0000R\u00020\u00032\u0006\u0010\n\u001a\u00020\u000b2\u0006\u0010\f\u001a\u00020\rH\u0016J \u0010\u000e\u001a\u00020\u000f2\u000e\u0010\u0010\u001a\n0\u0002R\u00060\u0000R\u00020\u00032\u0006\u0010\u0011\u001a\u00020\rH\u0016J\b\u0010\u0012\u001a\u00020\rH\u0016R\u0014\u0010\u0004\u001a\b\u0012\u0004\u0012\u00020\u00060\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006\u0014"}, d2 = {"Lcom/money/app/ui/CalendarFragment$DailyAdapter;", "Landroidx/recyclerview/widget/RecyclerView$Adapter;", "Lcom/money/app/ui/CalendarFragment$DailyAdapter$ViewHolder;", "Lcom/money/app/ui/CalendarFragment;", "list", "", "Lcom/money/app/data/Transaction;", "<init>", "(Lcom/money/app/ui/CalendarFragment;Ljava/util/List;)V", "onCreateViewHolder", "parent", "Landroid/view/ViewGroup;", "viewType", "", "onBindViewHolder", "", "holder", "position", "getItemCount", "ViewHolder", "app_debug"})
     public final class DailyAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<com.money.app.ui.CalendarFragment.DailyAdapter.ViewHolder> {
         @org.jetbrains.annotations.NotNull()

@@ -80,6 +80,13 @@
     <string name="wallet_manage_funds">Quản lý Quỹ/Goals</string>
     <string name="wallet_add_fund">+ Thêm quỹ</string>
 
+    <string name="empty_analysis_title">Chưa có dữ liệu tháng này</string>
+    <string name="empty_analysis_desc">Hãy thêm giao dịch để xem phân tích</string>
+    <string name="empty_analysis_btn">Thêm giao dịch ngay</string>
+
+    <string name="empty_stats_title">Không có giao dịch nào</string>
+    <string name="empty_stats_desc">Vui lòng chọn khoảng thời gian khác hoặc thêm mới</string>
+
     <!-- AI Chat -->
     <string name="ai_assistant_title">PiggyBite AI Assistant</string>
     <string name="ai_calculating">Đang tính toán...</string>

@@ -21,12 +21,17 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Màn hình Thống kê: Cung cấp báo cáo chi tiết về thu nhập và chi tiêu.
+ * Hỗ trợ lọc theo các khoảng thời gian: Tuần, Tháng, Năm hoặc Tất cả.
+ * Hiển thị các thẻ tóm tắt và danh sách giao dịch hoặc dữ liệu được gom nhóm.
+ */
 class StatisticsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityStatisticsBinding
-    private var currentCalendar = Calendar.getInstance()
-    private var selectedTabId = R.id.rbWeek
-    private var isExpenseMode = true
+    private var currentCalendar = Calendar.getInstance() // Calendar để theo dõi khoảng thời gian hiện tại
+    private var selectedTabId = R.id.rbWeek // Tab thời gian đang chọn (mặc định là Tuần)
+    private var isExpenseMode = true // Chế độ hiển thị Chi tiêu (mặc định) hoặc Thu nhập
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,13 +40,15 @@ class StatisticsActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener { finish() }
 
-        setupSummaryCards()
+        setupSummaryCards() // Khởi tạo giao diện các thẻ tóm tắt
         
         binding.rvStatsList.layoutManager = LinearLayoutManager(this)
 
+        // Xử lý sự kiện khi thay đổi Tab thời gian (Tuần/Tháng/Năm)
         binding.rgPeriodTabs.setOnCheckedChangeListener { group, checkedId ->
             selectedTabId = checkedId
             
+            // Cập nhật giao diện của các RadioButton để làm nổi bật Tab đang chọn
             for (i in 0 until group.childCount) {
                 val rb = group.getChildAt(i) as RadioButton
                 if (rb.id == checkedId) {
@@ -55,18 +62,23 @@ class StatisticsActivity : AppCompatActivity() {
             loadData()
         }
 
+        // Xử lý sự kiện khi chuyển đổi giữa xem Chi tiêu và Thu nhập
         binding.rgModeToggle.setOnCheckedChangeListener { _, checkedId ->
             isExpenseMode = (checkedId == R.id.rbModeExpense)
             updateModeToggleUI()
             loadData()
         }
 
+        // Các nút điều hướng thời gian (Sang trái/phải để chuyển tuần/tháng/năm tiếp theo)
         binding.btnPrev.setOnClickListener { navigateDate(-1) }
         binding.btnNext.setOnClickListener { navigateDate(1) }
 
         loadData()
     }
 
+    /**
+     * Thiết lập tiêu đề và icon cho 3 thẻ tóm tắt: Chi tiêu, Thu nhập và Số dư
+     */
     private fun setupSummaryCards() {
         val expenseCard = binding.cardTotalExpense.root
         expenseCard.findViewById<TextView>(R.id.tvStatsCardLabel).text = "Tổng chi/Total Spend"
@@ -94,6 +106,9 @@ class StatisticsActivity : AppCompatActivity() {
         balanceCard.findViewById<TextView>(R.id.tvStatsCardValue).setTextColor(ContextCompat.getColor(this, R.color.primary_blue))
     }
 
+    /**
+     * Cập nhật giao diện của nút gạt Chi tiêu/Thu nhập
+     */
     private fun updateModeToggleUI() {
         if (isExpenseMode) {
             binding.rbModeExpense.setBackgroundResource(R.drawable.bg_pill_white)
@@ -114,6 +129,9 @@ class StatisticsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Thay đổi thời gian đang xem dựa trên hướng (tiến/lùi) và Tab đang chọn
+     */
     private fun navigateDate(direction: Int) {
         when (selectedTabId) {
             R.id.rbWeek -> currentCalendar.add(Calendar.WEEK_OF_YEAR, direction)
@@ -123,13 +141,17 @@ class StatisticsActivity : AppCompatActivity() {
         loadData()
     }
 
+    /**
+     * Tải dữ liệu từ database, tính toán các chỉ số tóm tắt và cập nhật RecyclerView
+     */
     private fun loadData() {
         val (startTime, endTime) = getTimeRange()
-        updateDateRangeText(startTime, endTime)
+        updateDateRangeText(startTime, endTime) // Cập nhật văn bản hiển thị khoảng ngày
 
         lifecycleScope.launch {
             val transactions = withContext(Dispatchers.IO) {
                 val db = AppDatabase.getDatabase(this@StatisticsActivity)
+                // Lấy các giao dịch nằm trong khoảng thời gian xác định
                 db.transactionDao().getTransactionsInTimeRange(startTime, endTime)
             }
             
@@ -140,33 +162,43 @@ class StatisticsActivity : AppCompatActivity() {
                 if (it.isExpense) totalExp += amt else totalInc += amt
             }
 
+            // Hiển thị dữ liệu lên các thẻ tóm tắt
             binding.cardTotalExpense.root.findViewById<TextView>(R.id.tvStatsCardValue).text = "-${AppUtils.formatCurrency(totalExp, this@StatisticsActivity)}"
             binding.cardTotalIncome.root.findViewById<TextView>(R.id.tvStatsCardValue).text = "+${AppUtils.formatCurrency(totalInc, this@StatisticsActivity)}"
             binding.cardBalance.root.findViewById<TextView>(R.id.tvStatsCardValue).text = AppUtils.formatCurrency(totalInc - totalExp, this@StatisticsActivity)
 
+            // Lọc danh sách theo chế độ Chi tiêu hoặc Thu nhập đang chọn
             val filteredList = transactions.filter { it.isExpense == isExpenseMode }
                 .sortedByDescending { it.timestamp }
             
+            binding.rvStatsList.visibility = if (filteredList.isEmpty()) View.GONE else View.VISIBLE
+            binding.layoutEmptyStats.visibility = if (filteredList.isEmpty()) View.VISIBLE else View.GONE
+
+            // Tùy theo Tab đang chọn mà hiển thị danh sách chi tiết hoặc danh sách gom nhóm (theo tuần/tháng)
             when (selectedTabId) {
                 R.id.rbMonth -> {
                     val weeklyData = withContext(Dispatchers.Default) {
-                        aggregateByWeek(filteredList)
+                        aggregateByWeek(filteredList) // Gom nhóm theo tuần
                     }
                     binding.rvStatsList.adapter = AggregateAdapter(weeklyData, "Tuần") { }
                 }
                 R.id.rbYear -> {
                     val monthlyData = withContext(Dispatchers.Default) {
-                        aggregateByMonth(filteredList, startTime)
+                        aggregateByMonth(filteredList, startTime) // Gom nhóm theo tháng
                     }
                     binding.rvStatsList.adapter = AggregateAdapter(monthlyData, "Tháng") { }
                 }
                 else -> {
+                    // Mặc định (Tuần hoặc Tất cả) hiển thị chi tiết từng giao dịch
                     binding.rvStatsList.adapter = StatsListAdapter(filteredList)
                 }
             }
         }
     }
 
+    /**
+     * Gom nhóm các giao dịch theo từng tuần trong tháng để xem báo cáo tổng quát theo tuần
+     */
     private fun aggregateByWeek(transactions: List<Transaction>): List<AggregateItem> {
         val map = mutableMapOf<Int, Pair<Double, Long>>()
         val cal = Calendar.getInstance()
@@ -185,6 +217,9 @@ class StatisticsActivity : AppCompatActivity() {
         }.sortedByDescending { it.timestamp }
     }
 
+    /**
+     * Gom nhóm các giao dịch theo từng tháng trong năm
+     */
     private fun aggregateByMonth(transactions: List<Transaction>, start: Long): List<AggregateItem> {
         val map = mutableMapOf<Int, Double>()
         val cal = Calendar.getInstance()
@@ -208,6 +243,9 @@ class StatisticsActivity : AppCompatActivity() {
         return result.sortedByDescending { it.timestamp }
     }
 
+    /**
+     * Định dạng và hiển thị văn bản khoảng thời gian đang được xem
+     */
     private fun updateDateRangeText(start: Long, end: Long) {
         if (selectedTabId == R.id.rbAll) {
             binding.tvDateRange.text = "Tất cả thời gian/All time"
@@ -227,6 +265,9 @@ class StatisticsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Tính toán thời điểm bắt đầu và kết thúc (timestamp) dựa trên lựa chọn Tab và currentCalendar
+     */
     private fun getTimeRange(): Pair<Long, Long> {
         val start = currentCalendar.clone() as Calendar
         val end = currentCalendar.clone() as Calendar
@@ -259,6 +300,9 @@ class StatisticsActivity : AppCompatActivity() {
         return Pair(start.timeInMillis, end.timeInMillis)
     }
 
+    /**
+     * Hiển thị ảnh hóa đơn ở chế độ toàn màn hình trong một Dialog
+     */
     private fun showFullImage(path: String) {
         val dialog = android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         val iv = ImageView(this)
@@ -269,8 +313,12 @@ class StatisticsActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    // Model dữ liệu cho các dòng báo cáo tổng hợp (theo tuần/tháng)
     data class AggregateItem(val label: String, val amount: Double, val timestamp: Long)
 
+    /**
+     * Adapter cho báo cáo tổng hợp (theo tuần/tháng)
+     */
     inner class AggregateAdapter(private val items: List<AggregateItem>, private val typeLabel: String, val onClick: (Long) -> Unit) : RecyclerView.Adapter<AggregateAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_stats_entry, parent, false)
@@ -292,6 +340,9 @@ class StatisticsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Adapter cho danh sách chi tiết các giao dịch
+     */
     inner class StatsListAdapter(private val list: List<Transaction>) : RecyclerView.Adapter<StatsListAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_stats_entry, parent, false)
@@ -308,6 +359,7 @@ class StatisticsActivity : AppCompatActivity() {
             val timeSdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
             holder.tvDateTime.text = timeSdf.format(Date(t.timestamp))
 
+            // Xử lý hiển thị ảnh đính kèm (nếu có)
             if (t.imagePath != null) {
                 val file = java.io.File(t.imagePath)
                 if (file.exists()) {

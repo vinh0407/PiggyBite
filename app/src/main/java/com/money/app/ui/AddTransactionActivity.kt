@@ -16,6 +16,14 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Màn hình Thêm Giao dịch: Cho phép người dùng nhập các khoản thu/chi mới.
+ * Hỗ trợ các tính năng thông minh:
+ * - Nhập liệu bằng giọng nói (Voice input)
+ * - Quét hóa đơn (OCR)
+ * - Tự động phân loại hạng mục dựa trên nội dung
+ * - Bàn phím số tùy chỉnh
+ */
 class AddTransactionActivity : AppCompatActivity() {
 
     private lateinit var tvAmount: TextView
@@ -25,14 +33,15 @@ class AddTransactionActivity : AppCompatActivity() {
     private lateinit var btnIncome: TextView
     private lateinit var btnSave: Button
     
-    private var currentRawAmount: String = "0"
-    private var isExpenseMode: Boolean = true
-    private var isFromOCR: Boolean = false
+    private var currentRawAmount: String = "0" // Lưu trữ số tiền dưới dạng chuỗi thô để xử lý bàn phím
+    private var isExpenseMode: Boolean = true // Chế độ Chi tiêu (mặc định) hoặc Thu nhập
+    private var isFromOCR: Boolean = false // Đánh dấu nếu dữ liệu đến từ tính năng quét hóa đơn
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_transaction)
 
+        // Ánh xạ các view từ layout
         tvAmount = findViewById(R.id.tvAmount)
         etDescription = findViewById(R.id.etDescription)
         cgCategories = findViewById(R.id.cgCategories)
@@ -40,27 +49,30 @@ class AddTransactionActivity : AppCompatActivity() {
         btnIncome = findViewById(R.id.btnIncome)
         btnSave = findViewById(R.id.btnSave)
 
+        // Nút đóng màn hình
         findViewById<View>(R.id.btnClose).setOnClickListener { finish() }
 
+        // Chuyển đổi giữa Chi tiêu và Thu nhập
         btnExpense.setOnClickListener { switchMode(true) }
         btnIncome.setOnClickListener { switchMode(false) }
 
-        setupKeypad()
-        updateCategories()
+        setupKeypad() // Cài đặt bàn phím số
+        updateCategories() // Hiển thị danh sách các Chip hạng mục tương ứng
         
-        // Handle voice text or OCR text
+        // Nhận dữ liệu từ Intent nếu được gọi từ tính năng Voice hoặc OCR
         val voiceText = intent.getStringExtra("EXTRA_VOICE_TEXT")
         val ocrText = intent.getStringExtra("EXTRA_OCR_TEXT")
         
         if (!voiceText.isNullOrEmpty()) {
             etDescription.setText(voiceText)
-            parseVoiceText(voiceText)
+            parseVoiceText(voiceText) // Tự động trích xuất số tiền từ giọng nói
         } else if (!ocrText.isNullOrEmpty()) {
             isFromOCR = true
             etDescription.setText("Quét từ hóa đơn")
-            parseOCRText(ocrText)
+            parseOCRText(ocrText) // Tự động trích xuất số tiền từ văn bản OCR
         }
         
+        // Lắng nghe thay đổi văn bản để tự động gợi ý hạng mục
         etDescription.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -69,16 +81,15 @@ class AddTransactionActivity : AppCompatActivity() {
             override fun afterTextChanged(s: android.text.Editable?) {}
         })
         
+        // Sự kiện lưu giao dịch
         btnSave.setOnClickListener { validateAndSave() }
     }
 
-
-
     /**
-     * Kotlin String & Logic Handling: Parses Vietnamese voice input into amount and description
+     * Logic xử lý chuỗi: Phân tích giọng nói tiếng Việt thành số tiền và mô tả.
+     * Ví dụ: "Ăn phở hai mươi lăm ngàn" -> Mô tả: "Ăn phở", Số tiền: 25000
      */
     private fun parseVoiceText(text: String) {
-        // String manipulation: lowercase, replace, trim
         val lower = text.lowercase().replace("-", " ").trim()
         val words = lower.split(" ").filter { it.isNotBlank() }
         
@@ -87,6 +98,7 @@ class AddTransactionActivity : AppCompatActivity() {
         var tempAmount = 0L
         var description = text
         
+        // Quy đổi từ tiếng Việt sang số
         fun vnToNum(word: String): Long {
             return when (word) {
                 "một" -> 1; "hai" -> 2; "ba" -> 3; "bốn" -> 4; "năm" -> 5
@@ -98,8 +110,9 @@ class AddTransactionActivity : AppCompatActivity() {
         }
 
         var amountFound = false
-        var currentMultiplier = 1000L 
+        var currentMultiplier = 1000L // Mặc định đơn vị là ngàn đồng
         
+        // Duyệt ngược từ cuối chuỗi để tìm các từ chỉ số lượng
         for (i in words.indices.reversed()) {
             val word = words[i]
             val num = word.toLongOrNull()
@@ -120,6 +133,7 @@ class AddTransactionActivity : AppCompatActivity() {
             }
         }
 
+        // Xử lý trường hợp đặc biệt "năm chục" hoặc "năm mươi"
         if (lower.endsWith("năm chục") || lower.endsWith("năm mươi")) {
             tempAmount = 50000L
             description = lower.replace("năm chục", "").replace("năm mươi", "").trim()
@@ -138,15 +152,14 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     /**
-     * Kotlin String & Number Handling: Extracts numbers from OCR text using patterns
+     * Logic trích xuất số tiền lớn nhất từ văn bản OCR (thường là tổng tiền hóa đơn)
      */
     private fun parseOCRText(text: String) {
         val lines = text.split("\n")
         var foundAmount = 0L
         lines.forEach { line ->
-            // String manipulation: Regex-like replacement to clean up numeric strings
+            // Làm sạch chuỗi: xóa dấu chấm, phẩy và ký hiệu tiền tệ
             val clean = line.replace(".", "").replace(",", "").replace("đ", "").trim()
-            // Number handling: Safe conversion from String to Long
             val num = clean.toLongOrNull()
             if (num != null && num > foundAmount) {
                 foundAmount = num
@@ -162,10 +175,14 @@ class AddTransactionActivity : AppCompatActivity() {
         autoCategorize(text)
     }
 
+    /**
+     * Tự động chọn Chip hạng mục dựa trên các từ khóa có trong mô tả
+     */
     private fun autoCategorize(desc: String) {
         val lowerDesc = desc.lowercase().trim()
         if (lowerDesc.isEmpty()) return
 
+        // Bản đồ từ khóa cho từng hạng mục
         val categoryMap = if (isExpenseMode) {
             mapOf(
                 "🏠 Thuê nhà" to listOf("trọ", "nhà", "phòng", "cọc", "điện", "nước", "khách sạn", "homestay"),
@@ -194,16 +211,19 @@ class AddTransactionActivity : AppCompatActivity() {
         
         val targetCat = foundCat ?: (if (isFromOCR) "🛍️ Mua sắm" else "❓ Khác")
         
+        // Duyệt qua các Chip để tìm và đánh dấu hạng mục phù hợp
         for (i in 0 until cgCategories.childCount) {
             val chip = cgCategories.getChildAt(i) as Chip
             if (chip.text.toString().trim() == targetCat.trim()) {
                 chip.isChecked = true
-                // Manually trigger visual selection if needed
                 break
             }
         }
     }
 
+    /**
+     * Chuyển đổi giao diện giữa chế độ Chi tiêu và Thu nhập
+     */
     private fun switchMode(isExpense: Boolean) {
         isExpenseMode = isExpense
         if (isExpense) {
@@ -223,6 +243,9 @@ class AddTransactionActivity : AppCompatActivity() {
         autoCategorize(etDescription.text.toString())
     }
 
+    /**
+     * Tạo bàn phím số 0-9 và nút Xóa thủ công bằng GridLayout
+     */
     private fun setupKeypad() {
         val grid = findViewById<GridLayout>(R.id.keypad)
         val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "000", "0", "DEL")
@@ -244,6 +267,9 @@ class AddTransactionActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Xử lý sự kiện khi nhấn các phím trên bàn phím số
+     */
     private fun handleKey(key: String) {
         if (key == "DEL") {
             if (currentRawAmount.length > 1) {
@@ -262,6 +288,7 @@ class AddTransactionActivity : AppCompatActivity() {
         val amountDouble = currentRawAmount.toDoubleOrNull() ?: 0.0
         tvAmount.text = java.text.DecimalFormat("#,###").format(amountDouble)
         
+        // Cập nhật trạng thái nút Lưu (chỉ cho phép lưu khi số tiền > 0)
         if (currentRawAmount != "0") {
             btnSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary_blue))
             btnSave.setTextColor(android.graphics.Color.WHITE)
@@ -271,6 +298,9 @@ class AddTransactionActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Làm mới danh sách các hạng mục (Chip) khi thay đổi chế độ Thu/Chi
+     */
     private fun updateCategories() {
         cgCategories.removeAllViews()
         val cats = if (isExpenseMode) {
@@ -288,6 +318,9 @@ class AddTransactionActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Kiểm tra dữ liệu và lưu giao dịch vào cơ sở dữ liệu Room và đồng bộ lên Firebase
+     */
     private fun validateAndSave() {
         if (currentRawAmount == "0") return
         
@@ -308,14 +341,14 @@ class AddTransactionActivity : AppCompatActivity() {
                     timestamp = System.currentTimeMillis()
                 )
                 
-                // Save locally
+                // Lưu vào Room DB cục bộ
                 db.transactionDao().insert(trans)
                 
-                // Save to Firebase
+                // Đồng bộ lên Firebase Realtime Database
                 val syncManager = FirebaseSyncManager(this@AddTransactionActivity)
                 syncManager.saveTransaction(trans)
 
-                finish()
+                finish() // Đóng màn hình sau khi lưu thành công
             } catch (e: Exception) {
                 Toast.makeText(this@AddTransactionActivity, "Lỗi khi lưu giao dịch: ${e.message}", Toast.LENGTH_SHORT).show()
             }

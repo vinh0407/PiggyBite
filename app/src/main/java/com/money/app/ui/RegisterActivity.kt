@@ -17,16 +17,25 @@ import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Màn hình Đăng ký: Cho phép người dùng mới tạo tài khoản.
+ * Các tính năng đặc biệt:
+ * - Đăng ký bằng Email hoặc Số điện thoại.
+ * - Cho phép thiết lập "Số dư ban đầu" ngay khi khởi tạo tài khoản.
+ * - Tự động tạo một giao dịch thu nhập đầu tiên nếu người dùng nhập số dư ban đầu.
+ * - Lưu thông tin profile lên Firebase Realtime Database.
+ */
 class RegisterActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance().reference
 
-    private var isPhoneMode = false
+    private var isPhoneMode = false // Trạng thái chọn đăng ký bằng SĐT hay Email
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        // Ánh xạ các View
         val rgMethod = findViewById<RadioGroup>(R.id.rgRegisterMethod)
         val emailContainer = findViewById<View>(R.id.emailRegisterContainer)
         val phoneContainer = findViewById<View>(R.id.phoneRegisterContainer)
@@ -42,6 +51,7 @@ class RegisterActivity : AppCompatActivity() {
 
         btnBack.setOnClickListener { finish() }
 
+        // Chuyển đổi giao diện giữa Email và Số điện thoại
         rgMethod.setOnCheckedChangeListener { _, checkedId ->
             isPhoneMode = checkedId == R.id.rbPhone
             emailContainer.visibility = if (isPhoneMode) View.GONE else View.VISIBLE
@@ -58,6 +68,7 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             if (isPhoneMode) {
+                // Xử lý đăng ký bằng Số điện thoại (sử dụng shadow email)
                 val phone = etPhone.text.toString().trim()
                 val pass = etPhonePassword.text.toString().trim()
                 if (phone.isEmpty() || pass.isEmpty()) {
@@ -71,6 +82,7 @@ class RegisterActivity : AppCompatActivity() {
                 val shadowEmail = "phone_${phone}@piggybite.com"
                 registerWithEmail(name, shadowEmail, pass, initialBalance, phone)
             } else {
+                // Xử lý đăng ký bằng Email
                 val email = etEmail.text.toString().trim()
                 val password = etPassword.text.toString().trim()
                 if (email.isEmpty() || password.isEmpty()) {
@@ -82,6 +94,9 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Tạo tài khoản trên Firebase Authentication
+     */
     private fun registerWithEmail(name: String, email: String, pass: String, balance: Double, phone: String) {
         lifecycleScope.launch {
             try {
@@ -93,6 +108,12 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Lưu thông tin cá nhân và hoàn tất đăng ký:
+     * 1. Lưu Profile lên Firebase Database.
+     * 2. Kiểm tra nếu có lời mời tham gia quỹ chung đang chờ (pending invitations).
+     * 3. Tạo bản ghi giao dịch số dư đầu kỳ (nếu có).
+     */
     private suspend fun saveProfileAndFinish(user: FirebaseUser?, name: String, phone: String, balance: Double) {
         val userId = user?.uid ?: return
         try {
@@ -106,18 +127,20 @@ class RegisterActivity : AppCompatActivity() {
 
             val syncManager = FirebaseSyncManager(this)
             
+            // Tự động kiểm tra và chấp nhận các quỹ đã được mời trước khi đăng ký
             val userEmail = user.email
             if (!userEmail.isNullOrEmpty()) {
                 syncManager.checkPendingInvitations(userEmail, userId)
             }
 
+            // Ghi nhận số dư ban đầu vào ví chính
             if (balance > 0) {
                 val initialTrans = Transaction(
                     amount = balance,
                     category = "Số dư ban đầu",
                     description = "Tài sản khi khởi tạo tài khoản",
                     date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
-                    isExpense = false,
+                    isExpense = false, // Đây là một khoản thu nhập khởi tạo
                     timestamp = System.currentTimeMillis()
                 )
                 AppDatabase.getDatabase(this).transactionDao().insert(initialTrans)
@@ -125,7 +148,7 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
-            finish()
+            finish() // Quay về màn hình Login để người dùng đăng nhập lại (hoặc vào thẳng)
         } catch (e: Exception) {
             Toast.makeText(this, "Lỗi lưu dữ liệu: ${e.message}", Toast.LENGTH_SHORT).show()
         }

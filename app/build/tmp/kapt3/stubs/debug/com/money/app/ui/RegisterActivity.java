@@ -1,5 +1,13 @@
 package com.money.app.ui;
 
+/**
+ * Màn hình Đăng ký: Cho phép người dùng mới tạo tài khoản.
+ * Các tính năng đặc biệt:
+ * - Đăng ký bằng Email hoặc Số điện thoại.
+ * - Cho phép thiết lập "Số dư ban đầu" ngay khi khởi tạo tài khoản.
+ * - Tự động tạo một giao dịch thu nhập đầu tiên nếu người dùng nhập số dư ban đầu.
+ * - Lưu thông tin profile lên Firebase Realtime Database.
+ */
 @kotlin.Metadata(mv = {2, 2, 0}, k = 1, xi = 48, d1 = {"\u0000D\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\u0003\n\u0002\u0010\u0006\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0002\u0018\u00002\u00020\u0001B\u0007\u00a2\u0006\u0004\b\u0002\u0010\u0003J\u0012\u0010\n\u001a\u00020\u000b2\b\u0010\f\u001a\u0004\u0018\u00010\rH\u0014J0\u0010\u000e\u001a\u00020\u000b2\u0006\u0010\u000f\u001a\u00020\u00102\u0006\u0010\u0011\u001a\u00020\u00102\u0006\u0010\u0012\u001a\u00020\u00102\u0006\u0010\u0013\u001a\u00020\u00142\u0006\u0010\u0015\u001a\u00020\u0010H\u0002J0\u0010\u0016\u001a\u00020\u000b2\b\u0010\u0017\u001a\u0004\u0018\u00010\u00182\u0006\u0010\u000f\u001a\u00020\u00102\u0006\u0010\u0015\u001a\u00020\u00102\u0006\u0010\u0013\u001a\u00020\u0014H\u0082@\u00a2\u0006\u0002\u0010\u0019R\u000e\u0010\u0004\u001a\u00020\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0006\u001a\u00020\u0007X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\b\u001a\u00020\tX\u0082\u000e\u00a2\u0006\u0002\n\u0000\u00a8\u0006\u001a"}, d2 = {"Lcom/money/app/ui/RegisterActivity;", "Landroidx/appcompat/app/AppCompatActivity;", "<init>", "()V", "auth", "Lcom/google/firebase/auth/FirebaseAuth;", "db", "Lcom/google/firebase/database/DatabaseReference;", "isPhoneMode", "", "onCreate", "", "savedInstanceState", "Landroid/os/Bundle;", "registerWithEmail", "name", "", "email", "pass", "balance", "", "phone", "saveProfileAndFinish", "user", "Lcom/google/firebase/auth/FirebaseUser;", "(Lcom/google/firebase/auth/FirebaseUser;Ljava/lang/String;Ljava/lang/String;DLkotlin/coroutines/Continuation;)Ljava/lang/Object;", "app_debug"})
 public final class RegisterActivity extends androidx.appcompat.app.AppCompatActivity {
     @org.jetbrains.annotations.NotNull()
@@ -17,9 +25,18 @@ public final class RegisterActivity extends androidx.appcompat.app.AppCompatActi
     android.os.Bundle savedInstanceState) {
     }
     
+    /**
+     * Tạo tài khoản trên Firebase Authentication
+     */
     private final void registerWithEmail(java.lang.String name, java.lang.String email, java.lang.String pass, double balance, java.lang.String phone) {
     }
     
+    /**
+     * Lưu thông tin cá nhân và hoàn tất đăng ký:
+     * 1. Lưu Profile lên Firebase Database.
+     * 2. Kiểm tra nếu có lời mời tham gia quỹ chung đang chờ (pending invitations).
+     * 3. Tạo bản ghi giao dịch số dư đầu kỳ (nếu có).
+     */
     private final java.lang.Object saveProfileAndFinish(com.google.firebase.auth.FirebaseUser user, java.lang.String name, java.lang.String phone, double balance, kotlin.coroutines.Continuation<? super kotlin.Unit> $completion) {
         return null;
     }

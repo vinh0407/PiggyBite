@@ -24,6 +24,13 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Màn hình Lịch sử Giao dịch: Hiển thị toàn bộ các khoản thu/chi đã thực hiện.
+ * Cho phép người dùng:
+ * - Xem danh sách chi tiết tất cả giao dịch theo thứ tự thời gian mới nhất.
+ * - Xem ảnh hóa đơn đính kèm.
+ * - Nhấn giữ để Xóa một giao dịch khỏi hệ thống.
+ */
 class AllTransactionsActivity : AppCompatActivity() {
     private lateinit var rv: RecyclerView
 
@@ -36,6 +43,7 @@ class AllTransactionsActivity : AppCompatActivity() {
         rv = findViewById<RecyclerView>(R.id.rvAllTransactions)
         rv.layoutManager = LinearLayoutManager(this)
 
+        // Tải toàn bộ giao dịch từ Room Database
         lifecycleScope.launch {
             val db = AppDatabase.getDatabase(this@AllTransactionsActivity)
             val list = db.transactionDao().getAllTransactions().sortedByDescending { it.timestamp }
@@ -50,29 +58,39 @@ class AllTransactionsActivity : AppCompatActivity() {
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val t = list[position]
+            // Ưu tiên hiển thị mô tả, nếu không có thì hiện tên hạng mục
             holder.tvTitle.text = if (t.description.isNotEmpty()) t.description else t.category
             
             val amountVal = t.amount
             holder.tvAmount.text = "${if (t.isExpense) "-" else "+"}${AppUtils.formatCurrency(amountVal, this@AllTransactionsActivity)}"
             holder.tvAmount.setTextColor(ContextCompat.getColor(this@AllTransactionsActivity, if (t.isExpense) R.color.expense_red else R.color.income_green))
             
+            // Định dạng ngày giờ đầy đủ
             val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
             holder.tvDateTime.text = sdf.format(Date(t.timestamp))
             holder.tvDateTime.visibility = View.VISIBLE
 
+            // Hiển thị thumbnail ảnh hóa đơn nếu có
             if (t.imagePath != null) {
                 holder.cvPhoto.visibility = View.VISIBLE
-                holder.ivPhoto.setImageURI(android.net.Uri.fromFile(java.io.File(t.imagePath)))
+                val file = java.io.File(t.imagePath)
+                if (file.exists()) {
+                    holder.ivPhoto.setImageURI(android.net.Uri.fromFile(file))
+                }
             } else {
                 holder.cvPhoto.visibility = View.GONE
             }
 
+            // Sự kiện nhấn giữ để hiện menu xóa
             holder.itemView.setOnLongClickListener {
                 showPopupMenu(it, t)
                 true
             }
         }
 
+        /**
+         * Hiển thị Menu tùy chọn khi nhấn giữ một dòng giao dịch
+         */
         private fun showPopupMenu(view: View, transaction: Transaction) {
             val popup = PopupMenu(this@AllTransactionsActivity, view)
             popup.menu.add("Xóa giao dịch")
@@ -86,23 +104,23 @@ class AllTransactionsActivity : AppCompatActivity() {
             popup.show()
         }
 
+        /**
+         * Xử lý xóa giao dịch khỏi database cục bộ
+         */
         private fun deleteTransaction(transaction: Transaction) {
             lifecycleScope.launch {
                 val db = AppDatabase.getDatabase(this@AllTransactionsActivity)
                 withContext(Dispatchers.IO) {
                     db.transactionDao().delete(transaction)
-                    // Optional: sync delete to Firebase
                 }
                 Toast.makeText(this@AllTransactionsActivity, "Đã xóa giao dịch", Toast.LENGTH_SHORT).show()
-                // Refresh list
-                val newList = db.transactionDao().getAllTransactions().sortedByDescending { it.timestamp }
-                (rv.adapter as? TransactionsAdapter)?.let {
-                    finish()
-                    startActivity(intent)
-                }
+                // Làm mới lại màn hình sau khi xóa
+                recreate()
             }
         }
+        
         override fun getItemCount() = list.size
+        
         inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val tvTitle = v.findViewById<TextView>(R.id.tvTitle)
             val tvAmount = v.findViewById<TextView>(R.id.tvAmount)

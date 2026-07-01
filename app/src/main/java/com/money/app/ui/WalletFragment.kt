@@ -33,33 +33,26 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Dashboard Fragment representing the user's primary wallet overview.
- * Features:
- * - Real-time balance calculation
- * - Monthly analysis charts (Donut & Line)
- * - Recent transaction history
- * - Shared fund management
+ * Fragment Trang chủ hiển thị tổng quan về ví của người dùng.
+ * Các tính năng:
+ * - Tính toán số dư thời gian thực
+ * - Biểu đồ phân tích hàng tháng (Tròn & Đường)
+ * - Lịch sử giao dịch gần đây
+ * - Quản lý quỹ chung/tiết kiệm
  * 
- * Automatically refreshes data in [onResume] to ensure UI consistency.
+ * Tự động làm mới dữ liệu trong [onResume] để đảm bảo tính nhất quán của UI.
  */
 class WalletFragment : Fragment() {
 
     private var _binding: FragmentWalletBinding? = null
     private val binding get() = _binding!!
     
-    private var isExpenseMode = true
-    private var isBalanceVisible = true
-    private var actualBalance = 0.0
-    private var analysisMonth = Calendar.getInstance()
+    private var isExpenseMode = true // Chế độ hiển thị: Chi tiêu (true) hoặc Thu nhập (false)
+    private var isBalanceVisible = true // Trạng thái hiển thị/ẩn số dư
+    private var actualBalance = 0.0 // Số dư thực tế
+    private var analysisMonth = Calendar.getInstance() // Tháng đang được chọn để phân tích
 
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        } else {
-            Toast.makeText(requireContext(), "Quyền truy cập ảnh bị từ chối", Toast.LENGTH_SHORT).show()
-        }
-    }
-
+    // Bộ chọn ảnh từ thư viện máy (Photo Picker)
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             val localFile = saveImageToInternalStorage(uri)
@@ -81,25 +74,25 @@ class WalletFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        // Hiển thị tên người dùng từ SharedPreferences
         val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val name = prefs.getString("user_name", "")
         binding.tvUserName.text = name?.uppercase() ?: ""
 
+        // Nút ẩn/hiện số dư
         binding.ivToggleBalance.setOnClickListener {
             isBalanceVisible = !isBalanceVisible
             updateBalanceDisplay()
         }
 
+        // Click vào ảnh đại diện hoặc khung ảnh để thay đổi
         val clickListener = View.OnClickListener {
-            // PickVisualMedia doesn't need permissions as it uses the system picker
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
-
         binding.flProfile.setOnClickListener(clickListener)
         binding.ivProfile.setOnClickListener(clickListener)
 
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-        
+        // Điều khiển chuyển đổi tháng phân tích
         binding.btnPrevAnalysis.setOnClickListener {
             if (analysisMonth.get(Calendar.MONTH) > Calendar.JANUARY) {
                 analysisMonth.add(Calendar.MONTH, -1)
@@ -114,28 +107,30 @@ class WalletFragment : Fragment() {
             }
         }
 
-        loadAvatar()
-        setupQuickActions()
-        setupToggle()
-        updateAnalysisUI()
+        loadAvatar() // Tải ảnh đại diện đã lưu
+        setupQuickActions() // Thiết lập các sự kiện nút chức năng nhanh
+        setupToggle() // Thiết lập thanh gạt Chi tiêu/Thu nhập
+        updateAnalysisUI() // Cập nhật giao diện phân tích theo tháng hiện tại
     }
 
     override fun onResume() {
         super.onResume()
-        // Refresh data every time user returns to home screen
+        // Làm mới dữ liệu mỗi khi người dùng quay lại màn hình chính từ các Activity khác
         loadData()
         
-        // Refresh name in case it was changed in ProfileActivity
+        // Cập nhật lại tên trong trường hợp nó đã được thay đổi ở màn hình Profile
         val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val name = prefs.getString("user_name", "")
         binding.tvUserName.text = name?.uppercase() ?: ""
     }
 
+    // Lưu URI ảnh đại diện vào SharedPreferences
     private fun saveAvatarUri(uri: Uri) {
         val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         prefs.edit().putString("avatar_uri", uri.toString()).apply()
     }
 
+    // Sao chép ảnh được chọn vào bộ nhớ trong của ứng dụng để tránh mất quyền truy cập sau này
     private fun saveImageToInternalStorage(uri: Uri): File? {
         return try {
             val inputStream = requireContext().contentResolver.openInputStream(uri) ?: return null
@@ -153,6 +148,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Tải và hiển thị ảnh đại diện từ đường dẫn đã lưu
     private fun loadAvatar() {
         val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val uriString = prefs.getString("avatar_uri", null)
@@ -166,7 +162,7 @@ class WalletFragment : Fragment() {
                     binding.ivProfile.setImageResource(R.drawable.ic_piggy_bank)
                 }
             } else {
-                // If it's a content URI, try to use it directly, but it might fail if permission is lost
+                // Nếu là content URI, thử hiển thị trực tiếp (có thể thất bại nếu hết quyền)
                 try {
                     binding.ivProfile.setImageURI(uri)
                 } catch (e: Exception) {
@@ -176,6 +172,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Cài đặt thanh chuyển đổi Thu nhập/Chi tiêu cho biểu đồ tròn
     private fun setupToggle() {
         binding.rgChartToggle.setOnCheckedChangeListener { _, checkedId ->
             isExpenseMode = (checkedId == R.id.rbExpense)
@@ -195,6 +192,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Gán các sự kiện chuyển màn hình cho các nút chức năng
     private fun setupQuickActions() {
         binding.btnSettings.setOnClickListener {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
@@ -216,7 +214,7 @@ class WalletFragment : Fragment() {
             startActivity(Intent(requireContext(), AddFundActivity::class.java))
         }
 
-        // Quick action pills
+        // Các nút bấm nhanh (Quick action pills)
         binding.actionAdd.root.setOnClickListener { startActivity(Intent(requireContext(), AddTransactionActivity::class.java)) }
         binding.actionAdd.actionIcon.setImageResource(android.R.drawable.ic_input_add)
         binding.actionAdd.actionText.text = "Thêm/Add"
@@ -232,13 +230,19 @@ class WalletFragment : Fragment() {
         binding.actionGoals.root.setOnClickListener { startActivity(Intent(requireContext(), AllFundsActivity::class.java)) }
         binding.actionGoals.actionIcon.setImageResource(R.drawable.ic_check_circle)
         binding.actionGoals.actionText.text = "Mục tiêu/Goals"
+
+        // Nút thêm giao dịch khi biểu đồ trống
+        binding.btnEmptyAdd.setOnClickListener {
+            startActivity(Intent(requireContext(), AddTransactionActivity::class.java))
+        }
     }
 
+    // Cập nhật giao diện phần phân tích tháng (tiêu đề và nút ẩn/hiện)
     private fun updateAnalysisUI() {
         val monthNum = analysisMonth.get(Calendar.MONTH) + 1
         binding.tvChartTitle.text = "Phân tích tháng $monthNum"
         
-        // Limit to current year
+        // Giới hạn trong năm hiện tại
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         analysisMonth.set(Calendar.YEAR, currentYear)
 
@@ -252,6 +256,7 @@ class WalletFragment : Fragment() {
     }
 
     private var loadDataJob: kotlinx.coroutines.Job? = null
+    // Tải dữ liệu từ Room và cập nhật toàn bộ giao diện ví
     private fun loadData() {
         loadDataJob?.cancel()
         
@@ -262,10 +267,12 @@ class WalletFragment : Fragment() {
         loadDataJob = viewLifecycleOwner.lifecycleScope.launch {
             val db = AppDatabase.getDatabase(requireContext())
             db.transactionDao().getAllTransactionsFlow().collect { all ->
+                // Lọc giao dịch theo tháng được chọn để hiển thị biểu đồ
                 val filteredForMonth = all.filter { it.date.endsWith(monthStr) }
                 
                 var totalInc = 0.0
                 var totalExp = 0.0
+                // Tính toán tổng thu nhập và chi tiêu để ra số dư
                 all.forEach {
                     val amt = it.amount
                     if (it.isExpense) totalExp += amt else totalInc += amt
@@ -283,14 +290,23 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Vẽ biểu đồ tròn (Donut) dựa trên các hạng mục chi tiêu/thu nhập
     private fun updateDonutChart(transactions: List<Transaction>) {
         val filtered = transactions.filter { it.isExpense == isExpenseMode }
         if (filtered.isEmpty()) {
+            binding.pieChart.visibility = View.GONE
+            binding.chartLegend.visibility = View.GONE
+            binding.layoutEmptyAnalysis.visibility = View.VISIBLE
             binding.pieChart.setSlices(emptyList())
             binding.chartLegend.removeAllViews()
             return
         }
 
+        binding.pieChart.visibility = View.VISIBLE
+        binding.chartLegend.visibility = View.VISIBLE
+        binding.layoutEmptyAnalysis.visibility = View.GONE
+
+        // Nhóm theo hạng mục và tính tổng tiền của từng hạng mục
         val categoryTotals = filtered.groupBy { it.category }
             .mapValues { entry -> entry.value.sumOf { it.amount } }
 
@@ -300,6 +316,7 @@ class WalletFragment : Fragment() {
             listOf(0xFF28C76F.toInt(), 0xFF48DA89.toInt(), 0xFF10AC84.toInt(), 0xFF00FF00.toInt(), 0xFF20BF6B.toInt())
         }
 
+        // Lấy 5 hạng mục có tổng tiền cao nhất để hiển thị
         val slices = categoryTotals.entries.sortedByDescending { it.value }.take(5).mapIndexed { index, entry ->
             PieChartView.Slice(entry.value.toFloat(), colors[index % colors.size], entry.key)
         }
@@ -316,6 +333,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Vẽ biểu đồ đường hiển thị biến động trong tuần hiện tại
     private fun updateLineChart(transactions: List<Transaction>) {
         val spendArr = FloatArray(7) { 0f }
         val incomeArr = FloatArray(7) { 0f }
@@ -325,9 +343,9 @@ class WalletFragment : Fragment() {
         transactions.forEach { t ->
             cal.timeInMillis = t.timestamp
             if (cal.get(Calendar.WEEK_OF_YEAR) == currentWeek) {
-                // Calendar.DAY_OF_WEEK: Sun=1, Mon=2...
-                var dayIdx = cal.get(Calendar.DAY_OF_WEEK) - 2 // Mon=0
-                if (dayIdx < 0) dayIdx = 6 // Sun=6
+                // Calendar.DAY_OF_WEEK: Chủ nhật=1, Thứ hai=2...
+                var dayIdx = cal.get(Calendar.DAY_OF_WEEK) - 2 // Chuyển về Thứ hai=0
+                if (dayIdx < 0) dayIdx = 6 // Chủ nhật=6
                 
                 val amt = t.amount.toFloat()
                 if (t.isExpense) spendArr[dayIdx] += amt else incomeArr[dayIdx] += amt
@@ -336,6 +354,7 @@ class WalletFragment : Fragment() {
         binding.lineChart.setData(spendArr, incomeArr)
     }
 
+    // Cập nhật số dư hiển thị, xử lý việc ẩn số dư bằng dấu *
     private fun updateBalanceDisplay() {
         if (isBalanceVisible) {
             binding.tvTotalBalance.text = AppUtils.formatCurrency(actualBalance, requireContext())
@@ -346,6 +365,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Hiển thị danh sách các giao dịch gần nhất (tối đa 10)
     private fun renderRecent(list: List<Transaction>) {
         binding.recentList.removeAllViews()
         if (list.isEmpty()) {
@@ -356,7 +376,7 @@ class WalletFragment : Fragment() {
         list.forEach { trans ->
             val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_stats_entry, binding.recentList, false)
             
-            // Logic: Show description if available, else show category
+            // Hiển thị mô tả nếu có, nếu không thì hiện tên hạng mục
             val title = if (trans.description.isNullOrEmpty()) trans.category else trans.description
             item.findViewById<TextView>(R.id.tvTitle).text = title
             
@@ -366,12 +386,14 @@ class WalletFragment : Fragment() {
                 ContextCompat.getColor(requireContext(), if (trans.isExpense) R.color.expense_red else R.color.income_green)
             )
             
-            item.findViewById<TextView>(R.id.tvDateTime).text = trans.date
+            val timeSdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            item.findViewById<TextView>(R.id.tvDateTime).text = timeSdf.format(Date(trans.timestamp))
 
             binding.recentList.addView(item)
         }
     }
 
+    // Hiển thị danh sách các quỹ mục tiêu / quỹ chung
     private fun renderFunds() {
         binding.fundsContainer.removeAllViews()
         viewLifecycleOwner.lifecycleScope.launch {
@@ -381,12 +403,14 @@ class WalletFragment : Fragment() {
                 val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_fund_premium, binding.fundsContainer, false)
                 item.findViewById<TextView>(R.id.tvGoalName).text = fund.name
                 item.findViewById<TextView>(R.id.tvGoalProgress).text = "${AppUtils.formatCurrency(fund.currentAmount, requireContext())} / ${AppUtils.formatCurrency(fund.targetAmount, requireContext())}"
+                
                 val percent = if (fund.targetAmount > 0) (fund.currentAmount / fund.targetAmount * 100).toInt() else 0
                 item.findViewById<TextView>(R.id.tvGoalPercent).text = "$percent%"
                 item.findViewById<ProgressBar>(R.id.pbGoal).progress = percent.coerceIn(0, 100)
                 
+                // Nút yêu thích (ghim quỹ)
                 val btnPin = item.findViewById<ImageButton>(R.id.btnDeleteFund)
-                btnPin.setImageResource(if (fund.isPinned) R.drawable.ic_heart else R.drawable.ic_heart) // Needs ic_heart_filled for better UX
+                btnPin.setImageResource(R.drawable.ic_heart)
                 btnPin.setColorFilter(if (fund.isPinned) ContextCompat.getColor(requireContext(), R.color.expense_red) else ContextCompat.getColor(requireContext(), R.color.text_hint))
                 
                 btnPin.setOnClickListener {
@@ -395,15 +419,18 @@ class WalletFragment : Fragment() {
                     renderFunds()
                 }
 
+                // Nhấn giữ để xem menu tùy chọn xóa/sửa
                 item.setOnLongClickListener {
                     showEditDeleteDialog(fund)
                     true
                 }
 
+                // Nộp tiền vào quỹ
                 item.findViewById<Button>(R.id.btnDeposit).setOnClickListener {
                     showAmountDialog(fund, isDeposit = true)
                 }
 
+                // Rút tiền từ quỹ
                 item.findViewById<Button>(R.id.btnWithdraw).setOnClickListener {
                     showAmountDialog(fund, isDeposit = false)
                 }
@@ -413,6 +440,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Hiển thị BottomSheet các tùy chọn cho quỹ (Sửa, Thêm thành viên, Xem đóng góp, Xóa)
     private fun showEditDeleteDialog(fund: Fund) {
         val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_vivid_options, null)
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext(), R.style.CustomBottomSheetDialog)
@@ -424,6 +452,7 @@ class WalletFragment : Fragment() {
         val deleteContainer = view.findViewById<LinearLayout>(R.id.btnDeleteOption)
         val deleteText = deleteContainer.getChildAt(1) as? TextView
         
+        // Phân biệt văn bản giữa chủ quỹ và thành viên được mời
         if (!isOwner) {
             deleteText?.text = "Rời khỏi quỹ/Leave"
         } else {
@@ -454,6 +483,7 @@ class WalletFragment : Fragment() {
         dialog.show()
     }
 
+    // Hộp thoại xác nhận rời khỏi quỹ chung
     private fun confirmLeaveFund(fund: Fund) {
         android.app.AlertDialog.Builder(requireContext())
             .setTitle("Rời khỏi quỹ")
@@ -465,12 +495,13 @@ class WalletFragment : Fragment() {
             .show()
     }
 
+    // Xử lý rời quỹ và hoàn lại tiền đóng góp vào ví chính
     private fun leaveFundAndRefund(fund: Fund) {
         lifecycleScope.launch(Dispatchers.IO) {
             val syncManager = FirebaseSyncManager(requireContext())
             syncManager.leaveFund(fund)
             
-            // Sync to remove from local
+            // Đồng bộ lại để xóa khỏi máy địa phương
             syncManager.syncFunds()
             
             withContext(Dispatchers.Main) {
@@ -480,6 +511,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Hộp thoại xác nhận giải thể quỹ
     private fun confirmDeleteFund(fund: Fund) {
         android.app.AlertDialog.Builder(requireContext())
             .setTitle("Giải thể quỹ")
@@ -491,12 +523,13 @@ class WalletFragment : Fragment() {
             .show()
     }
 
+    // Xử lý giải thể quỹ và hoàn tiền cho tất cả mọi người thông qua FirebaseSyncManager
     private fun deleteFundAndRefund(fund: Fund) {
         lifecycleScope.launch(Dispatchers.IO) {
             val syncManager = FirebaseSyncManager(requireContext())
             syncManager.deleteFundAndRefund(fund)
             
-            // Sync to remove from local
+            // Đồng bộ lại để xóa khỏi máy địa phương
             syncManager.syncFunds()
             
             withContext(Dispatchers.Main) {
@@ -506,6 +539,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Hiển thị danh sách số tiền đóng góp của từng thành viên
     private fun showContributionsDialog(fund: Fund) {
         val container = LinearLayout(requireContext())
         container.orientation = LinearLayout.VERTICAL
@@ -515,6 +549,7 @@ class WalletFragment : Fragment() {
             val dbRef = FirebaseDatabase.getInstance().reference
             
             fund.memberContributions.forEach { (uid, amount) ->
+                // Lấy tên người dùng từ Firebase
                 val snapshot = dbRef.child("users").child(uid).child("profile").get().await()
                 val name = snapshot.child("name").value as? String ?: "Người dùng ẩn"
                 
@@ -542,6 +577,7 @@ class WalletFragment : Fragment() {
         }
     }
 
+    // Mời người khác vào quỹ chung qua Email
     private fun showAddMemberDialog(fund: Fund) {
         val etEmail = EditText(requireContext())
         etEmail.hint = "Email thành viên gia đình"
@@ -565,8 +601,9 @@ class WalletFragment : Fragment() {
             .show()
     }
 
+    // Cập nhật thông tin quỹ (ví dụ: đổi tên)
     private fun showUpdateFundDialog(fund: Fund) {
-        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_create_category, null) // Reusing layout for simplicity
+        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_create_category, null) // Dùng lại layout cũ để tối ưu
         val etName = view.findViewById<EditText>(R.id.etCategoryName)
         etName.setText(fund.name)
         
@@ -587,6 +624,7 @@ class WalletFragment : Fragment() {
             .show()
     }
 
+    // Hộp thoại nhập số tiền khi Nộp hoặc Rút khỏi quỹ
     private fun showAmountDialog(fund: Fund, isDeposit: Boolean) {
         val et = EditText(requireContext())
         et.inputType = android.text.InputType.TYPE_CLASS_NUMBER
@@ -605,13 +643,14 @@ class WalletFragment : Fragment() {
             .show()
     }
 
+    // Xử lý logic nghiệp vụ khi có giao dịch liên quan đến quỹ
     private fun processFundTransaction(fund: Fund, amount: Double, isDeposit: Boolean) {
         lifecycleScope.launch(Dispatchers.IO) {
             val db = AppDatabase.getDatabase(requireContext())
             val syncManager = FirebaseSyncManager(requireContext())
             val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
             
-            // 1. Update Fund Amount and Member Contributions
+            // 1. Cập nhật số tiền trong quỹ và ghi nhận đóng góp cá nhân
             if (isDeposit) {
                 fund.currentAmount += amount
                 val currentContrib = fund.memberContributions[currentUserId] ?: 0.0
@@ -627,15 +666,15 @@ class WalletFragment : Fragment() {
             }
             
             db.fundDao().update(fund)
-            syncManager.createFund(fund) // createFund updates the whole object in RTDB
+            syncManager.createFund(fund) // Cập nhật trạng thái quỹ lên Realtime Database
 
-            // 2. Create Transaction
+            // 2. Tạo bản ghi giao dịch trong ví chính
             val trans = Transaction(
                 amount = amount,
                 category = if (isDeposit) "Góp quỹ" else "Rút tiền quỹ",
                 description = "${if (isDeposit) "Góp vào" else "Rút từ"} quỹ ${fund.name}",
                 date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
-                isExpense = isDeposit, // Deposit is expense from main wallet, Withdraw is income to main wallet
+                isExpense = isDeposit, // Góp quỹ được tính là 1 khoản chi từ ví chính, Rút là thu nhập
                 timestamp = System.currentTimeMillis()
             )
             db.transactionDao().insert(trans)

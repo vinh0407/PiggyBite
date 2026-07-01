@@ -20,21 +20,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.money.app.R
 
+/**
+ * Màn hình Giới thiệu (Intro): Màn hình đầu tiên người dùng nhìn thấy khi mới cài đặt ứng dụng.
+ * Sử dụng Jetpack Compose để xây dựng giao diện hiện đại.
+ * Chỉ hiển thị một lần duy nhất nhờ lưu trạng thái vào SharedPreferences.
+ */
 class IntroActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         com.money.app.util.ThemeHelper.applyTheme(this)
         super.onCreate(savedInstanceState)
         
-        // Check if intro has been shown before
+        // Kiểm tra xem người dùng đã xem màn hình giới thiệu chưa
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         if (prefs.getBoolean("intro_shown", false)) {
+            // Nếu đã xem rồi, chuyển thẳng đến màn hình Đăng nhập
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
+        // Thiết lập nội dung giao diện bằng Compose
         setContent {
             IntroScreen {
+                // Khi nhấn nút "Bắt đầu", đánh dấu đã xem và chuyển màn hình
                 prefs.edit().putBoolean("intro_shown", true).apply()
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
@@ -43,16 +51,20 @@ class IntroActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Giao diện màn hình giới thiệu được viết bằng Jetpack Compose
+ */
 @Composable
 fun IntroScreen(onStart: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF4A5BCC))
+            .background(Color(0xFF4A5BCC)) // Màu nền chủ đạo của PiggyBite
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Logo ứng dụng
         Image(
             painter = painterResource(id = R.drawable.icon_app_money),
             contentDescription = "Logo",
@@ -61,6 +73,7 @@ fun IntroScreen(onStart: () -> Unit) {
         
         Spacer(modifier = Modifier.height(32.dp))
         
+        // Tiêu đề chào mừng
         Text(
             text = "Chào mừng bạn đến với\nPiggyBite",
             color = Color.White,
@@ -72,6 +85,7 @@ fun IntroScreen(onStart: () -> Unit) {
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        // Mô tả ngắn gọn về ứng dụng
         Text(
             text = "Quản lý tài chính thông minh, theo dõi chi tiêu và tiết kiệm cùng bạn bè trong thời gian thực.",
             color = Color.White.copy(alpha = 0.8f),
@@ -81,6 +95,7 @@ fun IntroScreen(onStart: () -> Unit) {
         
         Spacer(modifier = Modifier.height(48.dp))
         
+        // Nút bấm bắt đầu
         Button(
             onClick = onStart,
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
