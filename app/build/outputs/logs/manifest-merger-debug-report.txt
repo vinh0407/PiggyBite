@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:2:1-90:12
-INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:2:1-90:12
-INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:2:1-90:12
-INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:2:1-90:12
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:2:1-92:12
+INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:2:1-92:12
+INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:2:1-92:12
+INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:2:1-92:12
 MERGED from [androidx.databinding:viewbinding:9.2.1] C:\Users\admin\.gradle\caches\9.4.1\transforms\eab8f049ecb8236e01411789e670954b\transformed\viewbinding-9.2.1\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\admin\.gradle\caches\9.4.1\transforms\e63f9a64dce9a0f1e6c7dcb3d968749e\transformed\material-1.12.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.0] C:\Users\admin\.gradle\caches\9.4.1\transforms\6b4095079e60d5ec1801119aaad49577\transformed\constraintlayout-2.2.0\AndroidManifest.xml:2:1-9:12
@@ -211,21 +211,29 @@ uses-permission#android.permission.RECORD_AUDIO
 ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:7:5-71
 	android:name
 		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:7:22-68
-uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:8:5-80
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:8:5-79
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:8:22-77
-uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:8:22-76
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
 ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:9:5-81
 	android:name
 		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:9:22-78
-uses-permission#android.permission.READ_MEDIA_IMAGES
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:10:5-76
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:10:5-80
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:10:22-73
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:10:22-77
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:11:5-81
+	android:name
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:11:22-78
+uses-permission#android.permission.READ_MEDIA_IMAGES
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:12:5-76
+	android:name
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:12:22-73
 application
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:12:5-89:19
-INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:12:5-89:19
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:14:5-91:19
+INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:14:5-91:19
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\admin\.gradle\caches\9.4.1\transforms\e63f9a64dce9a0f1e6c7dcb3d968749e\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\admin\.gradle\caches\9.4.1\transforms\e63f9a64dce9a0f1e6c7dcb3d968749e\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.0] C:\Users\admin\.gradle\caches\9.4.1\transforms\6b4095079e60d5ec1801119aaad49577\transformed\constraintlayout-2.2.0\AndroidManifest.xml:7:5-20
@@ -321,121 +329,121 @@ MERGED from [com.google.android.play:core-common:2.0.3] C:\Users\admin\.gradle\c
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.15.0] C:\Users\admin\.gradle\caches\9.4.1\transforms\c6a4a502ff9222fc8322b4213a5fb640\transformed\core-1.15.0\AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:17:9-35
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:19:9-35
 	android:label
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:15:9-41
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:17:9-41
 	android:roundIcon
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:16:9-53
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:18:9-53
 	android:icon
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:14:9-48
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:16:9-48
 	android:allowBackup
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:13:9-35
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:15:9-35
 	android:theme
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:18:9-43
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:20:9-43
 activity#com.money.app.ui.StatisticsActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:20:9-22:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:22:9-24:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:22:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:24:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:21:13-50
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:23:13-50
 activity#com.money.app.ui.ProfileActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:24:9-26:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:26:9-28:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:26:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:28:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:25:13-47
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:27:13-47
 activity#com.money.app.ui.SettingsActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:29:9-31:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:31:9-33:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:31:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:33:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:30:13-48
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:32:13-48
 activity#com.money.app.ui.AddTransactionActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:33:9-35:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:35:9-37:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:35:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:37:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:34:13-54
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:36:13-54
 activity#com.money.app.ui.IntroActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:37:9-45:20
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:39:9-47:20
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:39:13-36
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:41:13-36
 	android:theme
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:40:13-47
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:42:13-47
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:38:13-45
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:40:13-45
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:41:13-44:29
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:43:13-46:29
 action#android.intent.action.MAIN
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:42:17-69
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:44:17-69
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:42:25-66
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:44:25-66
 category#android.intent.category.LAUNCHER
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:43:17-77
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:45:17-77
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:43:27-74
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:45:27-74
 activity#com.money.app.ui.LoginActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:47:9-49:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:49:9-51:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:49:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:51:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:48:13-45
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:50:13-45
 activity#com.money.app.ui.RegisterActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:51:9-53:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:53:9-55:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:53:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:55:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:52:13-48
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:54:13-48
 activity#com.money.app.ui.AIChatActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:55:9-57:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:57:9-59:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:57:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:59:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:56:13-46
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:58:13-46
 activity#com.money.app.ui.AddFundActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:59:9-61:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:61:9-63:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:61:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:63:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:60:13-47
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:62:13-47
 activity#com.money.app.ui.AllFundsActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:63:9-65:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:65:9-67:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:65:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:67:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:64:13-48
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:66:13-48
 activity#com.money.app.ui.AllTransactionsActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:67:9-69:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:69:9-71:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:69:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:71:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:68:13-55
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:70:13-55
 activity#com.money.app.ui.MapActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:71:9-73:40
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:73:9-75:40
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:73:13-37
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:75:13-37
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:72:13-43
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:74:13-43
 activity#com.money.app.ui.MainActivity
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:75:9-79:20
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:77:9-81:20
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:77:13-36
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:79:13-36
 	android:theme
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:78:13-47
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:80:13-47
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:76:13-44
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:78:13-44
 receiver#com.money.app.util.NetworkMonitor
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:81:9-87:20
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:83:9-89:20
 	android:exported
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:83:13-36
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:85:13-36
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:82:13-48
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:84:13-48
 intent-filter#action:name:android.net.conn.CONNECTIVITY_CHANGE
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:84:13-86:29
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:86:13-88:29
 action#android.net.conn.CONNECTIVITY_CHANGE
-ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:85:17-79
+ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:87:17-79
 	android:name
-		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:85:25-76
+		ADDED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml:87:25-76
 uses-sdk
 INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from E:\UTH\Lập trình thiết bị di động\PiggyBite\app\src\main\AndroidManifest.xml

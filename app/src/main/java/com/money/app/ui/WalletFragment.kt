@@ -14,6 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.PickVisualMediaRequest
 import android.net.Uri
+import java.io.File
+import java.io.FileOutputStream
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.money.app.R
@@ -49,10 +51,24 @@ class WalletFragment : Fragment() {
     private var isBalanceVisible = true
     private var actualBalance = 0.0
 
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        } else {
+            Toast.makeText(requireContext(), "Quyền truy cập ảnh bị từ chối", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
-            saveAvatarUri(uri)
-            binding.ivProfile.setImageURI(uri)
+            val localFile = saveImageToInternalStorage(uri)
+            if (localFile != null) {
+                saveAvatarUri(Uri.fromFile(localFile))
+                binding.ivProfile.setImageURI(Uri.fromFile(localFile))
+            } else {
+                saveAvatarUri(uri)
+                binding.ivProfile.setImageURI(uri)
+            }
         }
     }
 
@@ -73,13 +89,22 @@ class WalletFragment : Fragment() {
             updateBalanceDisplay()
         }
 
-        binding.flProfile.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        val clickListener = View.OnClickListener {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                // On Android 13+, PickVisualMedia doesn't need permissions, but we can request READ_MEDIA_IMAGES if we want to be safe
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            } else {
+                // On older versions, request READ_EXTERNAL_STORAGE
+                if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                } else {
+                    requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+            }
         }
 
-        binding.ivProfile.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
+        binding.flProfile.setOnClickListener(clickListener)
+        binding.ivProfile.setOnClickListener(clickListener)
 
         loadAvatar()
         setupQuickActions()
@@ -103,11 +128,38 @@ class WalletFragment : Fragment() {
         prefs.edit().putString("avatar_uri", uri.toString()).apply()
     }
 
+    private fun saveImageToInternalStorage(uri: Uri): File? {
+        return try {
+            val inputStream = requireContext().contentResolver.openInputStream(uri) ?: return null
+            val file = File(requireContext().filesDir, "user_avatar.jpg")
+            val outputStream = FileOutputStream(file)
+            inputStream.use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+            file
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     private fun loadAvatar() {
         val prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val uriString = prefs.getString("avatar_uri", null)
         if (uriString != null) {
-            binding.ivProfile.setImageURI(Uri.parse(uriString))
+            val uri = Uri.parse(uriString)
+            if (uri.scheme == "file") {
+                val file = File(uri.path ?: "")
+                if (file.exists()) {
+                    binding.ivProfile.setImageURI(uri)
+                } else {
+                    binding.ivProfile.setImageResource(R.drawable.ic_piggy_bank)
+                }
+            } else {
+                binding.ivProfile.setImageURI(uri)
+            }
         }
     }
 
@@ -137,6 +189,10 @@ class WalletFragment : Fragment() {
         
         binding.btnMap.setOnClickListener {
             startActivity(Intent(requireContext(), MapActivity::class.java))
+        }
+
+        binding.btnViewFlowMore.setOnClickListener {
+            startActivity(Intent(requireContext(), StatisticsActivity::class.java))
         }
 
         binding.btnViewAllTrans.setOnClickListener {
