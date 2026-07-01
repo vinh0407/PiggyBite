@@ -23,17 +23,20 @@ object AppUtils {
 
     /**
      * Định dạng số tiền (Double) thành chuỗi hiển thị kèm đơn vị tiền tệ.
-     * Tự động chuyển đổi tỷ giá nếu người dùng chọn USD.
+     * Tự động chuyển đổi tỷ giá nếu người dùng chọn USD hoặc hiển thị cả hai.
      */
     fun formatCurrency(amount: Double, context: Context? = null): String {
         return try {
-            val currency = if (context != null) CurrencyHelper.getSelectedCurrency(context) else "VND"
-            val convertedAmount = CurrencyHelper.convertFromBase(amount, currency)
+            val currency = if (context != null) CurrencyHelper.getSelectedCurrency(context) else CurrencyHelper.CURRENCY_VND
             
-            if (currency == "USD") {
-                "$" + DecimalFormat("#,##0.00", DecimalFormatSymbols(Locale.US)).format(convertedAmount)
-            } else {
-                df.format(convertedAmount) + "đ"
+            val vndStr = df.format(amount) + "đ"
+            val usdAmount = amount / CurrencyHelper.EXCHANGE_RATE_USD_TO_VND
+            val usdStr = "$" + DecimalFormat("#,##0.00", DecimalFormatSymbols(Locale.US)).format(usdAmount)
+
+            when (currency) {
+                CurrencyHelper.CURRENCY_BOTH -> "$vndStr ($usdStr)"
+                CurrencyHelper.CURRENCY_USD -> usdStr
+                else -> vndStr
             }
         } catch (e: Exception) {
             "0đ" // Trả về mặc định nếu lỗi định dạng

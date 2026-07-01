@@ -12,6 +12,7 @@ object CurrencyHelper {
 
     const val CURRENCY_VND = "VND"
     const val CURRENCY_USD = "USD"
+    const val CURRENCY_BOTH = "VND & USD"
     
     // Tỷ giá hối đoái giả định (1 USD = 25,000 VND)
     const val EXCHANGE_RATE_USD_TO_VND = 25000.0

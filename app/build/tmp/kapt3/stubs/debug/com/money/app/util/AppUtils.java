@@ -18,7 +18,7 @@ public final class AppUtils {
     
     /**
      * Định dạng số tiền (Double) thành chuỗi hiển thị kèm đơn vị tiền tệ.
-     * Tự động chuyển đổi tỷ giá nếu người dùng chọn USD.
+     * Tự động chuyển đổi tỷ giá nếu người dùng chọn USD hoặc hiển thị cả hai.
      */
     @org.jetbrains.annotations.NotNull()
     public final java.lang.String formatCurrency(double amount, @org.jetbrains.annotations.Nullable()

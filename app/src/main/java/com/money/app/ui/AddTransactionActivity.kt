@@ -12,6 +12,8 @@ import com.money.app.R
 import com.money.app.data.AppDatabase
 import com.money.app.data.Transaction
 import com.money.app.util.FirebaseSyncManager
+import com.money.app.util.CurrencyHelper
+import com.money.app.util.AppUtils
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,6 +29,7 @@ import java.util.*
 class AddTransactionActivity : AppCompatActivity() {
 
     private lateinit var tvAmount: TextView
+    private lateinit var tvCurrencySymbol: TextView
     private lateinit var etDescription: EditText
     private lateinit var cgCategories: ChipGroup
     private lateinit var btnExpense: TextView
@@ -36,6 +39,7 @@ class AddTransactionActivity : AppCompatActivity() {
     private var currentRawAmount: String = "0" // Lưu trữ số tiền dưới dạng chuỗi thô để xử lý bàn phím
     private var isExpenseMode: Boolean = true // Chế độ Chi tiêu (mặc định) hoặc Thu nhập
     private var isFromOCR: Boolean = false // Đánh dấu nếu dữ liệu đến từ tính năng quét hóa đơn
+    private var currentCurrency: String = CurrencyHelper.CURRENCY_VND
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,14 +47,27 @@ class AddTransactionActivity : AppCompatActivity() {
 
         // Ánh xạ các view từ layout
         tvAmount = findViewById(R.id.tvAmount)
+        tvCurrencySymbol = findViewById(R.id.tvCurrencySymbol)
         etDescription = findViewById(R.id.etDescription)
         cgCategories = findViewById(R.id.cgCategories)
         btnExpense = findViewById(R.id.btnExpense)
         btnIncome = findViewById(R.id.btnIncome)
         btnSave = findViewById(R.id.btnSave)
 
+        // Khởi tạo loại tiền tệ từ cài đặt
+        val savedCurrency = CurrencyHelper.getSelectedCurrency(this)
+        currentCurrency = if (savedCurrency == CurrencyHelper.CURRENCY_BOTH) CurrencyHelper.CURRENCY_VND else savedCurrency
+        updateCurrencySymbol()
+
         // Nút đóng màn hình
         findViewById<View>(R.id.btnClose).setOnClickListener { finish() }
+
+        // Chuyển đổi loại tiền tệ khi nhấn vào biểu tượng
+        tvCurrencySymbol.setOnClickListener {
+            currentCurrency = if (currentCurrency == CurrencyHelper.CURRENCY_VND) CurrencyHelper.CURRENCY_USD else CurrencyHelper.CURRENCY_VND
+            updateCurrencySymbol()
+            updateAmountDisplay()
+        }
 
         // Chuyển đổi giữa Chi tiêu và Thu nhập
         btnExpense.setOnClickListener { switchMode(true) }
@@ -86,8 +103,32 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     /**
+     * Cập nhật biểu tượng tiền tệ hiển thị (đ hoặc $)
+     */
+    private fun updateCurrencySymbol() {
+        tvCurrencySymbol.text = if (currentCurrency == CurrencyHelper.CURRENCY_USD) "$" else "đ"
+    }
+
+    /**
+     * Cập nhật số tiền hiển thị trên màn hình
+     */
+    private fun updateAmountDisplay() {
+        val amountDouble = currentRawAmount.toDoubleOrNull() ?: 0.0
+        val pattern = if (currentCurrency == CurrencyHelper.CURRENCY_USD) "#,##0.##" else "#,###"
+        tvAmount.text = java.text.DecimalFormat(pattern).format(amountDouble)
+        
+        // Cập nhật trạng thái nút Lưu
+        if (currentRawAmount != "0") {
+            btnSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary_blue))
+            btnSave.setTextColor(android.graphics.Color.WHITE)
+        } else {
+            btnSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.grey_light))
+            btnSave.setTextColor(ContextCompat.getColor(this, R.color.text_hint))
+        }
+    }
+
+    /**
      * Logic xử lý chuỗi: Phân tích giọng nói tiếng Việt thành số tiền và mô tả.
-     * Ví dụ: "Ăn phở hai mươi lăm ngàn" -> Mô tả: "Ăn phở", Số tiền: 25000
      */
     private fun parseVoiceText(text: String) {
         val lower = text.lowercase().replace("-", " ").trim()
@@ -141,10 +182,9 @@ class AddTransactionActivity : AppCompatActivity() {
 
         if (tempAmount > 0) {
             currentRawAmount = tempAmount.toString()
-            val amountDouble = currentRawAmount.toDoubleOrNull() ?: 0.0
-            tvAmount.text = java.text.DecimalFormat("#,###").format(amountDouble)
-            btnSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary_blue))
-            btnSave.setTextColor(android.graphics.Color.WHITE)
+            currentCurrency = CurrencyHelper.CURRENCY_VND // Mặc định giọng nói tiếng Việt là VND
+            updateCurrencySymbol()
+            updateAmountDisplay()
         }
         
         etDescription.setText(description.replaceFirstChar { it.uppercase() })
@@ -159,7 +199,7 @@ class AddTransactionActivity : AppCompatActivity() {
         var foundAmount = 0L
         lines.forEach { line ->
             // Làm sạch chuỗi: xóa dấu chấm, phẩy và ký hiệu tiền tệ
-            val clean = line.replace(".", "").replace(",", "").replace("đ", "").trim()
+            val clean = line.replace(".", "").replace(",", "").replace("đ", "").replace("$", "").trim()
             val num = clean.toLongOrNull()
             if (num != null && num > foundAmount) {
                 foundAmount = num
@@ -167,10 +207,7 @@ class AddTransactionActivity : AppCompatActivity() {
         }
         if (foundAmount > 0) {
             currentRawAmount = foundAmount.toString()
-            val amountDouble = currentRawAmount.toDoubleOrNull() ?: 0.0
-            tvAmount.text = java.text.DecimalFormat("#,###").format(amountDouble)
-            btnSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary_blue))
-            btnSave.setTextColor(android.graphics.Color.WHITE)
+            updateAmountDisplay()
         }
         autoCategorize(text)
     }
@@ -285,17 +322,7 @@ class AddTransactionActivity : AppCompatActivity() {
             }
         }
         
-        val amountDouble = currentRawAmount.toDoubleOrNull() ?: 0.0
-        tvAmount.text = java.text.DecimalFormat("#,###").format(amountDouble)
-        
-        // Cập nhật trạng thái nút Lưu (chỉ cho phép lưu khi số tiền > 0)
-        if (currentRawAmount != "0") {
-            btnSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary_blue))
-            btnSave.setTextColor(android.graphics.Color.WHITE)
-        } else {
-            btnSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.grey_light))
-            btnSave.setTextColor(ContextCompat.getColor(this, R.color.text_hint))
-        }
+        updateAmountDisplay()
     }
 
     /**
@@ -332,8 +359,17 @@ class AddTransactionActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val db = AppDatabase.getDatabase(this@AddTransactionActivity)
+                
+                // Quy đổi số tiền về VND nếu đang nhập bằng USD để lưu vào DB thống nhất
+                val inputAmount = currentRawAmount.toDoubleOrNull() ?: 0.0
+                val finalAmount = if (currentCurrency == CurrencyHelper.CURRENCY_USD) {
+                    inputAmount * CurrencyHelper.EXCHANGE_RATE_USD_TO_VND
+                } else {
+                    inputAmount
+                }
+
                 val trans = Transaction(
-                    amount = currentRawAmount.toDoubleOrNull() ?: 0.0,
+                    amount = finalAmount,
                     category = category,
                     date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
                     description = etDescription.text.toString(),

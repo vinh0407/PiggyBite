@@ -108,14 +108,22 @@ class SettingsActivity : AppCompatActivity() {
      * Hộp thoại chọn đơn vị tiền tệ chính
      */
     private fun showCurrencySelectionDialog(tvValue: TextView) {
-        val currencies = arrayOf("VND", "USD")
+        val currencies = arrayOf("VND", "USD", "VND & USD")
         val current = CurrencyHelper.getSelectedCurrency(this)
-        val checkedItem = if (current == "USD") 1 else 0
+        val checkedItem = when (current) {
+            CurrencyHelper.CURRENCY_USD -> 1
+            CurrencyHelper.CURRENCY_BOTH -> 2
+            else -> 0
+        }
 
         AlertDialog.Builder(this)
             .setTitle("Chọn loại tiền tệ")
             .setSingleChoiceItems(currencies, checkedItem) { dialog, which ->
-                val selected = currencies[which]
+                val selected = when (which) {
+                    1 -> CurrencyHelper.CURRENCY_USD
+                    2 -> CurrencyHelper.CURRENCY_BOTH
+                    else -> CurrencyHelper.CURRENCY_VND
+                }
                 CurrencyHelper.saveCurrency(this, selected)
                 tvValue.text = selected
                 dialog.dismiss()

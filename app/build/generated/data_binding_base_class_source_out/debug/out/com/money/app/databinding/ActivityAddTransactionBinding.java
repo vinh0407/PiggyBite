@@ -56,13 +56,17 @@ public final class ActivityAddTransactionBinding implements ViewBinding {
   public final TextView tvAmount;
 
   @NonNull
+  public final TextView tvCurrencySymbol;
+
+  @NonNull
   public final LinearLayout typeToggle;
 
   private ActivityAddTransactionBinding(@NonNull ConstraintLayout rootView,
       @NonNull LinearLayout amountContainer, @NonNull ImageButton btnClose,
       @NonNull TextView btnExpense, @NonNull TextView btnIncome, @NonNull Button btnSave,
       @NonNull ChipGroup cgCategories, @NonNull EditText etDescription, @NonNull View headerBg,
-      @NonNull GridLayout keypad, @NonNull TextView tvAmount, @NonNull LinearLayout typeToggle) {
+      @NonNull GridLayout keypad, @NonNull TextView tvAmount, @NonNull TextView tvCurrencySymbol,
+      @NonNull LinearLayout typeToggle) {
     this.rootView = rootView;
     this.amountContainer = amountContainer;
     this.btnClose = btnClose;
@@ -74,6 +78,7 @@ public final class ActivityAddTransactionBinding implements ViewBinding {
     this.headerBg = headerBg;
     this.keypad = keypad;
     this.tvAmount = tvAmount;
+    this.tvCurrencySymbol = tvCurrencySymbol;
     this.typeToggle = typeToggle;
   }
 
@@ -164,6 +169,12 @@ public final class ActivityAddTransactionBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvCurrencySymbol;
+      TextView tvCurrencySymbol = ViewBindings.findChildViewById(rootView, id);
+      if (tvCurrencySymbol == null) {
+        break missingId;
+      }
+
       id = R.id.typeToggle;
       LinearLayout typeToggle = ViewBindings.findChildViewById(rootView, id);
       if (typeToggle == null) {
@@ -172,7 +183,7 @@ public final class ActivityAddTransactionBinding implements ViewBinding {
 
       return new ActivityAddTransactionBinding((ConstraintLayout) rootView, amountContainer,
           btnClose, btnExpense, btnIncome, btnSave, cgCategories, etDescription, headerBg, keypad,
-          tvAmount, typeToggle);
+          tvAmount, tvCurrencySymbol, typeToggle);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

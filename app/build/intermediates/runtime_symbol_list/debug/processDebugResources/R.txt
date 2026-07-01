@@ -3918,6 +3918,7 @@ int id tvCalendarMonth 0x7f0902d7
 int id tvChangePassword 0x7f090298
 int id tvChartTitle 0x7f090299
 int id tvChatTitle 0x7f09029a
+int id tvCurrencySymbol 0x7f0902e0
 int id tvCurrencyValue 0x7f09029b
 int id tvCurrentMonth 0x7f09029c
 int id tvDailyAmount 0x7f0902d8

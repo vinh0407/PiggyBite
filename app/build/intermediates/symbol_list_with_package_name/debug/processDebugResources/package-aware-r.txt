@@ -3919,6 +3919,7 @@ id tvCalendarMonth
 id tvChangePassword
 id tvChartTitle
 id tvChatTitle
+id tvCurrencySymbol
 id tvCurrencyValue
 id tvCurrentMonth
 id tvDailyAmount

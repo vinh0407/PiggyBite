@@ -27,7 +27,7 @@
                 android:layout_height="48dp"
                 android:background="#F0F2FF"
                 android:padding="12dp"
-                android:src="@drawable/ic_camera"
+                android:src="@drawable/ic_piggy_bank"
                 app:tint="@color/primary_blue" />
 
             <LinearLayout
@@ -125,7 +125,7 @@
                 android:background="@drawable/circle_bg_dark"
                 android:backgroundTint="#F0F2FF"
                 android:padding="8dp"
-                android:src="@drawable/ic_camera"
+                android:src="@android:drawable/ic_input_add"
                 app:tint="@color/primary_blue" />
 
             <ImageButton

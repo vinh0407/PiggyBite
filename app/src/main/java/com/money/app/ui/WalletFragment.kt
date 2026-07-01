@@ -24,6 +24,7 @@ import com.money.app.data.Fund
 import com.money.app.data.Transaction
 import com.money.app.ui.MapActivity
 import com.money.app.util.AppUtils
+import com.money.app.util.CurrencyHelper
 import com.money.app.util.FirebaseSyncManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -83,6 +84,19 @@ class WalletFragment : Fragment() {
         binding.ivToggleBalance.setOnClickListener {
             isBalanceVisible = !isBalanceVisible
             updateBalanceDisplay()
+        }
+
+        // Nhấn vào số dư để đổi nhanh chế độ tiền tệ (VND -> USD -> Cả hai)
+        binding.tvTotalBalance.setOnClickListener {
+            val current = CurrencyHelper.getSelectedCurrency(requireContext())
+            val next = when (current) {
+                CurrencyHelper.CURRENCY_VND -> CurrencyHelper.CURRENCY_USD
+                CurrencyHelper.CURRENCY_USD -> CurrencyHelper.CURRENCY_BOTH
+                else -> CurrencyHelper.CURRENCY_VND
+            }
+            CurrencyHelper.saveCurrency(requireContext(), next)
+            loadData() // Tải lại toàn bộ dữ liệu để cập nhật định dạng
+            Toast.makeText(requireContext(), "Chế độ hiển thị: $next", Toast.LENGTH_SHORT).show()
         }
 
         // Click vào ảnh đại diện hoặc khung ảnh để thay đổi
@@ -228,7 +242,7 @@ class WalletFragment : Fragment() {
         binding.actionAIChat.actionText.text = "AI Chat"
         
         binding.actionGoals.root.setOnClickListener { startActivity(Intent(requireContext(), AllFundsActivity::class.java)) }
-        binding.actionGoals.actionIcon.setImageResource(R.drawable.ic_check_circle)
+        binding.actionGoals.actionIcon.setImageResource(R.drawable.ic_piggy_bank)
         binding.actionGoals.actionText.text = "Mục tiêu/Goals"
 
         // Nút thêm giao dịch khi biểu đồ trống
@@ -403,6 +417,7 @@ class WalletFragment : Fragment() {
                 val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_fund_premium, binding.fundsContainer, false)
                 item.findViewById<TextView>(R.id.tvGoalName).text = fund.name
                 item.findViewById<TextView>(R.id.tvGoalProgress).text = "${AppUtils.formatCurrency(fund.currentAmount, requireContext())} / ${AppUtils.formatCurrency(fund.targetAmount, requireContext())}"
+                item.findViewById<ImageView>(R.id.ivGoalIcon).setImageResource(R.drawable.ic_piggy_bank)
                 
                 val percent = if (fund.targetAmount > 0) (fund.currentAmount / fund.targetAmount * 100).toInt() else 0
                 item.findViewById<TextView>(R.id.tvGoalPercent).text = "$percent%"
@@ -417,6 +432,11 @@ class WalletFragment : Fragment() {
                     fund.isPinned = !fund.isPinned
                     lifecycleScope.launch(Dispatchers.IO) { db.fundDao().update(fund) }
                     renderFunds()
+                }
+
+                // Nút chia sẻ (mời thành viên)
+                item.findViewById<ImageButton>(R.id.btnShareFund).setOnClickListener {
+                    showAddMemberDialog(fund)
                 }
 
                 // Nhấn giữ để xem menu tùy chọn xóa/sửa
@@ -626,17 +646,43 @@ class WalletFragment : Fragment() {
 
     // Hộp thoại nhập số tiền khi Nộp hoặc Rút khỏi quỹ
     private fun showAmountDialog(fund: Fund, isDeposit: Boolean) {
+        val layout = LinearLayout(requireContext())
+        layout.orientation = LinearLayout.HORIZONTAL
+        layout.setPadding(50, 40, 50, 10)
+
         val et = EditText(requireContext())
-        et.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+        et.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        et.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
         et.hint = "Nhập số tiền..."
+        
+        val tvCurrency = TextView(requireContext())
+        val savedCurrency = CurrencyHelper.getSelectedCurrency(requireContext())
+        var currentCurrency = if (savedCurrency == CurrencyHelper.CURRENCY_BOTH) CurrencyHelper.CURRENCY_VND else savedCurrency
+        tvCurrency.text = currentCurrency
+        tvCurrency.setPadding(20, 0, 20, 0)
+        tvCurrency.textSize = 16f
+        tvCurrency.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_blue))
+        tvCurrency.isClickable = true
+        tvCurrency.setOnClickListener {
+            currentCurrency = if (currentCurrency == CurrencyHelper.CURRENCY_VND) CurrencyHelper.CURRENCY_USD else CurrencyHelper.CURRENCY_VND
+            tvCurrency.text = currentCurrency
+        }
+
+        layout.addView(et)
+        layout.addView(tvCurrency)
         
         android.app.AlertDialog.Builder(requireContext())
             .setTitle(if (isDeposit) "Góp vào quỹ" else "Rút từ quỹ")
-            .setView(et)
+            .setView(layout)
             .setPositiveButton("Xác nhận") { _, _ ->
-                val amount = et.text.toString().toDoubleOrNull() ?: 0.0
-                if (amount > 0) {
-                    processFundTransaction(fund, amount, isDeposit)
+                val inputAmount = et.text.toString().toDoubleOrNull() ?: 0.0
+                if (inputAmount > 0) {
+                    val finalAmount = if (currentCurrency == CurrencyHelper.CURRENCY_USD) {
+                        inputAmount * CurrencyHelper.EXCHANGE_RATE_USD_TO_VND
+                    } else {
+                        inputAmount
+                    }
+                    processFundTransaction(fund, finalAmount, isDeposit)
                 }
             }
             .setNegativeButton("Hủy", null)
