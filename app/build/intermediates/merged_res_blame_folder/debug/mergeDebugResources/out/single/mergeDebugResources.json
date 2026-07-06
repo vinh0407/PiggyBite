@@ -112,10 +112,6 @@
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\ic_piggy_bank.xml"
     },
     {
-        "merged": "com.money.app-debug-80:/layout_activity_add_transaction.xml.flat",
-        "source": "com.money.app-main-82:/layout/activity_add_transaction.xml"
-    },
-    {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_icon_app_money.jpg.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\icon_app_money.jpg"
     },
@@ -362,6 +358,10 @@
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_bg_keypad_button.xml.flat",
         "source": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-main-82:\\drawable\\bg_keypad_button.xml"
+    },
+    {
+        "merged": "com.money.app-debug-80:/layout_dialog_category_selection.xml.flat",
+        "source": "com.money.app-main-82:/layout/dialog_category_selection.xml"
     },
     {
         "merged": "C:\\Users\\admin\\.gradle\\daemon\\9.4.1\\com.money.app-debug-80:\\drawable_bg_income_card.xml.flat",

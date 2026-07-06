@@ -3385,6 +3385,7 @@ int id btnIncome 0x7f090087
 int id btnLogin 0x7f090088
 int id btnLogout 0x7f090089
 int id btnMap 0x7f09008a
+int id btnMoreCategories 0x7f0902e1
 int id btnNavCalendar 0x7f09008b
 int id btnNavHome 0x7f09008c
 int id btnNavWallet 0x7f09008d

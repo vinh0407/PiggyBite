@@ -26,7 +26,7 @@ import java.util.*
  * - Tự động phân loại hạng mục dựa trên nội dung
  * - Bàn phím số tùy chỉnh
  */
-class AddTransactionActivity : AppCompatActivity() {
+class AddTransactionActivity : AppCompatActivity(), CategorySelectionBottomSheet.OnCategorySelectedListener {
 
     private lateinit var tvAmount: TextView
     private lateinit var tvCurrencySymbol: TextView
@@ -35,6 +35,7 @@ class AddTransactionActivity : AppCompatActivity() {
     private lateinit var btnExpense: TextView
     private lateinit var btnIncome: TextView
     private lateinit var btnSave: Button
+    private lateinit var btnMoreCategories: TextView
     
     private var currentRawAmount: String = "0" // Lưu trữ số tiền dưới dạng chuỗi thô để xử lý bàn phím
     private var isExpenseMode: Boolean = true // Chế độ Chi tiêu (mặc định) hoặc Thu nhập
@@ -53,11 +54,23 @@ class AddTransactionActivity : AppCompatActivity() {
         btnExpense = findViewById(R.id.btnExpense)
         btnIncome = findViewById(R.id.btnIncome)
         btnSave = findViewById(R.id.btnSave)
+        btnMoreCategories = findViewById(R.id.btnMoreCategories)
 
         // Khởi tạo loại tiền tệ từ cài đặt
         val savedCurrency = CurrencyHelper.getSelectedCurrency(this)
         currentCurrency = if (savedCurrency == CurrencyHelper.CURRENCY_BOTH) CurrencyHelper.CURRENCY_VND else savedCurrency
         updateCurrencySymbol()
+
+        // Nút mở bảng chọn hạng mục chi tiết
+        btnMoreCategories.setOnClickListener {
+            val selected = arrayListOf<String>()
+            val checkedId = cgCategories.checkedChipId
+            if (checkedId != -1) {
+                selected.add(cgCategories.findViewById<Chip>(checkedId).text.toString())
+            }
+            val sheet = CategorySelectionBottomSheet.newInstance(isExpenseMode, selected)
+            sheet.show(supportFragmentManager, "CategorySelection")
+        }
 
         // Nút đóng màn hình
         findViewById<View>(R.id.btnClose).setOnClickListener { finish() }
@@ -100,6 +113,33 @@ class AddTransactionActivity : AppCompatActivity() {
         
         // Sự kiện lưu giao dịch
         btnSave.setOnClickListener { validateAndSave() }
+    }
+
+    /**
+     * Triển khai từ CategorySelectionBottomSheet.OnCategorySelectedListener
+     * Nhận hạng mục được chọn từ BottomSheet và hiển thị lên ChipGroup
+     */
+    override fun onCategorySelected(categories: List<String>) {
+        if (categories.isNotEmpty()) {
+            val first = categories[0]
+            var found = false
+            for (i in 0 until cgCategories.childCount) {
+                val chip = cgCategories.getChildAt(i) as Chip
+                if (chip.text.toString().trim() == first.trim()) {
+                    chip.isChecked = true
+                    found = true
+                    break
+                }
+            }
+            if (!found) {
+                val chip = Chip(this)
+                chip.text = first
+                chip.isCheckable = true
+                chip.isChecked = true
+                chip.chipBackgroundColor = ContextCompat.getColorStateList(this, R.color.white)
+                cgCategories.addView(chip, 0)
+            }
+        }
     }
 
     /**

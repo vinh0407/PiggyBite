@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet_translucent"
+    android:background="@drawable/bg_bottom_sheet_top_curved"
     android:paddingBottom="32dp">
 
     <View
         android:id="@+id/dragHandle"
         android:layout_width="40dp"
         android:layout_height="4dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:background="@color/light_grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,18 +23,18 @@
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/circle_bg_dark"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_close"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dragHandle"
-        app:tint="@color/white" />
+        app:tint="@color/text_main" />
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/cat_selection_title"
-        android:textColor="@color/white"
+        android:textColor="@color/text_main"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btnClose"
@@ -59,7 +59,7 @@
         android:id="@+id/monthSwitcher"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -73,7 +73,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:rotation="90"
             android:src="@drawable/ic_arrow_down"
-            app:tint="@color/white" />
+            app:tint="@color/text_main" />
 
         <TextView
             android:id="@+id/tvCurrentMonth"
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="12dp"
             android:text="@string/wallet_placeholder"
-            android:textColor="@color/accent"
+            android:textColor="@color/primary_blue"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -92,7 +92,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:rotation="-90"
             android:src="@drawable/ic_arrow_down"
-            app:tint="@color/white" />
+            app:tint="@color/text_main" />
     </LinearLayout>
 
     <!-- Content Scroll -->

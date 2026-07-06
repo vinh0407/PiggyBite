@@ -121,6 +121,7 @@ id btnIncome
 id btnLogin
 id btnLogout
 id btnMap
+id btnMoreCategories
 id btnNavCalendar
 id btnNavHome
 id btnNavWallet

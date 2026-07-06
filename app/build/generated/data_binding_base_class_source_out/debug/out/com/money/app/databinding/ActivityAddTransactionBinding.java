@@ -38,6 +38,9 @@ public final class ActivityAddTransactionBinding implements ViewBinding {
   public final TextView btnIncome;
 
   @NonNull
+  public final TextView btnMoreCategories;
+
+  @NonNull
   public final Button btnSave;
 
   @NonNull
@@ -63,15 +66,17 @@ public final class ActivityAddTransactionBinding implements ViewBinding {
 
   private ActivityAddTransactionBinding(@NonNull ConstraintLayout rootView,
       @NonNull LinearLayout amountContainer, @NonNull ImageButton btnClose,
-      @NonNull TextView btnExpense, @NonNull TextView btnIncome, @NonNull Button btnSave,
-      @NonNull ChipGroup cgCategories, @NonNull EditText etDescription, @NonNull View headerBg,
-      @NonNull GridLayout keypad, @NonNull TextView tvAmount, @NonNull TextView tvCurrencySymbol,
+      @NonNull TextView btnExpense, @NonNull TextView btnIncome,
+      @NonNull TextView btnMoreCategories, @NonNull Button btnSave, @NonNull ChipGroup cgCategories,
+      @NonNull EditText etDescription, @NonNull View headerBg, @NonNull GridLayout keypad,
+      @NonNull TextView tvAmount, @NonNull TextView tvCurrencySymbol,
       @NonNull LinearLayout typeToggle) {
     this.rootView = rootView;
     this.amountContainer = amountContainer;
     this.btnClose = btnClose;
     this.btnExpense = btnExpense;
     this.btnIncome = btnIncome;
+    this.btnMoreCategories = btnMoreCategories;
     this.btnSave = btnSave;
     this.cgCategories = cgCategories;
     this.etDescription = etDescription;
@@ -133,6 +138,12 @@ public final class ActivityAddTransactionBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnMoreCategories;
+      TextView btnMoreCategories = ViewBindings.findChildViewById(rootView, id);
+      if (btnMoreCategories == null) {
+        break missingId;
+      }
+
       id = R.id.btnSave;
       Button btnSave = ViewBindings.findChildViewById(rootView, id);
       if (btnSave == null) {
@@ -182,8 +193,8 @@ public final class ActivityAddTransactionBinding implements ViewBinding {
       }
 
       return new ActivityAddTransactionBinding((ConstraintLayout) rootView, amountContainer,
-          btnClose, btnExpense, btnIncome, btnSave, cgCategories, etDescription, headerBg, keypad,
-          tvAmount, tvCurrencySymbol, typeToggle);
+          btnClose, btnExpense, btnIncome, btnMoreCategories, btnSave, cgCategories, etDescription,
+          headerBg, keypad, tvAmount, tvCurrencySymbol, typeToggle);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
