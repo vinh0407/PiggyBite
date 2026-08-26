@@ -88,5 +88,3 @@
 
 ---
 
-## 📜 License
-Copyright © 2024 PiggyBite Team. Distributed under the MIT License.
