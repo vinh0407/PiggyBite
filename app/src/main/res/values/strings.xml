@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PiggyBite</string>
+    <string name="app_name">VINORA</string>
     <string name="nav_calendar">Lịch/Calendar</string>
     <string name="nav_home">Trang chủ/Home</string>
     <string name="nav_wallet">Ví/Wallet</string>
@@ -29,14 +29,14 @@
     <string name="settings_logout">Đăng xuất</string>
 
     <!-- Login/Register -->
-    <string name="login_tagline">Quản lý tài chính &amp; Tiết kiệm thông minh</string>
+    <string name="login_tagline">VINORA - Quản lý tài chính &amp; Tích lũy thông minh</string>
     <string name="login_email">Email</string>
     <string name="login_phone">Số điện thoại</string>
     <string name="login_password_hint">Mật khẩu</string>
     <string name="login_forgot_password">Quên mật khẩu?</string>
     <string name="login_start">Bắt đầu</string>
     <string name="login_register_link">Chưa có tài khoản? Đăng ký ngay</string>
-    <string name="register_title">Tạo tài khoản</string>
+    <string name="register_title">Tạo tài khoản VINORA</string>
     <string name="register_name_hint">Họ và tên</string>
     <string name="register_balance_hint">Tài sản hiện có (VND)</string>
     <string name="register_submit">Đăng ký</string>
@@ -46,7 +46,7 @@
     <string name="trans_category_label">DANH MỤC</string>
     <string name="trans_desc_label">MÔ TẢ</string>
     <string name="trans_desc_hint">Nhập mô tả...</string>
-    <string name="trans_ai_hint">✨ AI sẽ tự điền danh mục từ mô tả của bạn</string>
+    <string name="trans_ai_hint">✨ VINORA AI sẽ tự điền danh mục từ mô tả của bạn</string>
     <string name="trans_save_expense">Lưu Chi tiêu</string>
     <string name="trans_history">Lịch sử giao dịch/History</string>
 
@@ -70,7 +70,7 @@
 
     <!-- Wallet Analysis -->
     <string name="wallet_placeholder">---</string>
-    <string name="wallet_slogan">Tích tiểu thành đại, quản lý tương lai</string>
+    <string name="wallet_slogan">VINORA - Quản lý tài chính &amp; Làm chủ tương lai</string>
     <string name="wallet_zero_balance">0đ</string>
     <string name="wallet_analysis_month">Phân tích tháng</string>
     <string name="wallet_weekly_flow">Dòng tiền tuần này</string>
@@ -88,11 +88,11 @@
     <string name="empty_stats_desc">Vui lòng chọn khoảng thời gian khác hoặc thêm mới</string>
 
     <!-- AI Chat -->
-    <string name="ai_assistant_title">PiggyBite AI Assistant</string>
+    <string name="ai_assistant_title">VINORA AI Assistant</string>
     <string name="ai_calculating">Đang tính toán...</string>
     <string name="ai_dots">...</string>
-    <string name="ai_welcome_title">Xin chào! Tôi là PiggyBite AI</string>
-    <string name="ai_welcome_desc">Tôi có thể giúp bạn lập kế hoạch tài chính, phân tích chi tiêu hoặc chỉ là tán gẫu.</string>
+    <string name="ai_welcome_title">Xin chào! Tôi là VINORA AI</string>
+    <string name="ai_welcome_desc">Tôi có thể giúp bạn lập kế hoạch tài chính, phân tích chi tiêu hoặc quản lý mục tiêu tích lũy.</string>
     <string name="ai_sug_food">Ăn uống %?</string>
     <string name="ai_sug_emergency">Quỹ khẩn cấp?</string>
     <string name="ai_sug_saving">Tỷ lệ tiết kiệm?</string>

@@ -18,7 +18,7 @@ class NetworkMonitor : BroadcastReceiver() {
         
         if (!isConnected) {
             // Hiển thị thông báo khi mất kết nối
-            Toast.makeText(context, "Mất kết nối Internet. PiggyBite đang ở chế độ ngoại tuyến.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Mất kết nối Internet. VINORA đang ở chế độ ngoại tuyến.", Toast.LENGTH_LONG).show()
         }
     }
 }

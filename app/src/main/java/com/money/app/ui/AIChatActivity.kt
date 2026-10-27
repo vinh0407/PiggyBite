@@ -76,6 +76,13 @@ class AIChatActivity : AppCompatActivity() {
 
     // Gán sự kiện click cho các Chip câu hỏi gợi ý
     private fun setupSuggestions() {
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.sug1)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.sug2)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.sug3)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.sug4)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnSend)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnBack)
+
         binding.sug1.setOnClickListener { sendMessage(binding.sug1.text.toString()) }
         binding.sug2.setOnClickListener { sendMessage(binding.sug2.text.toString()) }
         binding.sug3.setOnClickListener { sendMessage(binding.sug3.text.toString()) }
@@ -268,7 +275,7 @@ class AIChatActivity : AppCompatActivity() {
 
                 // Thiết lập prompt hệ thống (System Instructions)
                 val system = """
-                    Bạn là PiggyBite AI Assistant (3.5 Flash).
+                    Bạn là VINORA AI Assistant (3.5 Flash).
                     Dữ liệu thực tế của người dùng:
                     - Số dư: ${AppUtils.formatCurrency(total, this@AIChatActivity)}
                     - Lịch sử khớp: $context

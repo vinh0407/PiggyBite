@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) { tvStatus.text = "PiggyBite đang nghe..." }
+            override fun onReadyForSpeech(params: Bundle?) { tvStatus.text = "VINORA đang nghe..." }
             override fun onEndOfSpeech() { tvStatus.text = "Đang xử lý dữ liệu..." }
             override fun onError(error: Int) { tvStatus.text = "Không nghe rõ, hãy thử lại." }
             override fun onResults(results: Bundle?) {
@@ -256,6 +256,12 @@ class MainActivity : AppCompatActivity() {
      * Cài đặt logic chuyển đổi giữa các màn hình chính (Navigation)
      */
     private fun setupNavigation() {
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnNavCalendar)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnNavHome)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnNavWallet)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnVoice)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnCapture)
+
         binding.btnNavCalendar.setOnClickListener { switchFragment(R.id.btnNavCalendar, CalendarFragment()) }
         binding.btnNavHome.setOnClickListener { switchFragment(R.id.btnNavHome, WalletFragment()) }
         binding.btnNavWallet.setOnClickListener { 

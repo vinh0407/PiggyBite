@@ -51,6 +51,39 @@ class SettingsActivity : AppCompatActivity() {
             showCurrencySelectionDialog(tvCurrency)
         }
 
+        // Mở màn hình Tài khoản & Net Worth
+        findViewById<View>(R.id.btnAccounts).setOnClickListener {
+            startActivity(Intent(this, AccountsActivity::class.java))
+        }
+
+        // Mở màn hình Ngân sách
+        findViewById<View>(R.id.btnBudgets).setOnClickListener {
+            startActivity(Intent(this, BudgetsActivity::class.java))
+        }
+
+        // Mở màn hình Sổ nợ
+        findViewById<View>(R.id.btnDebts).setOnClickListener {
+            startActivity(Intent(this, DebtActivity::class.java))
+        }
+
+        // Mở màn hình Đầu tư Portfolio
+        findViewById<View>(R.id.btnInvestments).setOnClickListener {
+            startActivity(Intent(this, InvestmentActivity::class.java))
+        }
+
+        // Xuất báo cáo CSV
+        findViewById<View>(R.id.btnExportCSV).setOnClickListener {
+            lifecycleScope.launch {
+                val exporter = com.money.app.util.CSVExporter(this@SettingsActivity)
+                val csvFile = exporter.exportTransactionsToCSV()
+                if (csvFile != null) {
+                    exporter.shareCSVFile(csvFile)
+                } else {
+                    Toast.makeText(this@SettingsActivity, "Không thể tạo tệp CSV", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
         // Xử lý Đăng xuất
         findViewById<View>(R.id.btnLogout).setOnClickListener {
             performLogout()

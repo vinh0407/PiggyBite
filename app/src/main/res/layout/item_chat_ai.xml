@@ -10,7 +10,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="bottom"
-        android:src="@drawable/ic_piggy_bank"
+        android:src="@drawable/ic_vinora_logo"
         app:tint="@color/primary_blue" />
 
     <androidx.cardview.widget.CardView

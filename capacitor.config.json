@@ -1,0 +1,8 @@
+{
+  "appId": "com.money.app",
+  "appName": "PiggyBite",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

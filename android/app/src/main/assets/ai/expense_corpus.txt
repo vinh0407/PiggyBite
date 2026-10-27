@@ -1,0 +1,122 @@
+# PiggyBite – bộ dữ liệu huấn luyện sẵn cho AI phân loại CHI TIÊU
+# Định dạng: NHAN|nội dung thông báo
+# Nhãn: ANUONG, MUASAM, DICHUYEN, HOADON, GIAITRI, SUCKHOE, KHAC
+
+ANUONG|Thanh toan Highlands Coffee Vincom Dong Khoi -55,000 VND
+ANUONG|The Coffee House: thanh toan hoa don tra sua va ca phe -89,000 VND
+ANUONG|Phuc Long Tea & Coffee thanh toan qua QR -65,000 VND
+ANUONG|GrabFood: Thanh toan don hang com tam suon bi cha -45,000 VND
+ANUONG|ShopeeFood: Giao com ga xoi mo thanh toan thanh cong -52,000 VND
+ANUONG|Baemin: Thanh toan bun bo Hue -40,000 VND
+ANUONG|Thanh toan Haidilao Hotpot Bitexco -1,250,000 VND
+ANUONG|KFC Vietnam: Thanh toan combo ga ran -165,000 VND
+ANUONG|Lotteria: Combo burger va khoai tay chien -95,000 VND
+ANUONG|Pizza 4P: Thanh toan hoa don ban an toi -780,000 VND
+ANUONG|Gogi House nuong Han Quoc -850,000 VND
+ANUONG|Kichi Kichi lau bang chuyen -590,000 VND
+ANUONG|Com trua van phong quan Co Ba -35,000 VND
+ANUONG|Tra sua Gong Cha tran chau duong den -62,000 VND
+ANUONG|Topping Beef Steakhouse quan 1 -620,000 VND
+ANUONG|Quan pho Thin Lo Duc ha noi -70,000 VND
+ANUONG|Banh mi Huynh Hoa Sai Gon -68,000 VND
+ANUONG|Tien an trua cung dong nghiep -50,000 VND
+ANUONG|Tra tien cafe sang chu nhat -45,000 VND
+ANUONG|Nuoc ep hoa qua va sinh to bo -38,000 VND
+ANUONG|Tien an toi voi gia dinh quan lau -650,000 VND
+ANUONG|An oc dem quan oc Dao -320,000 VND
+ANUONG|Chuyen tien an lau de -480,000 VND
+ANUONG|Banh ngot Paris Baguette -120,000 VND
+ANUONG|Starbucks Coffee thanh toan the -115,000 VND
+
+MUASAM|Shopee: Thanh toan don hang quan ao nam -250,000 VND
+MUASAM|TikTok Shop: Thanh toan don my pham son moi -189,000 VND
+MUASAM|Lazada: Thanh toan don hang giay the thao -540,000 VND
+MUASAM|WinMart: Thanh toan hoa don thuc pham sieu thi -320,000 VND
+MUASAM|Coopmart: Mua sam do dung gia dinh -680,000 VND
+MUASAM|Bach Hoa Xanh: Rau cu thit ca thuc pham tuoi -175,000 VND
+MUASAM|Uniqlo Vietnam: Thanh toan ao khoac chong nang -799,000 VND
+MUASAM|Zara Vincom: Mua quan jean va ao so mi -1,450,000 VND
+MUASAM|H&M Crescent Mall: Mua quan ao tre em -420,000 VND
+MUASAM|The Gioi Di Dong: Mua tai nghe Bluetooth -690,000 VND
+MUASAM|FPT Shop: Mua sac du phong Anker -450,000 VND
+MUASAM|Cellphones: Mua op lung cuong luc iPhone -230,000 VND
+MUASAM|Hasaki Beauty: Thanh toan kem chong nang -385,000 VND
+MUASAM|Guardian: Mua dau goi sua tam ban chai -210,000 VND
+MUASAM|Aeon Mall: Mua sam cuoi tuan -1,150,000 VND
+MUASAM|Lotte Mart: Mua do tieu dung hang ngay -490,000 VND
+MUASAM|Mua sach tiki nha sach Fahasa -185,000 VND
+MUASAM|Mua ban phim co va chuot khong day -850,000 VND
+MUASAM|Thanh toan do gia dung cay lau nha -160,000 VND
+MUASAM|Mua giay sneaker Bitis Hunter -899,000 VND
+
+DICHUYEN|Grab: Chuyen xe GrabCar tu quan 1 ve nha -85,000 VND
+DICHUYEN|Be Group: Cuoc xe BeBike di lam -28,000 VND
+DICHUYEN|Xanh SM: Di chuyen taxi dien VinFast -115,000 VND
+DICHUYEN|Petrolimex: Do xang xe may cay xang so 3 -80,000 VND
+DICHUYEN|PVOIL: Do xang A95 xe oto -800,000 VND
+DICHUYEN|VETC: Nap tien thu phi khong dung ETC cao toc -300,000 VND
+DICHUYEN|ePass: Nap tien thu phi tu dong BOT -200,000 VND
+DICHUYEN|Ve may bay Vietjet Air di Da Nang -1,850,000 VND
+DICHUYEN|Vietnam Airlines: Ve may bay khu hoi Ha Noi -3,200,000 VND
+DICHUYEN|Ve xe khach Phuong Trang di Da Lat -290,000 VND
+DICHUYEN|Ve tau hoa Duong sat Viet Nam -450,000 VND
+DICHUYEN|Phi gui xe thang toa nha van phong -150,000 VND
+DICHUYEN|Phi gui xe may qua dem -20,000 VND
+DICHUYEN|Thue xe tu lai cuoi tuan -1,200,000 VND
+DICHUYEN|Tien bao duong thay nhot xe may Honda -140,000 VND
+DICHUYEN|Sua xe va va sam xe -45,000 VND
+DICHUYEN|Rua xe oto va hut bui -120,000 VND
+
+HOADON|EVN: Thanh toan hoa don tien dien thang 10 -850,000 VND
+HOADON|Tien nuoc sinh hoat cong ty cap nuoc Sawaco -145,000 VND
+HOADON|Viettel Telecom: Cuoc internet cap quang thang 10 -220,000 VND
+HOADON|VNPT: Thanh toan cuoc vien thong internet -180,000 VND
+HOADON|FPT Telecom: Hoa don internet truyen hinh -275,000 VND
+HOADON|Tien thue phong tro thang 11 -3,500,000 VND
+HOADON|Tien thue nha thang 10 -7,000,000 VND
+HOADON|Phi quan ly chung cu va gui xe oto -1,450,000 VND
+HOADON|Hoc phi hoc ky 1 dai hoc -8,500,000 VND
+HOADON|Tien hoc them tieng Anh IELT thang 10 -2,200,000 VND
+HOADON|Nap tien dien thoai MobiFone tra truoc -100,000 VND
+HOADON|Nap the cao VinaPhone 4G -50,000 VND
+HOADON|Tien gas dun nau binh 12kg -380,000 VND
+HOADON|Dong phi bao hiem nhan tho Prudential -4,500,000 VND
+HOADON|Phi bao hiem y te Manulife dinh ky -3,200,000 VND
+HOADON|Thanh toan lai vay mua nha -6,800,000 VND
+
+GIAITRI|CGV Cinemas: Mua 2 ve xem phim va bap nuoc -240,000 VND
+GIAITRI|Lotte Cinema: Ve xem phim cuoi tuan -180,000 VND
+GIAITRI|Netflix: Gia han goi Premium thang 10 -260,000 VND
+GIAITRI|Spotify: Gia han goi Premium gia dinh -99,000 VND
+GIAITRI|YouTube Premium hang thang -79,000 VND
+GIAITRI|iCloud 200GB Apple dung luong -69,000 VND
+GIAITRI|Steam Games: Mua game giam gia -450,000 VND
+GIAITRI|Nap the game Garena Lien Quan -200,000 VND
+GIAITRI|Ve xem ca nhac concert live -1,500,000 VND
+GIAITRI|Dat phong khach san Agoda Da Lat -950,000 VND
+GIAITRI|Traveloka dat phong resort Phu Quoc -2,400,000 VND
+GIAITRI|Phi hoi vien phong tap Gym California -800,000 VND
+GIAITRI|San cau long tien gio va cau -150,000 VND
+GIAITRI|Tien san bong da mini toi thu 5 -200,000 VND
+GIAITRI|Hat karaoke gia dinh cuoi tuan -550,000 VND
+GIAITRI|Bia va cau lac bo bida quan 10 -180,000 VND
+
+SUCKHOE|Nha thuoc Pharmacity: Mua thuoc cam va vitamin C -165,000 VND
+SUCKHOE|Nha thuoc Long Chau: Don thuoc khang sinh ho sot -240,000 VND
+SUCKHOE|Nha thuoc An Khang mua thuoc tieu hoa -95,000 VND
+SUCKHOE|Benh vien Dai hoc Y Duoc: Phi kham benh chuyen khoa -450,000 VND
+SUCKHOE|Kham tong quat benh vien Vinmec -2,800,000 VND
+SUCKHOE|Nha khoa Kim: Lay cao rang va tay trang rang -350,000 VND
+SUCKHOE|Nha khoa: Tram rang sau so 6 -400,000 VND
+SUCKHOE|Kham mat va cat kinh can mat kinh Sai Gon -850,000 VND
+SUCKHOE|Tien mua thuc pham chuc nang Omega 3 -420,000 VND
+SUCKHOE|Tiem phong vac xin cum trung tam VNVC -380,000 VND
+SUCKHOE|Sieu am va xet nghiem mau -650,000 VND
+
+KHAC|Chuyen tien khac -100,000 VND
+KHAC|Rut tien mat tai cay ATM -2,000,000 VND
+KHAC|Phi duy tri tai khoan ngan hang -11,000 VND
+KHAC|Phi SMS Banking thang 10 -16,500 VND
+KHAC|Phi thuong nien the tin dung -330,000 VND
+KHAC|Chuyen tien cho ban -200,000 VND
+KHAC|Giao dich chuyen khoan -500,000 VND

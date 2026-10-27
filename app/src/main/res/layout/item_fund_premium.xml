@@ -27,7 +27,7 @@
                 android:layout_height="48dp"
                 android:background="#F0F2FF"
                 android:padding="12dp"
-                android:src="@drawable/ic_piggy_bank"
+                android:src="@drawable/ic_vinora_logo"
                 app:tint="@color/primary_blue" />
 
             <LinearLayout
@@ -119,23 +119,23 @@
 
             <ImageButton
                 android:id="@+id/btnShareFund"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="12dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
                 android:background="@drawable/circle_bg_dark"
                 android:backgroundTint="#F0F2FF"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:src="@android:drawable/ic_input_add"
                 app:tint="@color/primary_blue" />
 
             <ImageButton
                 android:id="@+id/btnDeleteFund"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="12dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
                 android:background="@drawable/circle_bg_dark"
                 android:backgroundTint="#F5F5F5"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:src="@drawable/ic_heart"
                 app:tint="@color/text_hint" />
 

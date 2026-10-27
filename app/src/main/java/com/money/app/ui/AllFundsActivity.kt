@@ -68,7 +68,7 @@ class AllFundsActivity : AppCompatActivity() {
             val percent = if (fund.targetAmount > 0) (fund.currentAmount / fund.targetAmount * 100).toInt() else 0
             holder.tvPercent.text = "$percent%"
             holder.progressBar.progress = percent.coerceIn(0, 100)
-            holder.ivIcon.setImageResource(R.drawable.ic_piggy_bank)
+            holder.ivIcon.setImageResource(R.drawable.ic_vinora_logo)
 
             // Nút mời thành viên vào quỹ chung
             holder.btnShare.setOnClickListener {

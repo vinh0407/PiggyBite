@@ -59,7 +59,7 @@ fun IntroScreen(onStart: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF4A5BCC)) // Màu nền chủ đạo của PiggyBite
+            .background(Color(0xFF4A5BCC)) // Màu nền chủ đạo của VINORA
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -75,7 +75,7 @@ fun IntroScreen(onStart: () -> Unit) {
         
         // Tiêu đề chào mừng
         Text(
-            text = "Chào mừng bạn đến với\nPiggyBite",
+            text = "Chào mừng bạn đến với\nVINORA",
             color = Color.White,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,

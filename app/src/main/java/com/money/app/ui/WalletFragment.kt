@@ -173,14 +173,14 @@ class WalletFragment : Fragment() {
                 if (file.exists()) {
                     binding.ivProfile.setImageURI(uri)
                 } else {
-                    binding.ivProfile.setImageResource(R.drawable.ic_piggy_bank)
+                    binding.ivProfile.setImageResource(R.drawable.ic_vinora_logo)
                 }
             } else {
                 // Nếu là content URI, thử hiển thị trực tiếp (có thể thất bại nếu hết quyền)
                 try {
                     binding.ivProfile.setImageURI(uri)
                 } catch (e: Exception) {
-                    binding.ivProfile.setImageResource(R.drawable.ic_piggy_bank)
+                    binding.ivProfile.setImageResource(R.drawable.ic_vinora_logo)
                 }
             }
         }
@@ -208,6 +208,12 @@ class WalletFragment : Fragment() {
 
     // Gán các sự kiện chuyển màn hình cho các nút chức năng
     private fun setupQuickActions() {
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnSettings)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnMap)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnViewFlowMore)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnViewAllTrans)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.btnAddFund)
+
         binding.btnSettings.setOnClickListener {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
         }
@@ -228,22 +234,53 @@ class WalletFragment : Fragment() {
             startActivity(Intent(requireContext(), AddFundActivity::class.java))
         }
 
-        // Các nút bấm nhanh (Quick action pills)
+        binding.btnPayAction?.setOnClickListener {
+            startActivity(Intent(requireContext(), AddTransactionActivity::class.java))
+        }
+        binding.btnDepositAction?.setOnClickListener {
+            startActivity(Intent(requireContext(), AccountsActivity::class.java))
+        }
+
+        // 8 Nút bấm nhanh (Command Center Pills)
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.actionAdd.root)
         binding.actionAdd.root.setOnClickListener { startActivity(Intent(requireContext(), AddTransactionActivity::class.java)) }
         binding.actionAdd.actionIcon.setImageResource(android.R.drawable.ic_input_add)
         binding.actionAdd.actionText.text = "Thêm/Add"
 
-        binding.actionReport.root.setOnClickListener { startActivity(Intent(requireContext(), StatisticsActivity::class.java)) }
-        binding.actionReport.actionIcon.setImageResource(R.drawable.ic_chart)
-        binding.actionReport.actionText.text = "Báo cáo/Stats"
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.actionAccounts.root)
+        binding.actionAccounts.root.setOnClickListener { startActivity(Intent(requireContext(), AccountsActivity::class.java)) }
+        binding.actionAccounts.actionIcon.setImageResource(R.drawable.ic_wallet)
+        binding.actionAccounts.actionText.text = "Tài khoản/Accounts"
 
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.actionBudgets.root)
+        binding.actionBudgets.root.setOnClickListener { startActivity(Intent(requireContext(), BudgetsActivity::class.java)) }
+        binding.actionBudgets.actionIcon.setImageResource(R.drawable.ic_chart)
+        binding.actionBudgets.actionText.text = "Ngân sách/Budgets"
+
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.actionDebt.root)
+        binding.actionDebt.root.setOnClickListener { startActivity(Intent(requireContext(), DebtActivity::class.java)) }
+        binding.actionDebt.actionIcon.setImageResource(R.drawable.ic_book)
+        binding.actionDebt.actionText.text = "Sổ nợ/Debt"
+
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.actionInvestments.root)
+        binding.actionInvestments.root.setOnClickListener { startActivity(Intent(requireContext(), InvestmentActivity::class.java)) }
+        binding.actionInvestments.actionIcon.setImageResource(R.drawable.ic_coin)
+        binding.actionInvestments.actionText.text = "Đầu tư/Invest"
+
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.actionAIChat.root)
         binding.actionAIChat.root.setOnClickListener { startActivity(Intent(requireContext(), AIChatActivity::class.java)) }
         binding.actionAIChat.actionIcon.setImageResource(R.drawable.ic_brain)
         binding.actionAIChat.actionText.text = "AI Chat"
         
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.actionGoals.root)
         binding.actionGoals.root.setOnClickListener { startActivity(Intent(requireContext(), AllFundsActivity::class.java)) }
-        binding.actionGoals.actionIcon.setImageResource(R.drawable.ic_piggy_bank)
+        binding.actionGoals.actionIcon.setImageResource(R.drawable.ic_vinora_logo)
         binding.actionGoals.actionText.text = "Mục tiêu/Goals"
+
+        com.money.app.util.AnimationUtils.applyBounceEffect(binding.actionReport.root)
+        binding.actionReport.root.setOnClickListener { startActivity(Intent(requireContext(), StatisticsActivity::class.java)) }
+        binding.actionReport.actionIcon.setImageResource(R.drawable.ic_chart)
+        binding.actionReport.actionText.text = "Báo cáo/Stats"
 
         // Nút thêm giao dịch khi biểu đồ trống
         binding.btnEmptyAdd.setOnClickListener {
@@ -280,6 +317,14 @@ class WalletFragment : Fragment() {
 
         loadDataJob = viewLifecycleOwner.lifecycleScope.launch {
             val db = AppDatabase.getDatabase(requireContext())
+            
+            // Tính toán bổ sung từ Account và Debt DAOs
+            val accounts = withContext(Dispatchers.IO) { db.accountDao().getAllAccounts() }
+            val debts = withContext(Dispatchers.IO) { db.debtDao().getAllDebts() }
+            
+            val totalAccountsAssets = accounts.filter { it.type != "CREDIT_CARD" && it.type != "LOAN" }.sumOf { it.balance }
+            val totalUnpaidDebts = debts.filter { !it.isSettled && !it.isOwedToMe }.sumOf { it.amount }
+
             db.transactionDao().getAllTransactionsFlow().collect { all ->
                 // Lọc giao dịch theo tháng được chọn để hiển thị biểu đồ
                 val filteredForMonth = all.filter { it.date.endsWith(monthStr) }
@@ -293,8 +338,26 @@ class WalletFragment : Fragment() {
                 }
                 actualBalance = totalInc - totalExp
                 
+                val monthExpenses = filteredForMonth.filter { it.isExpense }.sumOf { it.amount }
+                val netWorth = actualBalance + totalAccountsAssets - totalUnpaidDebts
+                
+                val nowCal = Calendar.getInstance()
+                val daysInMonth = nowCal.getActualMaximum(Calendar.DAY_OF_MONTH)
+                val dayOfMonth = nowCal.get(Calendar.DAY_OF_MONTH)
+                val daysRemaining = (daysInMonth - dayOfMonth + 1).coerceAtLeast(1)
+                
+                val monthlyBudget = 15000000.0
+                val safeToSpendDaily = ((monthlyBudget - monthExpenses).coerceAtLeast(0.0)) / daysRemaining
+                val avgMonthlyExpense = if (monthExpenses > 0) monthExpenses else 5000000.0
+                val runwayMonths = if (avgMonthlyExpense > 0) (actualBalance + totalAccountsAssets).coerceAtLeast(0.0) / avgMonthlyExpense else 12.0
+
                 withContext(Dispatchers.Main) {
                     updateBalanceDisplay()
+                    binding.tvNetWorth.text = AppUtils.formatCurrency(netWorth, requireContext())
+                    binding.tvSafeToSpend.text = "${AppUtils.formatCurrency(safeToSpendDaily, requireContext())}/ngày"
+                    binding.tvFinancialRunway.text = String.format(Locale.getDefault(), "%.1f Tháng", runwayMonths)
+                    binding.tvCenterChartAmount?.text = AppUtils.formatCurrency(monthExpenses, requireContext())
+                    
                     updateDonutChart(filteredForMonth)
                     updateLineChart(all)
                     renderRecent(all.take(10))
@@ -325,9 +388,9 @@ class WalletFragment : Fragment() {
             .mapValues { entry -> entry.value.sumOf { it.amount } }
 
         val colors = if (isExpenseMode) {
-            listOf(0xFF4A5BCC.toInt(), 0xFFEA5455.toInt(), 0xFFD131F5.toInt(), 0xFFFF9F43.toInt(), 0xFF00CFE8.toInt())
+            listOf(0xFF2563EB.toInt(), 0xFFEA580C.toInt(), 0xFF16A34A.toInt(), 0xFF9333EA.toInt(), 0xFFE11D48.toInt())
         } else {
-            listOf(0xFF28C76F.toInt(), 0xFF48DA89.toInt(), 0xFF10AC84.toInt(), 0xFF00FF00.toInt(), 0xFF20BF6B.toInt())
+            listOf(0xFF10B981.toInt(), 0xFF2563EB.toInt(), 0xFF9333EA.toInt(), 0xFFEA580C.toInt(), 0xFFCA8A04.toInt())
         }
 
         // Lấy 5 hạng mục có tổng tiền cao nhất để hiển thị
@@ -341,7 +404,8 @@ class WalletFragment : Fragment() {
             val v = TextView(requireContext())
             v.text = "● ${slice.label}: ${AppUtils.formatCurrency(slice.value.toDouble(), requireContext())}"
             v.setTextColor(slice.color)
-            v.textSize = 11f
+            v.textSize = 12f
+            v.setTypeface(null, android.graphics.Typeface.BOLD)
             v.setPadding(8, 4, 8, 4)
             binding.chartLegend.addView(v)
         }
@@ -390,6 +454,22 @@ class WalletFragment : Fragment() {
         list.forEach { trans ->
             val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_stats_entry, binding.recentList, false)
             
+            // Cài đặt pastel circular category icon avatar
+            val cvPhoto = item.findViewById<androidx.cardview.widget.CardView>(R.id.cvPhoto)
+            val ivPhoto = item.findViewById<ImageView>(R.id.ivPhoto)
+            
+            val (bgColor, iconRes) = when (trans.category) {
+                "Ăn uống", "Food", "Cafe" -> Pair(R.color.pastel_orange_bg, R.drawable.ic_cart)
+                "Di chuyển", "Transport" -> Pair(R.color.pastel_blue_bg, R.drawable.ic_home)
+                "Hưởng thụ & Giải trí", "Subscriptions" -> Pair(R.color.pastel_purple_bg, R.drawable.ic_coin)
+                "Nhu cầu thiết yếu", "Cố định", "Bills" -> Pair(R.color.pastel_green_bg, R.drawable.ic_book)
+                "Giáo dục", "Education" -> Pair(R.color.pastel_yellow_bg, R.drawable.ic_brain)
+                else -> Pair(R.color.pastel_pink_bg, R.drawable.ic_vinora_logo)
+            }
+            
+            cvPhoto?.setCardBackgroundColor(ContextCompat.getColor(requireContext(), bgColor))
+            ivPhoto?.setImageResource(iconRes)
+
             // Hiển thị mô tả nếu có, nếu không thì hiện tên hạng mục
             val title = if (trans.description.isNullOrEmpty()) trans.category else trans.description
             item.findViewById<TextView>(R.id.tvTitle).text = title
@@ -417,7 +497,7 @@ class WalletFragment : Fragment() {
                 val item = LayoutInflater.from(requireContext()).inflate(R.layout.item_fund_premium, binding.fundsContainer, false)
                 item.findViewById<TextView>(R.id.tvGoalName).text = fund.name
                 item.findViewById<TextView>(R.id.tvGoalProgress).text = "${AppUtils.formatCurrency(fund.currentAmount, requireContext())} / ${AppUtils.formatCurrency(fund.targetAmount, requireContext())}"
-                item.findViewById<ImageView>(R.id.ivGoalIcon).setImageResource(R.drawable.ic_piggy_bank)
+                item.findViewById<ImageView>(R.id.ivGoalIcon).setImageResource(R.drawable.ic_vinora_logo)
                 
                 val percent = if (fund.targetAmount > 0) (fund.currentAmount / fund.targetAmount * 100).toInt() else 0
                 item.findViewById<TextView>(R.id.tvGoalPercent).text = "$percent%"

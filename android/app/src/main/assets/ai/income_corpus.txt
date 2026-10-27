@@ -1,0 +1,208 @@
+# PiggyBite – bộ dữ liệu huấn luyện sẵn cho AI phân loại thu nhập
+# Định dạng: NHAN|nội dung thông báo   (dòng bắt đầu bằng # bị bỏ qua)
+# Nhãn: LUONG, KINHDOANH, THUONG, DAUTU, TANG, KHAC
+
+LUONG|TK 1903xxxx tai Techcombank +15,000,000 VND. ND: CONG TY TNHH ABC CHUYEN LUONG THANG 10
+LUONG|Vietcombank: SD TK 0071xxx +12,500,000VND luc 05-11 08:30. ND: TRA LUONG T10/2024 CTY CP XYZ
+LUONG|MB: TK 0123xxx|GD: +18,200,000VND|ND: SALARY OCT 2024 - FPT SOFTWARE
+LUONG|BIDV: +9.800.000 VND vao TK 2150xxx. Noi dung: Thanh toan luong thang 9 cho nhan vien
+LUONG|Agribank: TK 3100xxx nhan +7,500,000 VND. ND: Luong thang 11 truong THCS Nguyen Du
+LUONG|VietinBank: TK 1010xxx +22,000,000 VND. ND: PAYROLL NOVEMBER 2024 SAMSUNG VIETNAM
+LUONG|ACB: TK 2468xxx +11,300,000 VND. ND: CTY TNHH SX TM DV tra luong ky 1 thang 10
+LUONG|Sacombank: +8,000,000VND, ND: Tam ung luong thang 10
+LUONG|TPBank: TK 0000xxx +14,700,000 VND ND: Luong + phu cap thang 10 nam 2024
+LUONG|VPBank: +16,000,000 VND. ND: MONTHLY SALARY PAYMENT FOR EMPLOYEE
+LUONG|Techcombank: +6,500,000 VND ND: Tien cong thang 10 xuong may
+LUONG|MB Bank: +25,000,000 VND ND: Quyet toan luong thang 12 va luong thang 13
+LUONG|Vietcombank: +13,000,000 VND ND: CT TNHH VIETTEL tra luong nhan vien thang 10
+LUONG|Timo: You received 10,000,000 VND. Message: Salary for October
+LUONG|Cake: Ban vua nhan 9,000,000d tu CONG TY CO PHAN DEF. Noi dung: luong t10
+LUONG|BIDV: TK nhan +5,200,000 VND ND: Tien luong lam them gio thang 10
+LUONG|MSB: +17,600,000 VND ND: Chi luong dot 1 thang 11 cho can bo cong nhan vien
+LUONG|HDBank: +10,500,000 VND ND: Luong co ban va phu cap an trua T11
+LUONG|SHB: +12,000,000 VND ND: Tra luong thang 10/2024 Benh vien Da khoa tinh
+LUONG|OCB: +8,900,000 VND ND: Ngan sach chi luong giao vien thang 11
+LUONG|Lương tháng 10 đã được công ty chuyển vào tài khoản của bạn: +15.000.000đ
+LUONG|Tiền lương tháng 11 - Công ty TNHH Một thành viên
+LUONG|Thanh toán lương kỳ 2 tháng 10 cho nhân viên
+LUONG|Chuyển lương nhân viên văn phòng tháng 12
+LUONG|Lương part time tháng 10 quán cafe
+LUONG|Tra luong part time thang 10
+LUONG|Luong thuc tap sinh thang 9
+LUONG|Phu cap trach nhiem va luong thang 10
+LUONG|Tro cap thai san BHXH chi tra
+LUONG|BHXH chi tra tro cap om dau
+LUONG|Luong huu thang 11 BHXH
+LUONG|Payroll transfer company employee wage
+LUONG|Wage payment week 42
+LUONG|Tien cong lao dong ngay thang 10
+LUONG|Luong cong nhat tuan 3 thang 10
+
+KINHDOANH|MB: TK 0123xxx +350,000VND ND: Thanh toan don hang 12345
+KINHDOANH|Vietcombank: +1,250,000 VND ND: NGUYEN VAN A chuyen tien mua hang
+KINHDOANH|Techcombank: +2,800,000 VND ND: Thanh toan tien hang thang 10
+KINHDOANH|ACB: +480,000 VND ND: Khach chuyen khoan tien ao size L
+KINHDOANH|MoMo: Ban nhan duoc 199.000d tu TRAN THI B. Loi nhan: tien ship cod don 0987
+KINHDOANH|VPBank: +5,600,000 VND ND: SHOPEE thanh toan doanh thu don hang
+KINHDOANH|BIDV: +3,200,000 VND ND: TIKTOK SHOP quyet toan doanh thu
+KINHDOANH|Techcombank: +1,900,000 VND ND: LAZADA settlement seller payout
+KINHDOANH|MB: +750,000 VND ND: tien coc dat ban 10 nguoi toi thu 7
+KINHDOANH|Sacombank: +12,000,000 VND ND: Thanh toan hop dong cung cap thiet bi
+KINHDOANH|VietinBank: +4,500,000 VND ND: Thanh toan hoa don so 0001234
+KINHDOANH|ZaloPay: Ban da nhan 85.000d - Thanh toan tra sua
+KINHDOANH|MB: +260,000 VND ND: chuyen tien mua 2 hop banh
+KINHDOANH|ACB: +1,500,000 VND ND: Tien thue phong tro thang 11
+KINHDOANH|Vietcombank: +6,000,000 VND ND: Tien thue nha thang 11 phong 302
+KINHDOANH|Techcombank: +2,000,000 VND ND: Thanh toan dich vu thiet ke logo
+KINHDOANH|TPBank: +3,500,000 VND ND: Thanh toan phi tu van du an
+KINHDOANH|MB: +900,000 VND ND: Tien day kem thang 10 be Na
+KINHDOANH|VPBank: +7,800,000 VND ND: Thanh toan hop dong freelance website
+KINHDOANH|Vietcombank: +450,000 VND ND: GRAB thanh toan thu nhap tai xe
+KINHDOANH|MB: +1,120,000 VND ND: Be Group doanh thu chuyen xe tuan 43
+KINHDOANH|Cake: Ban vua nhan 320,000d. Noi dung: mua 1 kg ca phe
+KINHDOANH|MoMo: Nhan 150.000d tu khach - thanh toan QR cua hang
+KINHDOANH|Techcombank: +2,450,000 VND ND: Thanh toan VNPAY QR tai cua hang
+KINHDOANH|BIDV: +15,000,000 VND ND: Doanh thu ban hang online thang 10
+KINHDOANH|Khách thanh toán tiền hàng đơn #A1029
+KINHDOANH|Chuyển tiền mua sản phẩm áo khoác
+KINHDOANH|Thanh toán đơn hàng Shopee mã 241027ABC
+KINHDOANH|Tiền hàng đợt 2 hợp đồng số 15/2024
+KINHDOANH|Đặt cọc tiền hàng lô sơn mới
+KINHDOANH|Thanh toan tien sua xe may
+KINHDOANH|Tien cat toc va goi dau
+KINHDOANH|Tra tien hang con thieu thang truoc
+KINHDOANH|Invoice payment INV-2024-0099
+KINHDOANH|Customer payment for order 7781
+
+THUONG|Vietcombank: +5,000,000 VND ND: THUONG KPI QUY 3 2024
+THUONG|Techcombank: +3,000,000 VND ND: Tien thuong du an hoan thanh som
+THUONG|MB: +20,000,000 VND ND: Thuong Tet Nguyen Dan 2025
+THUONG|BIDV: +2,500,000 VND ND: Hoa hong ban hang thang 10
+THUONG|VPBank: +1,800,000 VND ND: COMMISSION OCTOBER SALES TEAM
+THUONG|ACB: +4,000,000 VND ND: BONUS Q3 PERFORMANCE
+THUONG|VietinBank: +1,000,000 VND ND: Thuong thi dua nhan ngay 20/10
+THUONG|TPBank: +6,500,000 VND ND: Thuong nang suat thang 10
+THUONG|Sacombank: +500,000 VND ND: Thuong sinh nhat nhan vien
+THUONG|MB: +2,000,000 VND ND: Thuong le 2/9
+THUONG|Techcombank: +700,000 VND ND: Hoa hong gioi thieu khach hang
+THUONG|MoMo: Ban nhan 50.000d - Thuong gioi thieu ban be
+THUONG|Vietcombank: +3,600,000 VND ND: Incentive thang 10 bo phan kinh doanh
+THUONG|HDBank: +1,200,000 VND ND: Thuong chuyen can thang 10
+THUONG|MB: +300,000 VND ND: Tien tip khach hang
+THUONG|SHB: +10,000,000 VND ND: Thuong cuoi nam 2024
+THUONG|BIDV: +15,000,000 VND ND: Luong thang 13 thuong Tet
+THUONG|ZaloPay: Nhan 100.000d - Thuong su kien hoan thanh nhiem vu
+THUONG|Techcombank: +250,000 VND ND: Cashback hoan tien uu dai the
+THUONG|VIB: +180,000 VND ND: HOAN TIEN CASHBACK THE TIN DUNG
+THUONG|Thưởng hoàn thành KPI tháng 10
+THUONG|Tiền thưởng dự án mobile app
+THUONG|Hoa hồng môi giới bất động sản
+THUONG|Thưởng quý 3 phòng kinh doanh
+THUONG|Thưởng Tết âm lịch cho nhân viên
+THUONG|Hoa hồng affiliate Shopee tháng 9
+THUONG|Hoa hong affiliate Accesstrade
+THUONG|Thuong doanh so vuot chi tieu
+THUONG|Referral bonus reward
+THUONG|Year end bonus payout
+THUONG|Thuong giai nhat cuoc thi
+THUONG|Tien thuong hoc bong hoc ky 1
+THUONG|Hoc bong khuyen khich hoc tap
+
+DAUTU|Vietcombank: +350,000 VND ND: TRA LAI TIEN GUI TIET KIEM KY HAN 6 THANG
+DAUTU|Techcombank: +1,240,000 VND ND: Lai tien gui so tiet kiem online
+DAUTU|MB: +85,000 VND ND: Tra lai tai khoan thanh toan thang 10
+DAUTU|BIDV: +50,500,000 VND ND: Tat toan so tiet kiem goc va lai
+DAUTU|VPBank: +2,300,000 VND ND: CO TUC BANG TIEN NAM 2024 VNM
+DAUTU|ACB: +12,000,000 VND ND: SSI chuyen tien ban chung khoan
+DAUTU|Techcombank: +8,500,000 VND ND: VNDIRECT rut tien tu tai khoan chung khoan
+DAUTU|MB: +3,000,000 VND ND: TCBS chuyen tien ban co phieu
+DAUTU|Vietcombank: +1,500,000 VND ND: Chi tra co tuc dot 1 nam 2024
+DAUTU|TPBank: +420,000 VND ND: Lai suat tien gui ky han 3 thang
+DAUTU|Cake: Ban nhan 12,500d tien lai tu tai khoan sinh loi
+DAUTU|Timo: Interest payment 35,000 VND Goal Save
+DAUTU|MoMo: Nhan 5.200d - Lai Tui Than Tai
+DAUTU|MB: +18,000,000 VND ND: Ban vang SJC 2 chi
+DAUTU|Techcombank: +25,000,000 VND ND: Rut von quy mo VCBF
+DAUTU|Vietcombank: +4,000,000 VND ND: Loi nhuan dau tu thang 10
+DAUTU|BIDV: +7,000,000 VND ND: Tra lai trai phieu dinh ky
+DAUTU|MB: +1,100,000 VND ND: Binance P2P ban USDT
+DAUTU|Techcombank: +600,000 VND ND: Remitano ban coin
+DAUTU|VPS: Chuyen tien ban CK tu tai khoan 123456
+DAUTU|Lãi tiết kiệm kỳ hạn 12 tháng
+DAUTU|Trả lãi tiền gửi định kỳ hàng tháng
+DAUTU|Cổ tức năm 2023 bằng tiền mặt
+DAUTU|Bán cổ phiếu FPT 1000 CP
+DAUTU|Rút tiền từ tài khoản chứng khoán
+DAUTU|Tất toán sổ tiết kiệm trước hạn
+DAUTU|Lợi nhuận góp vốn kinh doanh quý 3
+DAUTU|Chia loi nhuan gop von quan an
+DAUTU|Dividend payment stock
+DAUTU|Interest on savings deposit
+DAUTU|Ban dat lo so 12 dot 1
+DAUTU|Tien lai cho vay thang 10
+DAUTU|Fmarket rut chung chi quy
+
+TANG|MB: +500,000 VND ND: Me gui tien tieu vat
+TANG|Vietcombank: +2,000,000 VND ND: Bo me cho con tien hoc
+TANG|Techcombank: +1,000,000 VND ND: Mung cuoi ban than
+TANG|MoMo: Ban nhan 200.000d tu NGUYEN VAN C. Loi nhan: Li xi Tet nhe
+TANG|BIDV: +3,000,000 VND ND: Tra no thang truoc nhe
+TANG|ACB: +150,000 VND ND: Tra tien an trua hom qua
+TANG|ZaloPay: Nhan 75.000d - tra tien tra sua
+TANG|MB: +5,000,000 VND ND: Tra tien vay dot 1
+TANG|VPBank: +250,000 VND ND: Share tien di an lau
+TANG|Techcombank: +120,000 VND ND: Chia tien taxi hom qua
+TANG|Vietcombank: +1,500,000 VND ND: Qua sinh nhat cho em
+TANG|MoMo: Nhan 100.000d - Mung sinh nhat ban
+TANG|MB: +10,000,000 VND ND: Anh trai cho muon
+TANG|Sacombank: +300,000 VND ND: Gui tien dong quy lop
+TANG|TPBank: +4,000,000 VND ND: Vo chuyen tien chi tieu gia dinh
+TANG|Cake: Ban vua nhan 500,000d. Noi dung: chong gui tien di cho
+TANG|Agribank: +2,000,000 VND ND: Ong ba gui chau mua sach vo
+TANG|MB: +800,000 VND ND: Hoan tien dat ve may bay huy
+TANG|Techcombank: +350,000 VND ND: Shopee hoan tien don hang bi huy
+TANG|Vietcombank: +200,000 VND ND: Hoan tien do chuyen nham
+TANG|Mẹ gửi tiền tiêu vặt tháng 11
+TANG|Lì xì năm mới chúc con học giỏi
+TANG|Mừng cưới hai bạn trăm năm hạnh phúc
+TANG|Trả nợ tiền mượn tuần trước
+TANG|Trả lại tiền ăn sinh nhật
+TANG|Gửi em tiền đóng học phí
+TANG|Quà tặng 20/10 cho chị
+TANG|Tiền mừng tân gia
+TANG|Tien phung vieng dam hieu
+TANG|Gia dinh ung ho tien chua benh
+TANG|Ung ho tu thien quy nhom
+TANG|Ban be gop tien sinh nhat
+TANG|Refund for cancelled order
+TANG|Pay back loan thanks
+TANG|Gift from mom
+
+KHAC|MB: TK 0123xxx +100,000VND ND: NGUYEN VAN D chuyen tien
+KHAC|Vietcombank: +500,000 VND ND: IBFT chuyen tien
+KHAC|Techcombank: +1,000,000 VND ND: MBVCB.1234567 chuyen khoan
+KHAC|BIDV: +200,000 VND ND: chuyen khoan nhanh 247
+KHAC|ACB: +50,000 VND ND: Chuyen tien qua NAPAS
+KHAC|MoMo: Ban nhan duoc 300.000d tu LE VAN E
+KHAC|VPBank: +2,000,000 VND ND: Nap tien tu tai khoan Techcombank
+KHAC|MB: +5,000,000 VND ND: Chuyen tien noi bo giua cac tai khoan
+KHAC|Vietcombank: +1,200,000 VND ND: Nop tien mat tai quay giao dich
+KHAC|Techcombank: +3,000,000 VND ND: Nop tien mat tai ATM CDM
+KHAC|TPBank: +700,000 VND ND: Chuyen tien
+KHAC|ZaloPay: Nhan 60.000d tu ban be
+KHAC|Cake: Ban vua nhan 1,000,000d tu tai khoan khac
+KHAC|Agribank: +400,000 VND ND: Giao dich khac
+KHAC|Sacombank: +900,000 VND ND: FT24301 chuyen tien
+KHAC|Viettel Money: Nhan tien thanh cong 250.000d
+KHAC|MB: +150,000 VND ND: QR chuyen tien
+KHAC|Nhận tiền chuyển khoản
+KHAC|Chuyển tiền
+KHAC|Giao dịch chuyển khoản đến
+KHAC|Nộp tiền mặt vào tài khoản
+KHAC|Chuyển tiền từ ví sang ngân hàng
+KHAC|Rút tiền từ ví MoMo về tài khoản
+KHAC|Nap tien vao vi
+KHAC|Transfer from another account
+KHAC|Incoming transfer
+KHAC|Received money
+KHAC|Tien vao tai khoan

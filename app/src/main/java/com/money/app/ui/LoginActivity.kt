@@ -72,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
                 // Biến đổi SĐT thành định dạng Email ảo để Firebase Auth xử lý đồng nhất
-                val shadowEmail = "phone_${phone}@piggybite.com"
+                val shadowEmail = "phone_${phone}@vinora.com"
                 signInWithEmail(shadowEmail, pass)
             } else {
                 val email = etEmail.text.toString().trim()

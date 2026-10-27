@@ -121,6 +121,63 @@
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
 
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
+
+            <LinearLayout
+                android:id="@+id/btnAccounts"
+                style="@style/SettingsItemStyle"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_book" />
+                <TextView style="@style/SettingsTextStyle" android:text="Tài khoản &amp; Net Worth" />
+                <ImageView style="@style/SettingsArrowStyle" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
+
+            <LinearLayout
+                android:id="@+id/btnBudgets"
+                style="@style/SettingsItemStyle"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_chart" />
+                <TextView style="@style/SettingsTextStyle" android:text="Ngân sách chi tiêu (Budgets)" />
+                <ImageView style="@style/SettingsArrowStyle" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
+
+            <LinearLayout
+                android:id="@+id/btnDebts"
+                style="@style/SettingsItemStyle"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_calendar_nav" />
+                <TextView style="@style/SettingsTextStyle" android:text="Quản lý Sổ nợ (Debts)" />
+                <ImageView style="@style/SettingsArrowStyle" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
+
+            <LinearLayout
+                android:id="@+id/btnInvestments"
+                style="@style/SettingsItemStyle"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_brain" />
+                <TextView style="@style/SettingsTextStyle" android:text="Danh mục đầu tư (Portfolio)" />
+                <ImageView style="@style/SettingsArrowStyle" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
+
+            <LinearLayout
+                android:id="@+id/btnExportCSV"
+                style="@style/SettingsItemStyle"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView style="@style/SettingsIconStyle" android:src="@drawable/ic_camera" />
+                <TextView style="@style/SettingsTextStyle" android:text="Xuất báo cáo CSV" />
+                <ImageView style="@style/SettingsArrowStyle" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/grey_light" android:layout_marginHorizontal="24dp" />
+
             <LinearLayout
                 android:id="@+id/btnLogout"
                 style="@style/SettingsItemStyle"

@@ -324,6 +324,11 @@ class AddTransactionActivity : AppCompatActivity(), CategorySelectionBottomSheet
      * Tạo bàn phím số 0-9 và nút Xóa thủ công bằng GridLayout
      */
     private fun setupKeypad() {
+        com.money.app.util.AnimationUtils.applyBounceEffect(btnSave)
+        com.money.app.util.AnimationUtils.applyBounceEffect(btnExpense)
+        com.money.app.util.AnimationUtils.applyBounceEffect(btnIncome)
+        com.money.app.util.AnimationUtils.applyBounceEffect(btnMoreCategories)
+
         val grid = findViewById<GridLayout>(R.id.keypad)
         val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "000", "0", "DEL")
         
@@ -332,6 +337,7 @@ class AddTransactionActivity : AppCompatActivity(), CategorySelectionBottomSheet
             button.text = key
             button.textSize = 20f
             button.setTextColor(ContextCompat.getColor(this, R.color.text_main))
+            com.money.app.util.AnimationUtils.applyBounceEffect(button)
             button.setOnClickListener { handleKey(key) }
             
             val params = GridLayout.LayoutParams()

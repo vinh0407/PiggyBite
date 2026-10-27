@@ -79,7 +79,7 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(this, "Mật khẩu phải từ 6 ký tự", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-                val shadowEmail = "phone_${phone}@piggybite.com"
+                val shadowEmail = "phone_${phone}@vinora.com"
                 registerWithEmail(name, shadowEmail, pass, initialBalance, phone)
             } else {
                 // Xử lý đăng ký bằng Email

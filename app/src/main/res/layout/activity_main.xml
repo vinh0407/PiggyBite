@@ -186,10 +186,10 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_liquid_glass"
+            android:background="@drawable/bg_floating_nav_dark"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingHorizontal="10dp">
+            android:paddingHorizontal="16dp">
 
             <FrameLayout
                 android:id="@+id/btnNavCalendar"
