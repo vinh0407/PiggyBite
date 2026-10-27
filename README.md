@@ -96,7 +96,10 @@ PiggyBite/
 
 ### Method 1: Install Prebuilt APK
 
-Download the precompiled APK directly from the repository:
+Direct Download:
+- [Download PiggyBite APK](https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk)
+
+File Path in Repository:
 - `APK/PiggyBite.apk`
 
 Transfer the file to any Android device running Android 7.0 or newer, enable installation from unknown sources in device settings, and complete the installation prompt.

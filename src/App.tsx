@@ -494,19 +494,36 @@ function HomeScreen({
           </svg>
         </div>
 
-        {/* Bell button: Opens notification listener / test simulator */}
-        <button
-          className="top-bell-btn"
-          onClick={onOpenNotificationSimulator}
-          aria-label="Thông báo biến động số dư"
-          title="Tự động cập nhật từ thông báo chuyển tiền"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-          </svg>
-          <span className="bell-active-dot" />
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {/* APK Download Button */}
+          <a
+            href="https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk"
+            download="PiggyBite.apk"
+            className="top-apk-btn"
+            title="Tải tệp cài đặt PiggyBite APK cho Android"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            <span>Tải APK</span>
+          </a>
+
+          {/* Bell button: Opens notification listener / test simulator */}
+          <button
+            className="top-bell-btn"
+            onClick={onOpenNotificationSimulator}
+            aria-label="Thông báo biến động số dư"
+            title="Tự động cập nhật từ thông báo chuyển tiền"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+            </svg>
+            <span className="bell-active-dot" />
+          </button>
+        </div>
       </header>
 
       {/* Large Date Title */}
@@ -1722,6 +1739,21 @@ function SettingsScreen({
           </div>
           <b>{transactionsCount} khoản</b>
         </div>
+      </div>
+
+      <div className="settings-card-box" style={{ marginTop: "16px" }}>
+        <a
+          href="https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk"
+          download="PiggyBite.apk"
+          className="setting-row"
+          style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
+        >
+          <div>
+            <b>Tải tệp cài đặt PiggyBite APK</b>
+            <small>Cài đặt trực tiếp bản Native Jetpack Compose cho Android (21 MB)</small>
+          </div>
+          <span className="apk-download-pill">Tải APK ↓</span>
+        </a>
       </div>
 
       <div className="settings-danger-box">

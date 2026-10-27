@@ -1646,3 +1646,34 @@ button, input, select {
   border-color: var(--primary-green);
 }
 
+/* APK Download Buttons */
+.top-apk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--primary-green);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(27, 67, 50, 0.2);
+}
+
+.top-apk-btn:hover {
+  background-color: var(--primary-green-hover);
+  transform: translateY(-1px);
+}
+
+.apk-download-pill {
+  background-color: var(--primary-green);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+

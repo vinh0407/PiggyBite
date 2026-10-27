@@ -207,6 +207,38 @@ fun SettingsScreen(
             }
         }
 
+        // Direct Download APK
+        item {
+            Button(
+                onClick = {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk"))
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Không thể mở liên kết: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isDark) com.money.app.ui.theme.DarkButtonBg else SkyBlueSoft,
+                    contentColor = if (isDark) DarkTitleBlue else SkyBluePrimary
+                ),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    if (isDark) com.money.app.ui.theme.DarkButtonBorder else SkyBluePrimary.copy(alpha = 0.3f)
+                )
+            ) {
+                Text(
+                    text = "Tải tệp cài đặt APK mới nhất",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+            }
+        }
+
         // Danger zone: Reset data
         item {
             Button(
