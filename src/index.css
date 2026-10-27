@@ -1677,3 +1677,69 @@ button, input, select {
   white-space: nowrap;
 }
 
+/* Prominent Top APK Install Banner */
+.top-apk-install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(135deg, #eef7f2 0%, #e2ede4 100%);
+  border: 1.5px solid #2d6a4f;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.08);
+}
+
+.apk-banner-content {
+  flex: 1;
+}
+
+.apk-badge-tag {
+  display: inline-block;
+  background: #1b4332;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.apk-banner-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #1b4332;
+  line-height: 1.25;
+}
+
+.apk-banner-desc {
+  font-size: 12px;
+  color: #40534c;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.apk-banner-install-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1b4332;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(27, 67, 50, 0.25);
+  transition: all 0.15s ease;
+}
+
+.apk-banner-install-btn:hover {
+  background: #143527;
+  transform: translateY(-1px);
+}
+

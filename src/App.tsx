@@ -526,6 +526,28 @@ function HomeScreen({
         </div>
       </header>
 
+      {/* Top APK Download & Installation Banner */}
+      <div className="top-apk-install-banner">
+        <div className="apk-banner-content">
+          <div className="apk-badge-tag">Cài đặt ứng dụng Android</div>
+          <div className="apk-banner-title">PiggyBite Native APK (21 MB)</div>
+          <div className="apk-banner-desc">Hỗ trợ đầy đủ AI offline và tự động cập nhật số dư từ thông báo</div>
+        </div>
+        <a
+          href="https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk"
+          download="PiggyBite.apk"
+          className="apk-banner-install-btn"
+          title="Tải tệp cài đặt PiggyBite APK cho điện thoại Android"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>Cài đặt APK</span>
+        </a>
+      </div>
+
       {/* Large Date Title */}
       <h1 className="home-date-title">{dateHeader}</h1>
 
@@ -1707,6 +1729,24 @@ function SettingsScreen({
     <div className="settings-screen-wrap">
       <h1 className="screen-main-title">Cài đặt ứng dụng</h1>
 
+      {/* Top APK Download Card */}
+      <div className="settings-card-box apk-top-highlight-card" style={{ marginBottom: "16px", backgroundColor: "#eef7f2", border: "1.5px solid #1b4332" }}>
+        <a
+          href="https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk"
+          download="PiggyBite.apk"
+          className="setting-row"
+          style={{ textDecoration: "none", color: "inherit", cursor: "pointer", padding: "14px 16px" }}
+        >
+          <div>
+            <b style={{ color: "#1b4332", fontSize: "15px" }}>Cài đặt ứng dụng PiggyBite APK</b>
+            <small style={{ color: "#40534c", display: "block", marginTop: "2px" }}>Bản cài đặt trực tiếp Native cho điện thoại Android (21 MB)</small>
+          </div>
+          <span className="apk-download-pill" style={{ backgroundColor: "#1b4332", color: "#fff", padding: "8px 14px", borderRadius: "12px", fontWeight: "bold" }}>
+            Cài đặt APK ↓
+          </span>
+        </a>
+      </div>
+
       <div className="settings-card-box">
         <div className="setting-row" onClick={onOpenNotificationSimulator} style={{ cursor: "pointer" }}>
           <div>
@@ -1739,21 +1779,6 @@ function SettingsScreen({
           </div>
           <b>{transactionsCount} khoản</b>
         </div>
-      </div>
-
-      <div className="settings-card-box" style={{ marginTop: "16px" }}>
-        <a
-          href="https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk"
-          download="PiggyBite.apk"
-          className="setting-row"
-          style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
-        >
-          <div>
-            <b>Tải tệp cài đặt PiggyBite APK</b>
-            <small>Cài đặt trực tiếp bản Native Jetpack Compose cho Android (21 MB)</small>
-          </div>
-          <span className="apk-download-pill">Tải APK ↓</span>
-        </a>
       </div>
 
       <div className="settings-danger-box">

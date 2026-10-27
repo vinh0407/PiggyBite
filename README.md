@@ -6,6 +6,16 @@ PiggyBite is a modern personal finance application built with native Android Jet
 
 ---
 
+## Direct APK Download
+
+Download and install the prebuilt Android package directly:
+- [Download PiggyBite APK](https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk)
+
+Repository binary location:
+- `APK/PiggyBite.apk`
+
+---
+
 ## Overview
 
 PiggyBite provides a streamlined, privacy-first interface for tracking income, expenses, and banking accounts. Unlike cloud-dependent finance tools, PiggyBite processes transactions and financial analysis locally on the user device without transmitting sensitive banking information to external servers.
