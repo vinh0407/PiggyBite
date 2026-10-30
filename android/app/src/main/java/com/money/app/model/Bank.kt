@@ -68,4 +68,8 @@ object BankDirectory {
     fun findBankById(id: String): Bank? {
         return ALL_BANKS.firstOrNull { it.id == id }
     }
+
+    fun findBankByBin(bin: String): Bank? {
+        return ALL_BANKS.firstOrNull { it.bin == bin }
+    }
 }
