@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -114,6 +115,7 @@ fun QrPaymentDialog(
 
     // Ô nhập dán STK bắt đầu hoàn toàn rỗng
     var pasteInputText by remember { mutableStateOf("") }
+    var showBankPickerModal by remember { mutableStateOf(false) }
 
     // AI Phân biệt dữ liệu (Fuzzy Bank Matching + Regex STK + Xử lý chính tả)
     fun parsePastedText(raw: String) {
@@ -317,10 +319,11 @@ fun QrPaymentDialog(
                                 .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
                                 .padding(horizontal = 16.dp, vertical = 6.dp)
                         ) {
-                            // Row 1: Ngân hàng nhận
+                            // Row 1: Ngân hàng nhận (Có thể bấm để chọn hoặc tìm kiếm bất kỳ ngân hàng nào)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .clickable { showBankPickerModal = true }
                                     .padding(vertical = 12.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
@@ -330,12 +333,18 @@ fun QrPaymentDialog(
                                     fontSize = 13.5.sp,
                                     color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
                                 )
-                                Text(
-                                    text = "${receiverBank.shortName} ›",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    BankLogoView(bankId = receiverBank.id, size = 20.dp)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "${receiverBank.shortName} ›",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                                    )
+                                }
                             }
 
                             Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else CardBorder))
@@ -649,6 +658,113 @@ fun QrPaymentDialog(
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold
                                 )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Modal Hộp thoại chọn ngân hàng thủ công (khi người dùng bấm vào dòng Ngân hàng nhận)
+    if (showBankPickerModal) {
+        var bankSearchQuery by remember { mutableStateOf("") }
+        val filteredBanks = remember(bankSearchQuery) {
+            if (bankSearchQuery.isBlank()) {
+                BankDirectory.ALL_BANKS
+            } else {
+                BankDirectory.ALL_BANKS.filter {
+                    it.name.contains(bankSearchQuery, ignoreCase = true) ||
+                    it.shortName.contains(bankSearchQuery, ignoreCase = true) ||
+                    it.keywords.any { kw -> kw.contains(bankSearchQuery, ignoreCase = true) }
+                }
+            }
+        }
+
+        Dialog(onDismissRequest = { showBankPickerModal = false }) {
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(520.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Chọn ngân hàng nhận",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        IconButton(onClick = { showBankPickerModal = false }, modifier = Modifier.size(28.dp)) {
+                            Icon(imageVector = Icons.Default.Close, contentDescription = "Đóng", tint = TextMuted)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = bankSearchQuery,
+                        onValueChange = { bankSearchQuery = it },
+                        placeholder = { Text("Tìm kiếm ngân hàng (VCB, MB, Sacombank...)", fontSize = 12.5.sp, color = TextMuted) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        items(filteredBanks) { bank ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(
+                                        if (receiverBank.id == bank.id) (if (isDark) DarkHighlightNavyBg else HighlightBlueLightBg) else Color.Transparent
+                                    )
+                                    .clickable {
+                                        receiverBank = bank
+                                        showBankPickerModal = false
+                                    }
+                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                BankLogoView(bankId = bank.id, size = 32.dp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = bank.shortName,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = bank.name,
+                                        fontSize = 11.sp,
+                                        color = TextMuted,
+                                        maxLines = 1
+                                    )
+                                }
                             }
                         }
                     }

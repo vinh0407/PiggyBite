@@ -53,6 +53,14 @@ object BankDirectory {
         Bank("tnex", "Ngân hàng số TNEX", "TNEX", "970459", "#00D6B2", "tnex://", "msb.com.vn.tnex", listOf("tnex"))
     )
 
+    // Danh sách keyword được sắp xếp theo độ dài giảm dần (từ khóa dài được ưu tiên trước)
+    // để tránh từ khóa ngắn (ví dụ "mb") match nhầm vào từ dài (ví dụ "sacombank")
+    private val SORTED_KEYWORD_PAIRS: List<Pair<String, Bank>> by lazy {
+        ALL_BANKS.flatMap { bank ->
+            bank.keywords.map { kw -> kw.lowercase().trim() to bank }
+        }.sortedByDescending { it.first.length }
+    }
+
     private fun levenshteinDistance(s1: String, s2: String): Int {
         val dp = Array(s1.length + 1) { IntArray(s2.length + 1) }
         for (i in 0..s1.length) dp[i][0] = i
@@ -72,28 +80,43 @@ object BankDirectory {
 
     fun findBankByKeyword(text: String): Bank? {
         val lower = text.lowercase().trim()
+        if (lower.isBlank()) return null
 
-        // 1. Exact or keyword match
-        for (bank in ALL_BANKS) {
-            for (kw in bank.keywords) {
-                if (lower.contains(kw) || Regex("\\b${Regex.escape(kw)}\\b").containsMatchIn(lower)) {
-                    return bank
-                }
+        // 1. Khớp từ độc lập với ranh giới ký tự (boundary) không phải chữ cái/số
+        // Ưu tiên từ dài trước: "sacombank" sẽ khớp trước, không bao giờ rơi vào "mb"
+        for ((kw, bank) in SORTED_KEYWORD_PAIRS) {
+            val pattern = "(^|[^a-zA-Z0-9])${Regex.escape(kw)}($|[^a-zA-Z0-9])"
+            if (Regex(pattern).containsMatchIn(lower)) {
+                return bank
             }
         }
 
-        // 2. Fuzzy / Typo match on each word token (e.g. "argibank", "vietcombanh")
+        // 2. Khớp chuỗi con nếu người dùng viết liền không dấu cách (chỉ áp dụng cho từ khóa >= 4 ký tự)
+        // Ví dụ: "0337244067agribank", "sacombank123456789"
+        for ((kw, bank) in SORTED_KEYWORD_PAIRS) {
+            if (kw.length >= 4 && lower.contains(kw)) {
+                return bank
+            }
+        }
+
+        // 3. Khớp mờ hỗ trợ lỗi chính tả (Fuzzy Levenshtein) trên từng từ token
+        // Ví dụ: "argibank" -> Agribank, "vietcombanh" -> Vietcombank, "teckcombank" -> Techcombank
         val words = lower.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 3 }
         for (word in words) {
-            for (bank in ALL_BANKS) {
-                for (kw in bank.keywords) {
-                    if (kw.length >= 3 && Math.abs(kw.length - word.length) <= 2) {
-                        val distance = levenshteinDistance(word, kw)
-                        if (distance <= 1 || (word.length >= 7 && distance <= 2)) {
-                            return bank
-                        }
+            var bestBank: Bank? = null
+            var bestDistance = Int.MAX_VALUE
+
+            for ((kw, bank) in SORTED_KEYWORD_PAIRS) {
+                if (kw.length >= 4 && Math.abs(kw.length - word.length) <= 2) {
+                    val distance = levenshteinDistance(word, kw)
+                    if ((distance <= 1 || (word.length >= 7 && distance <= 2)) && distance < bestDistance) {
+                        bestDistance = distance
+                        bestBank = bank
                     }
                 }
+            }
+            if (bestBank != null) {
+                return bestBank
             }
         }
 
