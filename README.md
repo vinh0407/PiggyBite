@@ -6,13 +6,17 @@ PiggyBite is a modern personal finance application built with native Android Jet
 
 ---
 
-## Direct APK Download
+## Direct Downloads and Production Artifacts
 
 Download and install the prebuilt Android package directly:
 - [Download PiggyBite APK](https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk)
+- [Download PiggyBite Google Play Bundle AAB](https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite-release.aab)
+- [Privacy Policy](https://github.com/vinh0407/PiggyBite/blob/main/PRIVACY_POLICY.md)
 
 Repository binary location:
-- `APK/PiggyBite.apk`
+- `APK/PiggyBite.apk` (Signed Release APK)
+- `APK/PiggyBite-release.aab` (Signed Release Bundle for Google Play Store)
+- Package Name: `com.piggybite.app`
 
 ---
 
@@ -80,7 +84,7 @@ PiggyBite/
 ├── android/                         # Native Android Application (Jetpack Compose)
 │   ├── app/
 │   │   ├── build.gradle             # App-level build configuration and dependencies
-│   │   └── src/main/java/com/money/app/
+│   │   └── src/main/java/com/piggybite/app/
 │   │       ├── data/                # DataRepository and SharedPreferences management
 │   │       ├── model/               # Data classes: Bank, BankAccount, Transaction
 │   │       ├── service/             # Offline AI classifier and Smart Finance Advisor
