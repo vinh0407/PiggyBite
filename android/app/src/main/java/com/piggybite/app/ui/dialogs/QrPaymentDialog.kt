@@ -81,6 +81,7 @@ import com.piggybite.app.ui.theme.SkyBluePrimary
 import com.piggybite.app.ui.theme.SkyBlueSoft
 import com.piggybite.app.ui.theme.TextMuted
 import com.piggybite.app.util.Formatters
+import com.piggybite.app.util.VietQrHelper
 import com.piggybite.app.util.VietQrParser
 import com.piggybite.app.util.VietQrResult
 import java.util.UUID
@@ -753,28 +754,30 @@ fun QrPaymentDialog(
                                         return@Button
                                     }
 
-                                    // Tự động sao chép STK chính xác vào Clipboard để dán nhanh trên app ngân hàng
-                                    try {
-                                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
-                                        val clip = android.content.ClipData.newPlainText("VietQR STK", receiverAccNum)
-                                        clipboard?.setPrimaryClip(clip)
-                                    } catch (_: Exception) {}
+                                    // Mở ứng dụng ngân hàng nguồn và TỰ ĐỘNG ĐIỀN SẴN: Số tiền, STK và Loại ngân hàng nhận
+                                    val finalNote = if (noteText.isNotBlank()) noteText else "Chuyen khoan"
+                                    val opened = VietQrHelper.launchBankTransfer(
+                                        context = context,
+                                        sourceBank = sourceBankToLaunch,
+                                        receiverBank = receiverBank,
+                                        receiverAccountNumber = receiverAccNum,
+                                        amount = amountValue,
+                                        note = finalNote
+                                    )
 
-                                    // Mở ứng dụng ngân hàng nguồn được chọn (KHÔNG PHẢI ngân hàng nhận)
-                                    try {
-                                        val launchIntent = context.packageManager.getLaunchIntentForPackage(sourceBankToLaunch.packageName)
-                                        if (launchIntent != null) {
-                                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            context.startActivity(launchIntent)
-                                        } else {
-                                            val schemeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(sourceBankToLaunch.scheme)).apply {
-                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            }
-                                            context.startActivity(schemeIntent)
-                                        }
-                                    } catch (_: Exception) {}
-
-                                    Toast.makeText(context, "Đã sao chép STK: $receiverAccNum và mở app ngân hàng ${sourceBankToLaunch.shortName}", Toast.LENGTH_LONG).show()
+                                    if (opened) {
+                                        Toast.makeText(
+                                            context,
+                                            "Mở ${sourceBankToLaunch.shortName}: Đã nhập sẵn ${receiverBank.shortName} - STK $receiverAccNum (${Formatters.formatMoney(amountValue)})",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Vui lòng cài đặt ứng dụng ngân hàng ${sourceBankToLaunch.shortName} trên thiết bị",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
                                     onDismiss()
                                 },
                                 modifier = Modifier

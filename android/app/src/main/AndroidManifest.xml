@@ -14,6 +14,7 @@
         <package android:name="com.VCB" />
         <package android:name="com.mbmobile" />
         <package android:name="com.techcombank.mobile" />
+        <package android:name="vn.com.techcombank.bb.app" />
         <package android:name="com.vnpay.agribank" />
         <package android:name="com.vnpay.bidv" />
         <package android:name="com.vietinbank.ipay" />
@@ -24,6 +25,7 @@
         <package android:name="com.msb.mb" />
         <package android:name="com.hdbank.mb" />
         <package android:name="com.mplus.ocb" />
+        <package android:name="vn.com.ocb.awe" />
         <package android:name="com.vib.myvib" />
         <package android:name="com.shb.mobilebanking" />
         <package android:name="com.scb.mb" />
