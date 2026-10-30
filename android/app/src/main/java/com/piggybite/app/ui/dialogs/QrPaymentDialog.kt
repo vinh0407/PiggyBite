@@ -115,7 +115,10 @@ fun QrPaymentDialog(
 
     // Ô nhập dán STK bắt đầu hoàn toàn rỗng
     var pasteInputText by remember { mutableStateOf("") }
+    var isSourceCash by remember { mutableStateOf(false) }
     var showBankPickerModal by remember { mutableStateOf(false) }
+    var showCategoryPickerModal by remember { mutableStateOf(false) }
+    var showSourceAccountPickerModal by remember { mutableStateOf(false) }
 
     // AI Phân biệt dữ liệu (Fuzzy Bank Matching + Regex STK + Xử lý chính tả)
     fun parsePastedText(raw: String) {
@@ -463,56 +466,140 @@ fun QrPaymentDialog(
                                 color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
                             )
 
-                            Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(18.dp))
 
-                            // Số tiền
-                            OutlinedTextField(
-                                value = amountText,
-                                onValueChange = { input ->
-                                    amountText = input.filter { it.isDigit() }
-                                    amountValue = amountText.toLongOrNull() ?: 0L
-                                },
-                                placeholder = {
+                            // Thẻ Nhập số tiền: Nhập tự do, hiển thị số tiền định dạng và các nút chọn nhanh
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(22.dp))
+                                    .background(if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
+                                    .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(22.dp))
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Số tiền chuyển",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
+                                )
+
+                                Spacer(modifier = Modifier.height(2.dp))
+
+                                OutlinedTextField(
+                                    value = amountText,
+                                    onValueChange = { input ->
+                                        val clean = input.filter { it.isDigit() }
+                                        amountText = clean
+                                        amountValue = clean.toLongOrNull() ?: 0L
+                                    },
+                                    placeholder = {
+                                        Text(
+                                            "0 đ",
+                                            fontSize = 32.sp,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = if (isDark) DarkTextSub else Color(0xFF9CA3AF),
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                    },
+                                    trailingIcon = {
+                                        if (amountText.isNotEmpty()) {
+                                            IconButton(onClick = {
+                                                amountText = ""
+                                                amountValue = 0L
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Clear,
+                                                    contentDescription = "Xoá",
+                                                    tint = if (isDark) DarkTextMuted else Color(0xFF9CA3AF),
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                            }
+                                        }
+                                    },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    textStyle = androidx.compose.ui.text.TextStyle(
+                                        fontSize = 32.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                                    ),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color.Transparent,
+                                        unfocusedBorderColor = Color.Transparent,
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+
+                                if (amountValue > 0) {
                                     Text(
-                                        "Nhập số tiền",
-                                        fontSize = 28.sp,
-                                        color = if (isDark) DarkTextSub else Color(0xFF9CA3AF),
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        text = "= ${Formatters.formatMoney(amountValue)}",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = if (isDark) DarkTextMain else Color(0xFF111827)
                                     )
-                                },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                textStyle = androidx.compose.ui.text.TextStyle(
-                                    fontSize = 36.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
-                                ),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color.Transparent,
-                                    unfocusedBorderColor = Color.Transparent,
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                } else {
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                }
+
+                                // Các nút bấm chọn nhanh số tiền: +50k, +100k, +200k, +500k, +1tr
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    val quickChips = listOf(
+                                        50_000L to "+50k",
+                                        100_000L to "+100k",
+                                        200_000L to "+200k",
+                                        500_000L to "+500k",
+                                        1_000_000L to "+1tr"
+                                    )
+                                    quickChips.forEach { (amt, label) ->
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(if (isDark) DarkButtonBg else Color.White)
+                                                .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(10.dp))
+                                                .clickable {
+                                                    amountValue += amt
+                                                    amountText = amountValue.toString()
+                                                }
+                                                .padding(horizontal = 10.dp, vertical = 6.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = label,
+                                                fontSize = 11.5.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(18.dp))
 
-                        // Form Card: Danh mục & Ghi chú
+                        // Form Card: Danh mục (Bấm để chọn) & Ghi chú (Gõ trực tiếp)
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(18.dp))
+                                .clip(RoundedCornerShape(20.dp))
                                 .background(if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
-                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(20.dp))
                                 .padding(horizontal = 16.dp, vertical = 6.dp)
                         ) {
-                            // Row 1: Danh mục
+                            // Row 1: Danh mục chi tiêu (Có thể bấm để chọn danh mục khác)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .clickable { showCategoryPickerModal = true }
                                     .padding(vertical = 12.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
@@ -531,49 +618,62 @@ fun QrPaymentDialog(
                                         color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
                                     )
                                 }
-                                Text(
-                                    text = selectedCategory,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "$selectedCategory ›",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                                    )
+                                }
                             }
 
                             Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else CardBorder))
 
-                            // Row 2: Ghi chú
+                            // Row 2: Ghi chú (Cho phép gõ trực tiếp nội dung giao dịch)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                    .padding(vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Edit,
-                                        contentDescription = null,
-                                        tint = if (isDark) DarkTextMuted else Color(0xFF6B7280),
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Text(
-                                        text = "Ghi chú",
-                                        fontSize = 14.sp,
-                                        color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
-                                    )
-                                }
-                                Text(
-                                    text = noteText.ifBlank { "Không bắt buộc" },
-                                    fontSize = 14.sp,
-                                    color = if (noteText.isBlank()) (if (isDark) DarkTextSub else Color(0xFF9CA3AF)) else (if (isDark) DarkTextMain else Color(0xFF111827))
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = null,
+                                    tint = if (isDark) DarkTextMuted else Color(0xFF6B7280),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                OutlinedTextField(
+                                    value = noteText,
+                                    onValueChange = { noteText = it },
+                                    placeholder = {
+                                        Text(
+                                            "Thêm ghi chú chuyển tiền...",
+                                            fontSize = 13.5.sp,
+                                            color = if (isDark) DarkTextSub else Color(0xFF9CA3AF)
+                                        )
+                                    },
+                                    singleLine = true,
+                                    textStyle = androidx.compose.ui.text.TextStyle(
+                                        fontSize = 13.5.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                    ),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color.Transparent,
+                                        unfocusedBorderColor = Color.Transparent,
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         }
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        // Sticky Bottom Row: Source Bank Chip + "Chuyển khoản" Button
+                        // Sticky Bottom Row: Nút chọn nguồn tiền (Tiền mặt / Ngân hàng) + Nút Chuyển khoản
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -581,24 +681,43 @@ fun QrPaymentDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            val displaySourceBank = selectedAccount?.bankName ?: "Tài khoản nguồn"
-                            Box(
+                            val displaySourceBank = when {
+                                isSourceCash -> "💵 Tiền mặt"
+                                selectedAccount != null -> selectedAccount!!.bankName
+                                else -> "Chọn nguồn"
+                            }
+                            Row(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(16.dp))
                                     .background(if (isDark) DarkButtonBg else Color(0xFFF3F4F6))
                                     .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(16.dp))
+                                    .clickable { showSourceAccountPickerModal = true }
                                     .padding(horizontal = 14.dp, vertical = 14.dp),
-                                contentAlignment = Alignment.Center
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+                                if (isSourceCash) {
+                                    Text(text = "💵", fontSize = 16.sp)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                } else if (selectedAccount != null) {
+                                    BankLogoView(bankId = selectedAccount!!.bankId, size = 18.dp)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                }
                                 Text(
                                     text = displaySourceBank,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 13.5.sp,
                                     color = if (isDark) DarkTextMain else Color(0xFF111827)
                                 )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "▾",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                                )
                             }
 
-                            // Nút Chuyển khoản (Xanh dương đen ở Dark mode, Xanh dương ở Light mode)
+                            // Nút Chuyển khoản
                             Button(
                                 onClick = {
                                     if (amountValue <= 0) {
@@ -610,14 +729,20 @@ fun QrPaymentDialog(
                                         id = UUID.randomUUID().toString(),
                                         amount = amountValue,
                                         isIncome = false,
-                                        bankAccountId = selectedAccount?.id ?: receiverBank.id,
-                                        bankName = selectedAccount?.bankName ?: receiverBank.shortName,
+                                        bankAccountId = if (isSourceCash) "cash" else (selectedAccount?.id ?: receiverBank.id),
+                                        bankName = if (isSourceCash) "Tiền mặt" else (selectedAccount?.bankName ?: receiverBank.shortName),
                                         note = "Chuyển: ${receiverBank.shortName} STK $receiverAccNum (${if (noteText.isNotBlank()) noteText else selectedCategory})",
                                         timestamp = System.currentTimeMillis(),
                                         category = selectedCategory
                                     )
 
                                     onPaymentConfirmed(tx)
+
+                                    if (isSourceCash) {
+                                        Toast.makeText(context, "Đã ghi nhận chi tiền mặt: ${Formatters.formatMoney(amountValue)}", Toast.LENGTH_SHORT).show()
+                                        onDismiss()
+                                        return@Button
+                                    }
 
                                     // Tự động sao chép STK chính xác vào Clipboard
                                     try {
@@ -626,21 +751,22 @@ fun QrPaymentDialog(
                                         clipboard?.setPrimaryClip(clip)
                                     } catch (_: Exception) {}
 
-                                    // Mở ứng dụng ngân hàng đích
+                                    // Mở ứng dụng ngân hàng nguồn (hoặc đích nếu chưa chọn nguồn)
+                                    val bankToLaunch = selectedAccount?.let { BankDirectory.findBankById(it.bankId) } ?: receiverBank
                                     try {
-                                        val launchIntent = context.packageManager.getLaunchIntentForPackage(receiverBank.packageName)
+                                        val launchIntent = context.packageManager.getLaunchIntentForPackage(bankToLaunch.packageName)
                                         if (launchIntent != null) {
                                             launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                             context.startActivity(launchIntent)
                                         } else {
-                                            val schemeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(receiverBank.scheme)).apply {
+                                            val schemeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(bankToLaunch.scheme)).apply {
                                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                             }
                                             context.startActivity(schemeIntent)
                                         }
                                     } catch (_: Exception) {}
 
-                                    Toast.makeText(context, "Đã sao chép STK: $receiverAccNum và mở app ${receiverBank.shortName}", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, "Đã sao chép STK: $receiverAccNum và mở app ${bankToLaunch.shortName}", Toast.LENGTH_LONG).show()
                                     onDismiss()
                                 },
                                 modifier = Modifier
@@ -765,6 +891,280 @@ fun QrPaymentDialog(
                                         maxLines = 1
                                     )
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Modal Chọn danh mục chi tiêu
+    if (showCategoryPickerModal) {
+        val categories = listOf(
+            "Ăn uống" to "🍜",
+            "Mua sắm" to "🛍️",
+            "Di chuyển" to "🚗",
+            "Cà phê & Giải trí" to "☕",
+            "Hóa đơn & Tiện ích" to "💡",
+            "Sức khỏe" to "💊",
+            "Nhà cửa & Sinh hoạt" to "🏠",
+            "Giáo dục" to "🎓",
+            "Khác" to "🏷️"
+        )
+        Dialog(onDismissRequest = { showCategoryPickerModal = false }) {
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Chọn danh mục chi tiêu",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        IconButton(onClick = { showCategoryPickerModal = false }, modifier = Modifier.size(28.dp)) {
+                            Icon(imageVector = Icons.Default.Close, contentDescription = "Đóng", tint = TextMuted)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(categories) { (cat, icon) ->
+                            val isSelected = selectedCategory == cat
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(
+                                        if (isSelected) (if (isDark) DarkHighlightNavyBg else HighlightBlueLightBg) else Color.Transparent
+                                    )
+                                    .border(
+                                        1.dp,
+                                        if (isSelected) (if (isDark) DarkHighlightNavyBorder else HighlightBlueLightBorder) else Color.Transparent,
+                                        RoundedCornerShape(14.dp)
+                                    )
+                                    .clickable {
+                                        selectedCategory = cat
+                                        showCategoryPickerModal = false
+                                    }
+                                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = icon, fontSize = 22.sp)
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = cat,
+                                    fontSize = 14.5.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) (if (isDark) DarkTitleBlue else SkyBluePrimary) else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                if (isSelected) {
+                                    Text(
+                                        text = "✓",
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Modal Chọn nguồn tiền chuyển (Tiền mặt, Tài khoản đã liên kết hoặc Mở app ngân hàng)
+    if (showSourceAccountPickerModal) {
+        Dialog(onDismissRequest = { showSourceAccountPickerModal = false }) {
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(520.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Chọn nguồn tiền chuyển",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        IconButton(onClick = { showSourceAccountPickerModal = false }, modifier = Modifier.size(28.dp)) {
+                            Icon(imageVector = Icons.Default.Close, contentDescription = "Đóng", tint = TextMuted)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Tùy chọn 1: Tiền mặt
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(
+                                        if (isSourceCash) (if (isDark) DarkHighlightNavyBg else HighlightBlueLightBg) else (if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
+                                    )
+                                    .border(
+                                        1.dp,
+                                        if (isSourceCash) (if (isDark) DarkHighlightNavyBorder else HighlightBlueLightBorder) else (if (isDark) DarkCardBorder else CardBorder),
+                                        RoundedCornerShape(14.dp)
+                                    )
+                                    .clickable {
+                                        isSourceCash = true
+                                        selectedAccount = null
+                                        showSourceAccountPickerModal = false
+                                    }
+                                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = "💵", fontSize = 24.sp)
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Tiền mặt",
+                                        fontSize = 14.5.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "Ghi nhận chi tiêu bằng tiền mặt trực tiếp",
+                                        fontSize = 11.5.sp,
+                                        color = TextMuted
+                                    )
+                                }
+                                if (isSourceCash) {
+                                    Text(text = "✓", fontWeight = FontWeight.Bold, color = if (isDark) DarkTitleBlue else SkyBluePrimary)
+                                }
+                            }
+                        }
+
+                        // Danh sách tài khoản ngân hàng của người dùng
+                        if (accounts.isNotEmpty()) {
+                            item {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "TÀI KHOẢN NGÂN HÀNG CỦA BẠN:",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextMuted
+                                )
+                            }
+                            items(accounts) { acc ->
+                                val isSelected = !isSourceCash && selectedAccount?.id == acc.id
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(
+                                            if (isSelected) (if (isDark) DarkHighlightNavyBg else HighlightBlueLightBg) else (if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
+                                        )
+                                        .border(
+                                            1.dp,
+                                            if (isSelected) (if (isDark) DarkHighlightNavyBorder else HighlightBlueLightBorder) else (if (isDark) DarkCardBorder else CardBorder),
+                                            RoundedCornerShape(14.dp)
+                                        )
+                                        .clickable {
+                                            selectedAccount = acc
+                                            isSourceCash = false
+                                            showSourceAccountPickerModal = false
+                                        }
+                                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    BankLogoView(bankId = acc.bankId, size = 32.dp)
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = acc.bankName,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = "STK: ${acc.accountNumber} • ${Formatters.formatMoney(acc.balance)}",
+                                            fontSize = 11.5.sp,
+                                            color = TextMuted
+                                        )
+                                    }
+                                    if (isSelected) {
+                                        Text(text = "✓", fontWeight = FontWeight.Bold, color = if (isDark) DarkTitleBlue else SkyBluePrimary)
+                                    }
+                                }
+                            }
+                        }
+
+                        // Hoặc chọn mở app ngân hàng bất kỳ để chuyển khoản
+                        item {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "HOẶC CHỌN ỨNG DỤNG NGÂN HÀNG ĐỂ MỞ APP:",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TextMuted
+                            )
+                        }
+
+                        items(BankDirectory.ALL_BANKS) { bank ->
+                            val isSelected = !isSourceCash && selectedAccount?.bankId == bank.id
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        selectedAccount = BankAccount(
+                                            id = "source_${bank.id}",
+                                            bankId = bank.id,
+                                            bankName = bank.shortName,
+                                            accountNumber = "",
+                                            balance = 0L
+                                        )
+                                        isSourceCash = false
+                                        showSourceAccountPickerModal = false
+                                    }
+                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                BankLogoView(bankId = bank.id, size = 26.dp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = bank.shortName,
+                                    fontSize = 13.5.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) (if (isDark) DarkTitleBlue else SkyBluePrimary) else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Text(
+                                    text = "Mở app",
+                                    fontSize = 11.5.sp,
+                                    color = TextMuted
+                                )
                             }
                         }
                     }
