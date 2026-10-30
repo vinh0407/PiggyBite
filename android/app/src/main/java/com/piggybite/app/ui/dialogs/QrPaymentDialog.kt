@@ -112,6 +112,11 @@ fun QrPaymentDialog(
     var selectedCategory by remember { mutableStateOf("Ăn uống") }
     var noteText by remember { mutableStateOf("") }
     var selectedAccount by remember { mutableStateOf<BankAccount?>(accounts.firstOrNull()) }
+    var selectedSourceBank by remember {
+        mutableStateOf(
+            accounts.firstOrNull()?.let { BankDirectory.findBankById(it.bankId) } ?: BankDirectory.ALL_BANKS[0]
+        )
+    }
 
     // Ô nhập dán STK bắt đầu hoàn toàn rỗng
     var pasteInputText by remember { mutableStateOf("") }
@@ -683,8 +688,9 @@ fun QrPaymentDialog(
                         ) {
                             val displaySourceBank = when {
                                 isSourceCash -> "💵 Tiền mặt"
+                                selectedAccount != null && selectedAccount!!.accountNumber.isNotBlank() -> "${selectedAccount!!.bankName} (${selectedAccount!!.accountNumber.takeLast(4)})"
                                 selectedAccount != null -> selectedAccount!!.bankName
-                                else -> "Chọn nguồn"
+                                else -> selectedSourceBank.shortName
                             }
                             Row(
                                 modifier = Modifier
@@ -698,8 +704,8 @@ fun QrPaymentDialog(
                                 if (isSourceCash) {
                                     Text(text = "💵", fontSize = 16.sp)
                                     Spacer(modifier = Modifier.width(6.dp))
-                                } else if (selectedAccount != null) {
-                                    BankLogoView(bankId = selectedAccount!!.bankId, size = 18.dp)
+                                } else {
+                                    BankLogoView(bankId = selectedAccount?.bankId ?: selectedSourceBank.id, size = 18.dp)
                                     Spacer(modifier = Modifier.width(6.dp))
                                 }
                                 Text(
@@ -725,12 +731,15 @@ fun QrPaymentDialog(
                                         return@Button
                                     }
 
+                                    // Ngân hàng nguồn tiền được chọn để mở app và ghi nhận giao dịch
+                                    val sourceBankToLaunch = selectedAccount?.let { BankDirectory.findBankById(it.bankId) } ?: selectedSourceBank
+
                                     val tx = Transaction(
                                         id = UUID.randomUUID().toString(),
                                         amount = amountValue,
                                         isIncome = false,
-                                        bankAccountId = if (isSourceCash) "cash" else (selectedAccount?.id ?: receiverBank.id),
-                                        bankName = if (isSourceCash) "Tiền mặt" else (selectedAccount?.bankName ?: receiverBank.shortName),
+                                        bankAccountId = if (isSourceCash) "cash" else (selectedAccount?.id ?: "source_${sourceBankToLaunch.id}"),
+                                        bankName = if (isSourceCash) "Tiền mặt" else (selectedAccount?.bankName ?: sourceBankToLaunch.shortName),
                                         note = "Chuyển: ${receiverBank.shortName} STK $receiverAccNum (${if (noteText.isNotBlank()) noteText else selectedCategory})",
                                         timestamp = System.currentTimeMillis(),
                                         category = selectedCategory
@@ -744,29 +753,28 @@ fun QrPaymentDialog(
                                         return@Button
                                     }
 
-                                    // Tự động sao chép STK chính xác vào Clipboard
+                                    // Tự động sao chép STK chính xác vào Clipboard để dán nhanh trên app ngân hàng
                                     try {
                                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
                                         val clip = android.content.ClipData.newPlainText("VietQR STK", receiverAccNum)
                                         clipboard?.setPrimaryClip(clip)
                                     } catch (_: Exception) {}
 
-                                    // Mở ứng dụng ngân hàng nguồn (hoặc đích nếu chưa chọn nguồn)
-                                    val bankToLaunch = selectedAccount?.let { BankDirectory.findBankById(it.bankId) } ?: receiverBank
+                                    // Mở ứng dụng ngân hàng nguồn được chọn (KHÔNG PHẢI ngân hàng nhận)
                                     try {
-                                        val launchIntent = context.packageManager.getLaunchIntentForPackage(bankToLaunch.packageName)
+                                        val launchIntent = context.packageManager.getLaunchIntentForPackage(sourceBankToLaunch.packageName)
                                         if (launchIntent != null) {
                                             launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                             context.startActivity(launchIntent)
                                         } else {
-                                            val schemeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(bankToLaunch.scheme)).apply {
+                                            val schemeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(sourceBankToLaunch.scheme)).apply {
                                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                             }
                                             context.startActivity(schemeIntent)
                                         }
                                     } catch (_: Exception) {}
 
-                                    Toast.makeText(context, "Đã sao chép STK: $receiverAccNum và mở app ${bankToLaunch.shortName}", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, "Đã sao chép STK: $receiverAccNum và mở app ngân hàng ${sourceBankToLaunch.shortName}", Toast.LENGTH_LONG).show()
                                     onDismiss()
                                 },
                                 modifier = Modifier
@@ -1092,6 +1100,7 @@ fun QrPaymentDialog(
                                         )
                                         .clickable {
                                             selectedAccount = acc
+                                            selectedSourceBank = BankDirectory.findBankById(acc.bankId) ?: selectedSourceBank
                                             isSourceCash = false
                                             showSourceAccountPickerModal = false
                                         }
@@ -1138,6 +1147,7 @@ fun QrPaymentDialog(
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
+                                        selectedSourceBank = bank
                                         selectedAccount = BankAccount(
                                             id = "source_${bank.id}",
                                             bankId = bank.id,

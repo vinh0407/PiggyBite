@@ -9,8 +9,8 @@ import java.util.Locale
 object Formatters {
 
     fun formatMoney(amount: Long, currencySuffix: String = "đ"): String {
-        val symbols = DecimalFormatSymbols(Locale("vi", "VN")).apply {
-            groupingSeparator = '.'
+        val symbols = DecimalFormatSymbols(Locale.US).apply {
+            groupingSeparator = ','
         }
         val df = DecimalFormat("#,###", symbols)
         return "${df.format(amount)} $currencySuffix"
