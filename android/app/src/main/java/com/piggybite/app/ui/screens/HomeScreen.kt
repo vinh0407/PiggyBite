@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.piggybite.app.model.BankAccount
 import com.piggybite.app.model.Transaction
 import com.piggybite.app.ui.components.ActionButtonsRow
-import com.piggybite.app.ui.components.ExpenseCard
 import com.piggybite.app.ui.components.TopHeader
 import com.piggybite.app.ui.components.TransactionList
 import com.piggybite.app.ui.components.WalletSummaryCard
@@ -91,17 +90,18 @@ fun HomeScreen(
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Nếp Main Expense & Remaining Budget Card
-            ExpenseCard(
-                todayExpense = todayExpense,
-                todayIncome = todayIncome,
-                remainingBudget = if (totalBalance > 0) totalBalance else 19784000L,
-                monthExpense = 1750000L + todayExpense,
+            // Thẻ Tổng số dư & Liệt kê tài khoản ngân hàng duy nhất
+            WalletSummaryCard(
+                accounts = accounts,
+                totalBalance = totalBalance,
                 isBalanceHidden = isBalanceHidden,
-                onToggleHideBalance = onToggleHideBalance
+                onToggleHideBalance = onToggleHideBalance,
+                onAddBank = onAddBank,
+                onEditAccount = onEditAccount,
+                onManageAll = onManageAllWallets
             )
 
-            // Primary QR Payment & Action Buttons (Quét QR thanh toán + Ghi tay)
+            // Cụm phím hành động (Quét QR thanh toán + Ghi tay)
             ActionButtonsRow(
                 onScanQr = onScanQr,
                 onAddManual = onAddManual,
@@ -109,7 +109,7 @@ fun HomeScreen(
                 onOpenNotificationSimulator = onOpenNotificationSimulator
             )
 
-            // "Mỗi tuần, khép sổ một lần" Banner (Exact Nếp Screenshot 4 logic)
+            // "Mỗi tuần, khép sổ một lần" Banner (Logic Nếp)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -156,18 +156,7 @@ fun HomeScreen(
                 )
             }
 
-            // Wallet Summary Card (Aggregated accounts)
-            WalletSummaryCard(
-                accounts = accounts,
-                totalBalance = totalBalance,
-                isBalanceHidden = isBalanceHidden,
-                onToggleHideBalance = onToggleHideBalance,
-                onAddBank = onAddBank,
-                onEditAccount = onEditAccount,
-                onManageAll = onManageAllWallets
-            )
-
-            // Recent Transactions (Gần đây)
+            // Giao dịch gần đây
             TransactionList(
                 transactions = transactions,
                 onAddClick = onAddManual
