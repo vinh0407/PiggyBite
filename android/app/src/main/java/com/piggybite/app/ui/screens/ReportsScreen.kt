@@ -19,8 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Home
@@ -47,18 +47,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.piggybite.app.model.BankAccount
 import com.piggybite.app.model.Transaction
+import com.piggybite.app.ui.components.BankLogoView
+import com.piggybite.app.ui.theme.CardBorder
 import com.piggybite.app.ui.theme.DarkButtonBg
 import com.piggybite.app.ui.theme.DarkButtonBorder
 import com.piggybite.app.ui.theme.DarkCardBackground
 import com.piggybite.app.ui.theme.DarkCardBorder
+import com.piggybite.app.ui.theme.DarkHighlightNavyBg
+import com.piggybite.app.ui.theme.DarkHighlightNavyBorder
+import com.piggybite.app.ui.theme.DarkHighlightNavyText
 import com.piggybite.app.ui.theme.DarkTextMain
 import com.piggybite.app.ui.theme.DarkTextMuted
 import com.piggybite.app.ui.theme.DarkTextSub
 import com.piggybite.app.ui.theme.DarkTitleBlue
+import com.piggybite.app.ui.theme.HighlightBlueLightBg
+import com.piggybite.app.ui.theme.HighlightBlueLightBorder
+import com.piggybite.app.ui.theme.HighlightBlueLightText
 import com.piggybite.app.ui.theme.LocalIsDarkMode
-import com.piggybite.app.ui.theme.NepGreenPrimary
-import com.piggybite.app.ui.theme.NepGreenSoft
 import com.piggybite.app.ui.theme.SkyBluePrimary
+import com.piggybite.app.ui.theme.SkyBlueSoft
+import com.piggybite.app.ui.theme.TextMuted
 import com.piggybite.app.util.Formatters
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -73,26 +81,34 @@ enum class ReportTab {
 @Composable
 fun ReportsScreen(
     accounts: List<BankAccount>,
-    transactions: List<Transaction>
+    transactions: List<Transaction>,
+    onAddBank: () -> Unit = {},
+    onEditAccount: (BankAccount) -> Unit = {}
 ) {
     val isDark = LocalIsDarkMode.current
     var activeSubTab by remember { mutableStateOf(ReportTab.CALENDAR) }
 
-    var selectedDay by remember {
-        val today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-        mutableIntStateOf(today)
+    // Quản lý chuyển tháng qua lại
+    var monthOffset by remember { mutableIntStateOf(0) }
+
+    val cal = remember(monthOffset) {
+        Calendar.getInstance().apply { add(Calendar.MONTH, monthOffset) }
     }
 
-    val cal = remember { Calendar.getInstance() }
-    val daysInMonth = remember { cal.getActualMaximum(Calendar.DAY_OF_MONTH) }
-    val firstDayOfWeek = remember {
-        val temp = Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 1) }
-        // Calendar.SUNDAY is 1, Calendar.MONDAY is 2. Convert to Monday-first (0 to 6)
+    var selectedDay by remember(monthOffset) {
+        val maxDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        mutableIntStateOf(if (monthOffset == 0) today else 1.coerceAtMost(maxDays))
+    }
+
+    val daysInMonth = remember(cal) { cal.getActualMaximum(Calendar.DAY_OF_MONTH) }
+    val firstDayOfWeek = remember(cal) {
+        val temp = (cal.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, 1) }
         (temp.get(Calendar.DAY_OF_WEEK) + 5) % 7
     }
 
-    // Spending per day
-    val dailySpendings = remember(transactions) {
+    // Chi tiêu từng ngày trong tháng
+    val dailySpendings = remember(transactions, cal) {
         val map = mutableMapOf<Int, Long>()
         transactions.filter { !it.isIncome }.forEach { tx ->
             val txCal = Calendar.getInstance().apply { timeInMillis = tx.timestamp }
@@ -105,18 +121,19 @@ fun ReportsScreen(
     }
 
     val totalMonthExpense = remember(dailySpendings) {
-        dailySpendings.values.sum().let { if (it > 0) it else 25768000L }
+        dailySpendings.values.sum()
     }
     val avgPerDay = remember(totalMonthExpense, daysInMonth) {
-        totalMonthExpense / daysInMonth
+        if (daysInMonth > 0) totalMonthExpense / daysInMonth else 0L
     }
 
-    // Transactions for selected day
-    val selectedDayTransactions = remember(transactions, selectedDay) {
+    // Giao dịch trong ngày đã chọn
+    val selectedDayTransactions = remember(transactions, selectedDay, cal) {
         transactions.filter { tx ->
             val txCal = Calendar.getInstance().apply { timeInMillis = tx.timestamp }
             txCal.get(Calendar.DAY_OF_MONTH) == selectedDay &&
-            txCal.get(Calendar.MONTH) == cal.get(Calendar.MONTH)
+            txCal.get(Calendar.MONTH) == cal.get(Calendar.MONTH) &&
+            txCal.get(Calendar.YEAR) == cal.get(Calendar.YEAR)
         }
     }
     val selectedDayTotal = remember(selectedDayTransactions) {
@@ -131,13 +148,15 @@ fun ReportsScreen(
         }
     }
 
+    val monthDisplayTitle = if (monthOffset == 0) "Tháng này" else "Tháng ${cal.get(Calendar.MONTH) + 1}, ${cal.get(Calendar.YEAR)}"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 20.dp, vertical = 14.dp)
     ) {
-        // Top Header: Báo cáo | Segmented Control [Tổng quan | Lịch]
+        // Top Header: Báo cáo | Segmented Switch [Tổng quan | Lịch]
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -150,12 +169,12 @@ fun ReportsScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            // Segmented Switch [Tổng quan | Lịch] (Nếp style)
+            // Segmented Switch [Tổng quan | Lịch]
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(14.dp))
                     .background(if (isDark) DarkButtonBg else Color(0xFFF3F4F6))
-                    .border(1.dp, if (isDark) DarkButtonBorder else Color(0xFFE5E7EB), RoundedCornerShape(14.dp))
+                    .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(14.dp))
                     .padding(3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -164,7 +183,14 @@ fun ReportsScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(if (isOverview) (if (isDark) DarkCardBackground else Color.White) else Color.Transparent)
+                        .background(
+                            if (isOverview) (if (isDark) DarkHighlightNavyBg else Color.White) else Color.Transparent
+                        )
+                        .border(
+                            1.dp,
+                            if (isOverview) (if (isDark) DarkHighlightNavyBorder else CardBorder) else Color.Transparent,
+                            RoundedCornerShape(10.dp)
+                        )
                         .clickable { activeSubTab = ReportTab.OVERVIEW }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -173,7 +199,7 @@ fun ReportsScreen(
                         text = "Tổng quan",
                         fontSize = 12.sp,
                         fontWeight = if (isOverview) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isOverview) MaterialTheme.colorScheme.onSurface else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
+                        color = if (isOverview) (if (isDark) DarkTitleBlue else Color(0xFF111827)) else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
                     )
                 }
 
@@ -182,7 +208,14 @@ fun ReportsScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(if (isCal) (if (isDark) DarkCardBackground else Color.White) else Color.Transparent)
+                        .background(
+                            if (isCal) (if (isDark) DarkHighlightNavyBg else Color.White) else Color.Transparent
+                        )
+                        .border(
+                            1.dp,
+                            if (isCal) (if (isDark) DarkHighlightNavyBorder else CardBorder) else Color.Transparent,
+                            RoundedCornerShape(10.dp)
+                        )
                         .clickable { activeSubTab = ReportTab.CALENDAR }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -191,7 +224,7 @@ fun ReportsScreen(
                         text = "Lịch",
                         fontSize = 12.sp,
                         fontWeight = if (isCal) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isCal) MaterialTheme.colorScheme.onSurface else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
+                        color = if (isCal) (if (isDark) DarkTitleBlue else Color(0xFF111827)) else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
                     )
                 }
             }
@@ -204,37 +237,48 @@ fun ReportsScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Navigation Row: Trước | Tháng này | Sau
+                // Nút chuyển tháng: Trước | Tháng này | Sau
                 item {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
+                            .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(16.dp))
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Trước",
-                            fontSize = 13.5.sp,
-                            color = if (isDark) DarkTextMuted else Color(0xFF6B7280),
-                            modifier = Modifier.clickable { /* Prev month */ }
+                            text = "‹ Trước",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                            modifier = Modifier
+                                .clickable { monthOffset-- }
+                                .padding(4.dp)
                         )
 
                         Text(
-                            text = "Tháng này",
+                            text = monthDisplayTitle,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = if (isDark) DarkTextMain else Color(0xFF111827)
                         )
 
                         Text(
-                            text = "Sau",
-                            fontSize = 13.5.sp,
-                            color = if (isDark) DarkTextMuted else Color(0xFF6B7280),
-                            modifier = Modifier.clickable { /* Next month */ }
+                            text = "Sau ›",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                            modifier = Modifier
+                                .clickable { monthOffset++ }
+                                .padding(4.dp)
                         )
                     }
                 }
 
-                // Total Month Expense & Daily Average (Nếp style)
+                // Tổng chi tháng & Trung bình ngày
                 item {
                     Column(
                         modifier = Modifier
@@ -243,7 +287,7 @@ fun ReportsScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Tổng chi tháng này",
+                            text = "Tổng chi $monthDisplayTitle",
                             fontSize = 13.sp,
                             color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
                         )
@@ -252,7 +296,7 @@ fun ReportsScreen(
                             text = Formatters.formatMoney(totalMonthExpense),
                             fontSize = 32.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = if (isDark) DarkTextMain else Color(0xFF111827)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -263,17 +307,17 @@ fun ReportsScreen(
                     }
                 }
 
-                // Exact Nếp Calendar Matrix Grid
+                // Ma trận Lịch 7 cột (Hiển thị rõ ràng các khoảng chi tiêu mỗi ngày)
                 item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(22.dp))
                             .background(if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
-                            .border(1.dp, if (isDark) DarkCardBorder else Color(0xFFE5E7EB), RoundedCornerShape(22.dp))
+                            .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(22.dp))
                             .padding(12.dp)
                     ) {
-                        // Weekday headers: T2, T3, T4, T5, T6, T7, CN
+                        // Thứ trong tuần: T2, T3, T4, T5, T6, T7, CN
                         val weekDays = listOf("T2", "T3", "T4", "T5", "T6", "T7", "CN")
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -285,7 +329,7 @@ fun ReportsScreen(
                                     fontSize = 11.5.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = if (isDark) DarkTextSub else Color(0xFF9CA3AF),
-                                    modifier = Modifier.width(40.dp),
+                                    modifier = Modifier.width(42.dp),
                                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                                 )
                             }
@@ -293,7 +337,7 @@ fun ReportsScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // Grid of days
+                        // Lưới các ngày
                         val totalCells = firstDayOfWeek + daysInMonth
                         val rows = (totalCells + 6) / 7
 
@@ -312,24 +356,24 @@ fun ReportsScreen(
                                         val hasExpense = dayExpense > 0
 
                                         val cellBg = when {
-                                            isSelected -> (if (isDark) Color(0xFF1B3E2F) else Color(0xFFD8F3DC))
-                                            hasExpense -> (if (isDark) Color(0xFF12231A) else Color(0xFFE8F5E9))
+                                            isSelected -> (if (isDark) DarkHighlightNavyBg else HighlightBlueLightBg)
+                                            hasExpense -> (if (isDark) Color(0xFF161E28) else Color(0xFFF0F9FF))
                                             else -> Color.Transparent
                                         }
 
-                                        val cellBorder = if (isSelected) {
-                                            if (isDark) DarkTitleBlue else NepGreenPrimary
-                                        } else {
-                                            Color.Transparent
+                                        val cellBorder = when {
+                                            isSelected -> (if (isDark) DarkTitleBlue else SkyBluePrimary)
+                                            hasExpense -> (if (isDark) DarkHighlightNavyBorder else HighlightBlueLightBorder)
+                                            else -> Color.Transparent
                                         }
 
                                         Box(
                                             modifier = Modifier
                                                 .width(42.dp)
-                                                .height(46.dp)
+                                                .height(48.dp)
                                                 .clip(RoundedCornerShape(10.dp))
                                                 .background(cellBg)
-                                                .border(if (isSelected) 1.5.dp else 0.dp, cellBorder, RoundedCornerShape(10.dp))
+                                                .border(if (isSelected) 1.5.dp else (if (hasExpense) 1.dp else 0.dp), cellBorder, RoundedCornerShape(10.dp))
                                                 .clickable { selectedDay = dayNum }
                                                 .padding(2.dp),
                                             contentAlignment = Alignment.Center
@@ -339,14 +383,14 @@ fun ReportsScreen(
                                                     text = "$dayNum",
                                                     fontSize = 12.5.sp,
                                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                                    color = MaterialTheme.colorScheme.onSurface
+                                                    color = if (isSelected) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextMain else Color(0xFF111827))
                                                 )
                                                 if (hasExpense) {
                                                     Text(
                                                         text = formatCompactK(dayExpense),
-                                                        fontSize = 9.sp,
-                                                        color = if (isDark) DarkTitleBlue else NepGreenPrimary,
-                                                        fontWeight = FontWeight.SemiBold
+                                                        fontSize = 9.5.sp,
+                                                        color = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
+                                                        fontWeight = FontWeight.Bold
                                                     )
                                                 }
                                             }
@@ -361,7 +405,7 @@ fun ReportsScreen(
                     }
                 }
 
-                // Selected Day Header & Amount
+                // Chi tiết giao dịch ngày đã chọn
                 item {
                     Row(
                         modifier = Modifier
@@ -374,18 +418,17 @@ fun ReportsScreen(
                             text = "Ngày $selectedDay, Tháng ${cal.get(Calendar.MONTH) + 1}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = if (isDark) DarkTextMain else Color(0xFF111827)
                         )
                         Text(
                             text = if (selectedDayTotal > 0) Formatters.formatMoney(selectedDayTotal) else "0 đ",
                             fontSize = 14.5.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (selectedDayTotal > 0) (if (isDark) DarkTitleBlue else NepGreenPrimary) else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
+                            color = if (selectedDayTotal > 0) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
                         )
                     }
                 }
 
-                // Daily Transactions
                 if (selectedDayTransactions.isEmpty()) {
                     item {
                         Column(
@@ -393,7 +436,7 @@ fun ReportsScreen(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else Color(0xFFF3F4F6), RoundedCornerShape(16.dp))
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(16.dp))
                                 .padding(vertical = 24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -411,8 +454,8 @@ fun ReportsScreen(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else Color(0xFFF3F4F6), RoundedCornerShape(20.dp))
-                                .padding(horizontal = 14.dp, vertical = 6.dp),
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(20.dp))
+                            .padding(horizontal = 14.dp, vertical = 6.dp),
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             selectedDayTransactions.forEachIndexed { index, tx ->
@@ -422,7 +465,7 @@ fun ReportsScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(0.6.dp)
-                                            .background(if (isDark) DarkCardBorder.copy(alpha = 0.5f) else Color(0xFFF3F4F6))
+                                            .background(if (isDark) DarkCardBorder else CardBorder)
                                     )
                                 }
                             }
@@ -435,17 +478,18 @@ fun ReportsScreen(
                 }
             }
         } else {
-            // OVERVIEW TAB: Categories & Budgets
+            // TAB TỔNG QUAN: Báo cáo danh mục + Quản lý ví & Danh sách ngân hàng
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
+                // PHẦN 1: BÁO CÁO PHÂN BỔ CHI TIÊU
                 item {
                     Text(
                         text = "Phân bổ chi tiêu theo danh mục",
-                        fontSize = 15.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (isDark) DarkTextMain else Color(0xFF111827)
                     )
                 }
 
@@ -462,7 +506,7 @@ fun ReportsScreen(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(18.dp))
                             .background(if (isDark) DarkCardBackground else Color.White)
-                            .border(1.dp, if (isDark) DarkCardBorder else Color(0xFFF3F4F6), RoundedCornerShape(18.dp))
+                            .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
                             .padding(16.dp)
                     ) {
                         Row(
@@ -473,13 +517,13 @@ fun ReportsScreen(
                                 text = cat,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = if (isDark) DarkTextMain else Color(0xFF111827)
                             )
                             Text(
                                 text = Formatters.formatMoney(amount),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = if (isDark) DarkTextMain else Color(0xFF111827)
                             )
                         }
 
@@ -497,9 +541,122 @@ fun ReportsScreen(
                                     .fillMaxWidth(ratio)
                                     .height(6.dp)
                                     .clip(RoundedCornerShape(3.dp))
-                                    .background(if (isDark) DarkTitleBlue else NepGreenPrimary)
+                                    .background(if (isDark) DarkTitleBlue else SkyBluePrimary)
                             )
                         }
+                    }
+                }
+
+                // PHẦN 2: QUẢN LÝ VÍ & DANH SÁCH NGÂN HÀNG
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.AccountBalanceWallet,
+                                contentDescription = null,
+                                tint = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Quản lý ví & Tài khoản ngân hàng",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isDark) DarkTextMain else Color(0xFF111827)
+                            )
+                        }
+                    }
+                }
+
+                // Danh sách ngân hàng
+                if (accounts.isEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(18.dp))
+                                .background(if (isDark) DarkCardBackground else Color.White)
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
+                                .padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Chưa có tài khoản ngân hàng nào",
+                                fontSize = 13.5.sp,
+                                color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
+                            )
+                        }
+                    }
+                } else {
+                    items(accounts) { acc ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(if (isDark) DarkCardBackground else Color.White)
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(16.dp))
+                                .clickable { onEditAccount(acc) }
+                                .padding(horizontal = 14.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            BankLogoView(bankId = acc.bankId, size = 38.dp)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = acc.bankName,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                )
+                                if (acc.accountNumber.isNotBlank()) {
+                                    Text(
+                                        text = "STK: ${acc.accountNumber}",
+                                        fontSize = 12.sp,
+                                        color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
+                                    )
+                                }
+                            }
+                            Text(
+                                text = Formatters.formatMoney(acc.balance),
+                                fontSize = 14.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isDark) DarkTextMain else Color(0xFF111827)
+                            )
+                        }
+                    }
+                }
+
+                // Nút Thêm ngân hàng / Ví điện tử
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(if (isDark) DarkButtonBg else Color(0xFFF9FAFB))
+                            .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(16.dp))
+                            .clickable { onAddBank() }
+                            .padding(vertical = 12.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Thêm ngân hàng / Ví điện tử",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                        )
                     }
                 }
 

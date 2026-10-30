@@ -61,6 +61,7 @@ fun HomeScreen(
     accounts: List<BankAccount>,
     transactions: List<Transaction>,
     onScanQr: () -> Unit,
+    onPasteStk: () -> Unit,
     onAddManual: () -> Unit,
     onMyQr: () -> Unit,
     onOpenWeeklyReview: () -> Unit,
@@ -101,9 +102,10 @@ fun HomeScreen(
                 onManageAll = onManageAllWallets
             )
 
-            // Cụm phím hành động (Quét QR thanh toán + Ghi tay)
+            // Cụm phím hành động (Chuyển khoản ngân hàng + Ghi tay)
             ActionButtonsRow(
                 onScanQr = onScanQr,
+                onPasteStk = onPasteStk,
                 onAddManual = onAddManual,
                 onMyQr = onMyQr,
                 onOpenNotificationSimulator = onOpenNotificationSimulator

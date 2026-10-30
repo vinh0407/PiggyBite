@@ -14,20 +14,20 @@ data class Bank(
 
 object BankDirectory {
     val ALL_BANKS = listOf(
-        Bank("vcb", "Ngân hàng Ngoại thương Việt Nam", "Vietcombank", "970436", "#006837", "vcb://", "com.VCB", listOf("vcb", "vietcombank")),
-        Bank("mbbank", "Ngân hàng Quân đội", "MB Bank", "970422", "#0033A0", "mbbank://", "com.mbmobile", listOf("mb", "mbbank", "mb bank")),
-        Bank("techcombank", "Ngân hàng Kỹ thương Việt Nam", "Techcombank", "970407", "#E4002B", "techcombank://", "com.techcombank.mobile", listOf("tcb", "techcombank")),
-        Bank("agribank", "Ngân hàng Nông nghiệp & PTNT", "Agribank", "970405", "#800000", "agribank://", "com.vnpay.agribank", listOf("agribank", "agri")),
-        Bank("bidv", "Ngân hàng Đầu tư và Phát triển", "BIDV", "970418", "#00558F", "bidv://", "com.vnpay.bidv", listOf("bidv")),
-        Bank("vietinbank", "Ngân hàng Công thương Việt Nam", "VietinBank", "970415", "#005BAA", "vietinbank://", "com.vietinbank.ipay", listOf("vietinbank", "vietin", "ctg")),
-        Bank("vpbank", "Ngân hàng Việt Nam Thịnh Vượng", "VPBank", "970432", "#008853", "vpbank://", "com.vnpay.vpbank", listOf("vpbank", "vpb")),
-        Bank("acb", "Ngân hàng Á Châu", "ACB", "970416", "#005596", "acb://", "mobile.acb.com.vn", listOf("acb")),
-        Bank("sacombank", "Ngân hàng Sài Gòn Thương Tín", "Sacombank", "970403", "#004B87", "sacombank://", "src.com.sacombank", listOf("sacombank", "stb")),
-        Bank("tpbank", "Ngân hàng Tiên Phong", "TPBank", "970423", "#592D82", "tpbank://", "com.tpb.mb.gprsandroid", listOf("tpbank", "tpb")),
+        Bank("vcb", "Ngân hàng Ngoại thương Việt Nam", "Vietcombank", "970436", "#006837", "vcb://", "com.VCB", listOf("vcb", "vietcombank", "vietcom", "vcombank", "vietcombanh")),
+        Bank("mbbank", "Ngân hàng Quân đội", "MB Bank", "970422", "#0033A0", "mbbank://", "com.mbmobile", listOf("mb", "mbbank", "mb bank", "mbb", "quandoi", "quan doi")),
+        Bank("techcombank", "Ngân hàng Kỹ thương Việt Nam", "Techcombank", "970407", "#E4002B", "techcombank://", "com.techcombank.mobile", listOf("tcb", "techcombank", "techcom", "tech", "techcombanh")),
+        Bank("agribank", "Ngân hàng Nông nghiệp & PTNT", "Agribank", "970405", "#800000", "agribank://", "com.vnpay.agribank", listOf("agribank", "argibank", "agri", "argi", "agr", "nongnghiep", "nong nghiep", "agribanh")),
+        Bank("bidv", "Ngân hàng Đầu tư và Phát triển", "BIDV", "970418", "#00558F", "bidv://", "com.vnpay.bidv", listOf("bidv", "bi dv", "dautu")),
+        Bank("vietinbank", "Ngân hàng Công thương Việt Nam", "VietinBank", "970415", "#005BAA", "vietinbank://", "com.vietinbank.ipay", listOf("vietinbank", "viettinbank", "vietin", "viettin", "ctg", "cong thuong")),
+        Bank("vpbank", "Ngân hàng Việt Nam Thịnh Vượng", "VPBank", "970432", "#008853", "vpbank://", "com.vnpay.vpbank", listOf("vpbank", "vpb", "thinh vuong", "vp bank")),
+        Bank("acb", "Ngân hàng Á Châu", "ACB", "970416", "#005596", "acb://", "mobile.acb.com.vn", listOf("acb", "a chau")),
+        Bank("sacombank", "Ngân hàng Sài Gòn Thương Tín", "Sacombank", "970403", "#004B87", "sacombank://", "src.com.sacombank", listOf("sacombank", "stb", "sacom", "sacombanh")),
+        Bank("tpbank", "Ngân hàng Tiên Phong", "TPBank", "970423", "#592D82", "tpbank://", "com.tpb.mb.gprsandroid", listOf("tpbank", "tpb", "tienphong", "tien phong", "tp bank")),
         Bank("msb", "Ngân hàng Hàng Hải", "MSB", "970426", "#EA5B0C", "msb://", "com.msb.mb", listOf("msb", "hang hai")),
-        Bank("hdbank", "Ngân hàng Phát triển TP.HCM", "HDBank", "970437", "#EE1C25", "hdbank://", "com.hdbank.mb", listOf("hdbank", "hdb")),
-        Bank("ocb", "Ngân hàng Phương Đông", "OCB", "970448", "#008852", "ocb://", "com.mplus.ocb", listOf("ocb")),
-        Bank("vib", "Ngân hàng Quốc tế", "VIB", "970441", "#004B87", "vib://", "com.vib.myvib", listOf("vib")),
+        Bank("hdbank", "Ngân hàng Phát triển TP.HCM", "HDBank", "970437", "#EE1C25", "hdbank://", "com.hdbank.mb", listOf("hdbank", "hdb", "hd bank")),
+        Bank("ocb", "Ngân hàng Phương Đông", "OCB", "970448", "#008852", "ocb://", "com.mplus.ocb", listOf("ocb", "phuong dong")),
+        Bank("vib", "Ngân hàng Quốc tế", "VIB", "970441", "#004B87", "vib://", "com.vib.myvib", listOf("vib", "quoc te")),
         Bank("shb", "Ngân hàng Sài Gòn - Hà Nội", "SHB", "970443", "#F58220", "shb://", "com.shb.mobilebanking", listOf("shb")),
         Bank("scb", "Ngân hàng Sài Gòn", "SCB", "970429", "#005BAC", "scb://", "com.scb.mb", listOf("scb")),
         Bank("seabank", "Ngân hàng Đông Nam Á", "SeABank", "970440", "#ED1C24", "seabank://", "vn.com.seabank.mb", listOf("seabank", "seab")),
@@ -53,15 +53,50 @@ object BankDirectory {
         Bank("tnex", "Ngân hàng số TNEX", "TNEX", "970459", "#00D6B2", "tnex://", "msb.com.vn.tnex", listOf("tnex"))
     )
 
+    private fun levenshteinDistance(s1: String, s2: String): Int {
+        val dp = Array(s1.length + 1) { IntArray(s2.length + 1) }
+        for (i in 0..s1.length) dp[i][0] = i
+        for (j in 0..s2.length) dp[0][j] = j
+        for (i in 1..s1.length) {
+            for (j in 1..s2.length) {
+                val cost = if (s1[i - 1] == s2[j - 1]) 0 else 1
+                dp[i][j] = minOf(
+                    dp[i - 1][j] + 1,
+                    dp[i][j - 1] + 1,
+                    dp[i - 1][j - 1] + cost
+                )
+            }
+        }
+        return dp[s1.length][s2.length]
+    }
+
     fun findBankByKeyword(text: String): Bank? {
-        val lower = text.lowercase()
+        val lower = text.lowercase().trim()
+
+        // 1. Exact or keyword match
         for (bank in ALL_BANKS) {
             for (kw in bank.keywords) {
-                if (Regex("\\b${Regex.escape(kw)}\\b").containsMatchIn(lower)) {
+                if (lower.contains(kw) || Regex("\\b${Regex.escape(kw)}\\b").containsMatchIn(lower)) {
                     return bank
                 }
             }
         }
+
+        // 2. Fuzzy / Typo match on each word token (e.g. "argibank", "vietcombanh")
+        val words = lower.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 3 }
+        for (word in words) {
+            for (bank in ALL_BANKS) {
+                for (kw in bank.keywords) {
+                    if (kw.length >= 3 && Math.abs(kw.length - word.length) <= 2) {
+                        val distance = levenshteinDistance(word, kw)
+                        if (distance <= 1 || (word.length >= 7 && distance <= 2)) {
+                            return bank
+                        }
+                    }
+                }
+            }
+        }
+
         return null
     }
 

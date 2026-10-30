@@ -10,31 +10,32 @@ import androidx.compose.ui.graphics.Color
 
 val LocalIsDarkMode = compositionLocalOf { false }
 
+// Chế độ sáng: Nền trắng, chữ đen, các ô chữ trắng, ô nổi bật màu xanh dương nhạt sáng
 private val ModernLightColorScheme = lightColorScheme(
-    primary = NepGreenPrimary,
+    primary = SkyBluePrimary,
     onPrimary = PureWhite,
-    primaryContainer = NepGreenSoft,
-    onPrimaryContainer = NepGreenPrimary,
+    primaryContainer = HighlightBlueLightBg,
+    onPrimaryContainer = HighlightBlueLightText,
     background = ModernBackground,
-    onBackground = TextDeepNavy,
+    onBackground = TextMain,
     surface = CardBackground,
-    onSurface = TextDeepNavy,
+    onSurface = TextMain,
     surfaceVariant = CardBorderLight,
     outline = CardBorder
 )
 
-// Dark Theme: Nền đen tuyền, surface & card màu xanh đen, chữ xám sáng
+// Chế độ tối: Nền đen, chữ xám, các ô chữ xám, ô nổi bật màu xanh dương đen
 private val ModernDarkColorScheme = darkColorScheme(
-    primary = NepGreenAccent,
+    primary = DarkTitleBlue,
     onPrimary = Color.White,
-    primaryContainer = DarkCardBackground,
-    onPrimaryContainer = DarkTextMain,
-    background = DarkAppBackground, // Nền hoàn toàn màu đen
-    onBackground = DarkTextMain,    // Chữ xám sáng
-    surface = DarkCardBackground,   // Thẻ & card màu xanh đen
+    primaryContainer = DarkHighlightNavyBg,
+    onPrimaryContainer = DarkHighlightNavyText,
+    background = DarkAppBackground, // Nền đen tuyền #000000
+    onBackground = DarkTextMain,    // Chữ xám #EDEDED
+    surface = DarkCardBackground,   // Ô xám đen #12161A
     onSurface = DarkTextMain,
-    surfaceVariant = DarkButtonBg,  // Nút & ô nhập màu xanh đen
-    outline = DarkCardBorder        // Viền xanh đen
+    surfaceVariant = DarkButtonBg,  // Ô xám #161B22
+    outline = DarkCardBorder        // Viền xám đen #21262D
 )
 
 @Composable

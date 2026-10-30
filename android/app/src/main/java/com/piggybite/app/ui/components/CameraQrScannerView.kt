@@ -146,72 +146,7 @@ fun CameraQrScannerView(
     ) {
         if (hasCameraPermission) {
             // Live CameraX Preview
-            AndroidView(
-                factory = { ctx ->
-                    val previewView = PreviewView(ctx).apply {
-                        scaleType = PreviewView.ScaleType.FILL_CENTER
-                    }
-                    val cameraExecutor = Executors.newSingleThreadExecutor()
-                    val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
-
-                    cameraProviderFuture.addListener({
-                        try {
-                            val cameraProvider = cameraProviderFuture.get()
-                            val preview = Preview.Builder().build().also {
-                                it.surfaceProvider = previewView.surfaceProvider
-                            }
-
-                            val reader = MultiFormatReader()
-                            val imageAnalysis = ImageAnalysis.Builder()
-                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                                .build()
-                                .also { analysis ->
-                                    analysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                                        if (isScanned) {
-                                            imageProxy.close()
-                                            return@setAnalyzer
-                                        }
-
-                                        val detectedText = decodeImageProxy(imageProxy, reader)
-                                        imageProxy.close()
-
-                                        if (!detectedText.isNullOrBlank() && !isScanned) {
-                                            isScanned = true
-                                            vibrateDevice(ctx)
-                                            previewView.post {
-                                                onQrCodeDetected(detectedText)
-                                            }
-                                        }
-                                    }
-                                }
-
-                            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-                            cameraProvider.unbindAll()
-                            val cam = cameraProvider.bindToLifecycle(
-                                lifecycleOwner,
-                                cameraSelector,
-                                preview,
-                                imageAnalysis
-                            )
-                            cameraControl = cam
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }, ContextCompat.getMainExecutor(ctx))
-
-                    previewView
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-
-            // Transparent overlay with target viewfinder
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0x77000000))
-            )
-
-            // Viewfinder cutout area
+            // Center Viewfinder: Camera ONLY visible inside this square, pinned with solid black outside
             Box(
                 modifier = Modifier.align(Alignment.Center),
                 contentAlignment = Alignment.Center
@@ -220,29 +155,85 @@ fun CameraQrScannerView(
                     modifier = Modifier
                         .size(260.dp)
                         .clip(RoundedCornerShape(24.dp))
-                        .background(Color.Transparent)
-                        .border(2.dp, Color.White.copy(alpha = 0.8f), RoundedCornerShape(24.dp))
+                        .background(Color.Black)
+                        .border(2.5.dp, Color.White, RoundedCornerShape(24.dp)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // Animated green laser line
+                    AndroidView(
+                        factory = { ctx ->
+                            val previewView = PreviewView(ctx).apply {
+                                scaleType = PreviewView.ScaleType.FILL_CENTER
+                            }
+                            val cameraExecutor = Executors.newSingleThreadExecutor()
+                            val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
+
+                            cameraProviderFuture.addListener({
+                                try {
+                                    val cameraProvider = cameraProviderFuture.get()
+                                    val preview = Preview.Builder().build().also {
+                                        it.surfaceProvider = previewView.surfaceProvider
+                                    }
+
+                                    val reader = MultiFormatReader()
+                                    val imageAnalysis = ImageAnalysis.Builder()
+                                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                        .build()
+                                        .also { analysis ->
+                                            analysis.setAnalyzer(cameraExecutor) { imageProxy ->
+                                                if (isScanned) {
+                                                    imageProxy.close()
+                                                    return@setAnalyzer
+                                                }
+
+                                                val detectedText = decodeImageProxy(imageProxy, reader)
+                                                imageProxy.close()
+
+                                                if (!detectedText.isNullOrBlank() && !isScanned) {
+                                                    isScanned = true
+                                                    vibrateDevice(ctx)
+                                                    previewView.post {
+                                                        onQrCodeDetected(detectedText)
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                                    cameraProvider.unbindAll()
+                                    val cam = cameraProvider.bindToLifecycle(
+                                        lifecycleOwner,
+                                        cameraSelector,
+                                        preview,
+                                        imageAnalysis
+                                    )
+                                    cameraControl = cam
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }, ContextCompat.getMainExecutor(ctx))
+
+                            previewView
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                    // Laser sweep line
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(2.5.dp)
                             .offset(y = laserOffset.dp)
-                            .background(Color(0xFF10B981))
+                            .background(Color(0xFF38BDF8))
                     )
                 }
 
-                // Subtitle
+                // Subtitle pinned directly under the square
                 Text(
                     text = "Hướng camera vào mã QR VietQR",
                     color = Color.White,
-                    fontSize = 13.5.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier
-                        .offset(y = 160.dp)
-                        .background(Color(0x99000000), RoundedCornerShape(12.dp))
-                        .padding(horizontal = 14.dp, vertical = 6.dp)
+                    modifier = Modifier.offset(y = 165.dp)
                 )
             }
         } else {

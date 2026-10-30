@@ -74,6 +74,7 @@ fun AddTransactionDialog(
     var noteText by remember { mutableStateOf("") }
     var categoryText by remember { mutableStateOf(if (isIncome) "Lương" else "Ăn uống") }
     var selectedAccount by remember { mutableStateOf<BankAccount?>(accounts.firstOrNull()) }
+    var isCashSelected by remember { mutableStateOf(accounts.isEmpty()) }
 
     val expenseCategories = listOf("Ăn uống", "Mua sắm", "Di chuyển", "Hóa đơn", "Giải trí", "Sức khỏe", "Khác")
     val incomeCategories = listOf("Lương", "Thưởng", "Kinh doanh", "Được cho/tặng", "Khác")
@@ -320,9 +321,9 @@ fun AddTransactionDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Bank Account Selection
+                // Nguồn tiền / Tài khoản (Có thêm option Tiền mặt)
                 Text(
-                    text = "TÀI KHOẢN NGÂN HÀNG:",
+                    text = "NGUỒN TIỀN:",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextMuted
@@ -331,8 +332,48 @@ fun AddTransactionDialog(
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    // Option 1: Tiền mặt
+                    item {
+                        val isSelected = isCashSelected
+                        val cashBg = if (isSelected) {
+                            if (isDark) DarkButtonBg else SkyBlueSoft
+                        } else {
+                            if (isDark) Color(0xFF172033) else Color(0xFFF8FAFC)
+                        }
+                        val cashBorder = if (isSelected) {
+                            if (isDark) DarkButtonBorder else SkyBluePrimary
+                        } else {
+                            MaterialTheme.colorScheme.outline
+                        }
+                        val cashText = if (isSelected) {
+                            if (isDark) DarkTitleBlue else SkyBluePrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(cashBg)
+                                .border(1.dp, cashBorder, RoundedCornerShape(10.dp))
+                                .clickable {
+                                    isCashSelected = true
+                                    selectedAccount = null
+                                }
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Text(
+                                text = "💵 Tiền mặt",
+                                color = cashText,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    // Option ngân hàng
                     items(accounts) { acc ->
-                        val isSelected = selectedAccount?.id == acc.id
+                        val isSelected = !isCashSelected && selectedAccount?.id == acc.id
                         val accBg = if (isSelected) {
                             if (isDark) DarkButtonBg else SkyBlueSoft
                         } else {
@@ -354,7 +395,10 @@ fun AddTransactionDialog(
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(accBg)
                                 .border(1.dp, accBorder, RoundedCornerShape(10.dp))
-                                .clickable { selectedAccount = acc }
+                                .clickable {
+                                    isCashSelected = false
+                                    selectedAccount = acc
+                                }
                                 .padding(horizontal = 10.dp, vertical = 6.dp)
                         ) {
                             Text(
@@ -372,22 +416,20 @@ fun AddTransactionDialog(
                 Button(
                     onClick = {
                         val amount = amountText.toLongOrNull() ?: 0L
-                        val acc = selectedAccount
                         if (amount <= 0L) {
                             Toast.makeText(context, "Vui lòng nhập số tiền", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
-                        if (acc == null) {
-                            Toast.makeText(context, "Vui lòng chọn tài khoản ngân hàng", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
+
+                        val bId = if (isCashSelected) "cash" else (selectedAccount?.id ?: "cash")
+                        val bName = if (isCashSelected) "Tiền mặt" else (selectedAccount?.bankName ?: "Tiền mặt")
 
                         val tx = Transaction(
                             id = "tx_" + UUID.randomUUID().toString().take(8),
                             amount = amount,
                             isIncome = isIncome,
-                            bankAccountId = acc.id,
-                            bankName = acc.bankName,
+                            bankAccountId = bId,
+                            bankName = bName,
                             note = noteText.ifBlank { categoryText },
                             category = categoryText
                         )

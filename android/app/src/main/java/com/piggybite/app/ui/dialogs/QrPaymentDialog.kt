@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -60,16 +59,23 @@ import com.piggybite.app.model.BankDirectory
 import com.piggybite.app.model.Transaction
 import com.piggybite.app.ui.components.BankLogoView
 import com.piggybite.app.ui.components.CameraQrScannerView
+import com.piggybite.app.ui.theme.CardBorder
+import com.piggybite.app.ui.theme.DarkAppBackground
 import com.piggybite.app.ui.theme.DarkButtonBg
 import com.piggybite.app.ui.theme.DarkButtonBorder
 import com.piggybite.app.ui.theme.DarkCardBackground
 import com.piggybite.app.ui.theme.DarkCardBorder
+import com.piggybite.app.ui.theme.DarkHighlightNavyBg
+import com.piggybite.app.ui.theme.DarkHighlightNavyBorder
+import com.piggybite.app.ui.theme.DarkHighlightNavyText
 import com.piggybite.app.ui.theme.DarkTextMain
 import com.piggybite.app.ui.theme.DarkTextMuted
 import com.piggybite.app.ui.theme.DarkTextSub
 import com.piggybite.app.ui.theme.DarkTitleBlue
+import com.piggybite.app.ui.theme.HighlightBlueLightBg
+import com.piggybite.app.ui.theme.HighlightBlueLightBorder
+import com.piggybite.app.ui.theme.HighlightBlueLightText
 import com.piggybite.app.ui.theme.LocalIsDarkMode
-import com.piggybite.app.ui.theme.NepGreenPrimary
 import com.piggybite.app.ui.theme.SkyBluePrimary
 import com.piggybite.app.ui.theme.SkyBlueSoft
 import com.piggybite.app.ui.theme.TextMuted
@@ -81,49 +87,81 @@ import java.util.UUID
 enum class QrPaymentStep {
     SCAN_CAMERA,
     PASTE_ACCOUNT,
-    CHECK_EXPENSE // Exact Nếp screen "Kiểm tra khoản chi"
+    CHECK_EXPENSE
 }
 
 @Composable
 fun QrPaymentDialog(
     accounts: List<BankAccount>,
+    initialStep: QrPaymentStep = QrPaymentStep.SCAN_CAMERA,
     onDismiss: () -> Unit,
     onPaymentConfirmed: (Transaction) -> Unit
 ) {
     val context = LocalContext.current
     val isDark = LocalIsDarkMode.current
 
-    var currentStep by remember { mutableStateOf(QrPaymentStep.SCAN_CAMERA) }
+    var currentStep by remember { mutableStateOf(initialStep) }
 
-    // Smart Parsed Data
-    var receiverName by remember { mutableStateOf("Nguyen Thu Ha") }
-    var receiverBank by remember { mutableStateOf(BankDirectory.ALL_BANKS.firstOrNull { it.shortName == "Vietcombank" } ?: BankDirectory.ALL_BANKS[0]) }
-    var receiverAccNum by remember { mutableStateOf("0071000123456") }
-    var amountValue by remember { mutableStateOf(65000L) }
-    var amountText by remember { mutableStateOf("65000") }
+    // Dữ liệu trống hoàn toàn (Xóa toàn bộ dữ liệu mẫu có sẵn)
+    var receiverName by remember { mutableStateOf("") }
+    var receiverBank by remember { mutableStateOf(BankDirectory.ALL_BANKS[0]) }
+    var receiverAccNum by remember { mutableStateOf("") }
+    var amountValue by remember { mutableStateOf(0L) }
+    var amountText by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Ăn uống") }
     var noteText by remember { mutableStateOf("") }
     var selectedAccount by remember { mutableStateOf<BankAccount?>(accounts.firstOrNull()) }
 
-    // Paste text input
-    var pasteInputText by remember { mutableStateOf("Techcombank 1903 6688 999 Tran Thi Mai") }
+    // Ô nhập dán STK bắt đầu hoàn toàn rỗng
+    var pasteInputText by remember { mutableStateOf("") }
 
-    // Parse pasted string on change
+    // AI Phân biệt dữ liệu (Fuzzy Bank Matching + Regex STK + Xử lý chính tả)
     fun parsePastedText(raw: String) {
-        val foundBank = BankDirectory.ALL_BANKS.firstOrNull { raw.contains(it.shortName, ignoreCase = true) || raw.contains(it.id, ignoreCase = true) }
+        if (raw.isBlank()) return
+
+        // 1. Nhận diện ngân hàng thông minh hỗ trợ lỗi chính tả (ví dụ: argibank -> Agribank, vietcombanh -> Vietcombank)
+        val foundBank = BankDirectory.findBankByKeyword(raw)
         if (foundBank != null) {
             receiverBank = foundBank
         }
 
-        // Extract digits (STK)
-        val digits = raw.filter { it.isDigit() }
-        if (digits.length >= 6) {
-            receiverAccNum = digits.take(16)
+        // 2. Tách Số tài khoản (chuỗi số liên tiếp từ 6 - 19 chữ số)
+        val digitMatch = Regex("\\b\\d{6,19}\\b").find(raw)
+        if (digitMatch != null) {
+            receiverAccNum = digitMatch.value
+        } else {
+            val allDigits = raw.filter { it.isDigit() }
+            if (allDigits.length >= 6) {
+                receiverAccNum = allDigits.take(19)
+            }
         }
 
-        // Extract name
+        // 3. Tách số tiền nếu có trong chuỗi (ví dụ: 50k, 100k, 50.000, 200000)
+        val amountKMatch = Regex("(\\d+)\\s*(k|nghin|nghìn)", RegexOption.IGNORE_CASE).find(raw)
+        if (amountKMatch != null) {
+            val num = amountKMatch.groupValues[1].toLongOrNull() ?: 0L
+            amountValue = num * 1000
+            amountText = amountValue.toString()
+        } else {
+            val amountNumMatch = Regex("\\b(\\d{1,3}(?:[.,]\\d{3})+|\\d{4,9})\\s*(?:đ|vnd|dong|đồng)?\\b", RegexOption.IGNORE_CASE).find(raw)
+            if (amountNumMatch != null) {
+                val clean = amountNumMatch.groupValues[1].replace(".", "").replace(",", "")
+                if (clean != receiverAccNum) {
+                    val num = clean.toLongOrNull() ?: 0L
+                    if (num in 1000..500_000_000) {
+                        amountValue = num
+                        amountText = num.toString()
+                    }
+                }
+            }
+        }
+
+        // 4. Tên người nhận (nếu có thì lấy, không có thì không quan tâm theo yêu cầu)
         val words = raw.split(" ", "\n", "\t").filter { it.isNotBlank() && it.none { c -> c.isDigit() } }
-        val probableName = words.filter { it.length > 2 && it.lowercase() !in listOf("techcombank", "vietcombank", "mbbank", "bidv", "stk", "tk", "ngan", "hang") }
+        val probableName = words.filter { w ->
+            val lw = w.lowercase()
+            lw.length > 2 && lw !in listOf("techcombank", "vietcombank", "mbbank", "bidv", "agribank", "argibank", "vcb", "tcb", "stk", "tk", "ngan", "hang", "chuyen", "tien", "khoan")
+        }
         if (probableName.isNotEmpty()) {
             receiverName = probableName.joinToString(" ").uppercase()
         }
@@ -138,7 +176,7 @@ fun QrPaymentDialog(
         )
     ) {
         when (currentStep) {
-            // STEP 1: CAMERA QR SCANNER
+            // STEP 1: CAMERA QR SCANNER (Ghim mỗi ô vuông giữa, còn lại đen hoàn toàn)
             QrPaymentStep.SCAN_CAMERA -> {
                 CameraQrScannerView(
                     onQrCodeDetected = { rawText ->
@@ -161,11 +199,11 @@ fun QrPaymentDialog(
                 )
             }
 
-            // STEP 2: "CHỈ CÓ SỐ TÀI KHOẢN? DÁN LÀ XONG" (Screenshot 2)
+            // STEP 2: DÁN SỐ TÀI KHOẢN (STK)
             QrPaymentStep.PASTE_ACCOUNT -> {
                 Surface(
                     shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-                    color = MaterialTheme.colorScheme.surface,
+                    color = if (isDark) DarkAppBackground else Color.White,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 40.dp)
@@ -175,25 +213,25 @@ fun QrPaymentDialog(
                             .fillMaxSize()
                             .padding(20.dp)
                     ) {
-                        // Header: Huỷ | Số tài khoản | Tiếp
+                        // Header
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Huỷ",
+                                text = "Quay lại",
                                 fontSize = 15.sp,
                                 color = if (isDark) DarkTextMuted else Color(0xFF6B7280),
                                 modifier = Modifier
-                                    .clickable { currentStep = QrPaymentStep.SCAN_CAMERA }
+                                    .clickable { onDismiss() }
                                     .padding(8.dp)
                             )
                             Text(
-                                text = "Số tài khoản",
+                                text = "Dán số tài khoản",
                                 fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = if (isDark) DarkTextMain else Color(0xFF111827)
                             )
                             Text(
                                 text = "Tiếp",
@@ -203,7 +241,11 @@ fun QrPaymentDialog(
                                 modifier = Modifier
                                     .clickable {
                                         parsePastedText(pasteInputText)
-                                        currentStep = QrPaymentStep.CHECK_EXPENSE
+                                        if (receiverAccNum.isBlank()) {
+                                            Toast.makeText(context, "Vui lòng nhập hoặc dán số tài khoản", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            currentStep = QrPaymentStep.CHECK_EXPENSE
+                                        }
                                     }
                                     .padding(8.dp)
                             )
@@ -211,7 +253,7 @@ fun QrPaymentDialog(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Large Input Box with Clear (x) button
+                        // Ô nhập văn bản rỗng (Placeholder gợi ý: ví dụ "0337244067 agribank")
                         OutlinedTextField(
                             value = pasteInputText,
                             onValueChange = {
@@ -220,18 +262,24 @@ fun QrPaymentDialog(
                             },
                             placeholder = {
                                 Text(
-                                    "Dán STK hoặc nội dung: Techcombank 1903 6688 999 Tran Thi Mai",
-                                    color = DarkTextMuted,
+                                    "Dán STK & tên ngân hàng (Ví dụ: 0337244067 agribank)",
+                                    color = if (isDark) DarkTextMuted else Color(0xFF9CA3AF),
                                     fontSize = 13.5.sp
                                 )
                             },
                             trailingIcon = {
                                 if (pasteInputText.isNotEmpty()) {
-                                    IconButton(onClick = { pasteInputText = "" }) {
+                                    IconButton(onClick = {
+                                        pasteInputText = ""
+                                        receiverAccNum = ""
+                                        receiverName = ""
+                                        amountValue = 0L
+                                        amountText = ""
+                                    }) {
                                         Icon(
                                             imageVector = Icons.Default.Clear,
                                             contentDescription = "Xoá",
-                                            tint = DarkTextMuted,
+                                            tint = if (isDark) DarkTextMuted else Color(0xFF9CA3AF),
                                             modifier = Modifier.size(18.dp)
                                         )
                                     }
@@ -241,17 +289,17 @@ fun QrPaymentDialog(
                             shape = RoundedCornerShape(18.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = if (isDark) DarkTitleBlue else SkyBluePrimary,
-                                unfocusedBorderColor = if (isDark) DarkCardBorder else Color(0xFFE5E7EB),
-                                focusedContainerColor = if (isDark) DarkButtonBg else Color(0xFFF9FAFB),
-                                unfocusedContainerColor = if (isDark) DarkButtonBg else Color(0xFFF9FAFB),
-                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                                unfocusedBorderColor = if (isDark) DarkCardBorder else CardBorder,
+                                focusedContainerColor = if (isDark) DarkCardBackground else Color(0xFFF9FAFB),
+                                unfocusedContainerColor = if (isDark) DarkCardBackground else Color(0xFFF9FAFB),
+                                focusedTextColor = if (isDark) DarkTextMain else Color(0xFF111827),
+                                unfocusedTextColor = if (isDark) DarkTextMain else Color(0xFF111827)
                             )
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // "Nếp đọc được" (PiggyBite đọc được) Card
+                        // Khối "PiggyBite đọc được"
                         Text(
                             text = "PiggyBite đọc được",
                             fontSize = 12.5.sp,
@@ -266,7 +314,7 @@ fun QrPaymentDialog(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(18.dp))
                                 .background(if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
-                                .border(1.dp, if (isDark) DarkCardBorder else Color(0xFFE5E7EB), RoundedCornerShape(18.dp))
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
                                 .padding(horizontal = 16.dp, vertical = 6.dp)
                         ) {
                             // Row 1: Ngân hàng nhận
@@ -286,11 +334,11 @@ fun QrPaymentDialog(
                                     text = "${receiverBank.shortName} ›",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
                                 )
                             }
 
-                            Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else Color(0xFFE5E7EB)))
+                            Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else CardBorder))
 
                             // Row 2: Số tài khoản
                             Row(
@@ -306,39 +354,16 @@ fun QrPaymentDialog(
                                     color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
                                 )
                                 Text(
-                                    text = "$receiverAccNum ›",
+                                    text = if (receiverAccNum.isNotBlank()) "$receiverAccNum ›" else "Chưa có ›",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = if (receiverAccNum.isNotBlank()) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextSub else Color(0xFF9CA3AF))
                                 )
                             }
 
-                            Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else Color(0xFFE5E7EB)))
+                            Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else CardBorder))
 
-                            // Row 3: Tên
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Tên",
-                                    fontSize = 13.5.sp,
-                                    color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
-                                )
-                                Text(
-                                    text = "$receiverName ›",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-
-                            Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else Color(0xFFE5E7EB)))
-
-                            // Row 4: Số tiền
+                            // Row 3: Số tiền
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -355,7 +380,7 @@ fun QrPaymentDialog(
                                     text = if (amountValue > 0) "${Formatters.formatMoney(amountValue)} ›" else "Chưa có ›",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                                    color = if (amountValue > 0) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextSub else Color(0xFF9CA3AF))
                                 )
                             }
                         }
@@ -363,11 +388,11 @@ fun QrPaymentDialog(
                 }
             }
 
-            // STEP 3: "KIỂM TRA KHOẢN CHI" (Exact Nếp Screen 2)
+            // STEP 3: "KIỂM TRA KHOẢN CHI"
             QrPaymentStep.CHECK_EXPENSE -> {
                 Surface(
                     shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-                    color = MaterialTheme.colorScheme.surface,
+                    color = if (isDark) DarkAppBackground else Color.White,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 40.dp)
@@ -377,7 +402,7 @@ fun QrPaymentDialog(
                             .fillMaxSize()
                             .padding(20.dp)
                     ) {
-                        // Header: Quay lại | Kiểm tra khoản chi | Sửa
+                        // Header
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -388,14 +413,14 @@ fun QrPaymentDialog(
                                 fontSize = 15.sp,
                                 color = if (isDark) DarkTextMuted else Color(0xFF6B7280),
                                 modifier = Modifier
-                                    .clickable { currentStep = QrPaymentStep.SCAN_CAMERA }
+                                    .clickable { currentStep = QrPaymentStep.PASTE_ACCOUNT }
                                     .padding(4.dp)
                             )
                             Text(
                                 text = "Kiểm tra khoản chi",
                                 fontSize = 16.5.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = if (isDark) DarkTextMain else Color(0xFF111827)
                             )
                             Text(
                                 text = "Sửa",
@@ -409,39 +434,50 @@ fun QrPaymentDialog(
 
                         Spacer(modifier = Modifier.height(28.dp))
 
-                        // Recipient Info (Nếp centered layout)
+                        // Thông tin người nhận
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            if (receiverName.isNotBlank()) {
+                                Text(
+                                    text = receiverName,
+                                    fontSize = 19.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
                             Text(
-                                text = receiverName,
-                                fontSize = 19.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "${receiverBank.shortName} · $receiverAccNum",
-                                fontSize = 13.5.sp,
+                                text = "${receiverBank.shortName} · ${receiverAccNum.ifBlank { "Chưa nhập STK" }}",
+                                fontSize = 14.sp,
                                 color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
                             )
 
                             Spacer(modifier = Modifier.height(20.dp))
 
-                            // Giant Amount: 65.000đ
+                            // Số tiền
                             OutlinedTextField(
                                 value = amountText,
                                 onValueChange = { input ->
                                     amountText = input.filter { it.isDigit() }
                                     amountValue = amountText.toLongOrNull() ?: 0L
                                 },
+                                placeholder = {
+                                    Text(
+                                        "Nhập số tiền",
+                                        fontSize = 28.sp,
+                                        color = if (isDark) DarkTextSub else Color(0xFF9CA3AF),
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 textStyle = androidx.compose.ui.text.TextStyle(
                                     fontSize = 36.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
                                 ),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = Color.Transparent,
@@ -461,7 +497,7 @@ fun QrPaymentDialog(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(18.dp))
                                 .background(if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
-                                .border(1.dp, if (isDark) DarkCardBorder else Color(0xFFE5E7EB), RoundedCornerShape(18.dp))
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
                                 .padding(horizontal = 16.dp, vertical = 6.dp)
                         ) {
                             // Row 1: Danh mục
@@ -490,11 +526,11 @@ fun QrPaymentDialog(
                                     text = selectedCategory,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
                                 )
                             }
 
-                            Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else Color(0xFFE5E7EB)))
+                            Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else CardBorder))
 
                             // Row 2: Ghi chú
                             Row(
@@ -521,7 +557,7 @@ fun QrPaymentDialog(
                                 Text(
                                     text = noteText.ifBlank { "Không bắt buộc" },
                                     fontSize = 14.sp,
-                                    color = if (noteText.isBlank()) (if (isDark) DarkTextSub else Color(0xFF9CA3AF)) else MaterialTheme.colorScheme.onSurface
+                                    color = if (noteText.isBlank()) (if (isDark) DarkTextSub else Color(0xFF9CA3AF)) else (if (isDark) DarkTextMain else Color(0xFF111827))
                                 )
                             }
                         }
@@ -536,13 +572,12 @@ fun QrPaymentDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            // Source bank selector chip (e.g. [BIDV] BIDV)
-                            val displaySourceBank = selectedAccount?.bankName ?: "BIDV"
+                            val displaySourceBank = selectedAccount?.bankName ?: "Tài khoản nguồn"
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(16.dp))
                                     .background(if (isDark) DarkButtonBg else Color(0xFFF3F4F6))
-                                    .border(1.dp, if (isDark) DarkButtonBorder else Color(0xFFE5E7EB), RoundedCornerShape(16.dp))
+                                    .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(16.dp))
                                     .padding(horizontal = 14.dp, vertical = 14.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -550,11 +585,11 @@ fun QrPaymentDialog(
                                     text = displaySourceBank,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 13.5.sp,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
                                 )
                             }
 
-                            // Big Green Button: "Chuyển khoản" (Exact Nếp design)
+                            // Nút Chuyển khoản (Xanh dương đen ở Dark mode, Xanh dương ở Light mode)
                             Button(
                                 onClick = {
                                     if (amountValue <= 0) {
@@ -568,30 +603,35 @@ fun QrPaymentDialog(
                                         isIncome = false,
                                         bankAccountId = selectedAccount?.id ?: receiverBank.id,
                                         bankName = selectedAccount?.bankName ?: receiverBank.shortName,
-                                        note = "$receiverName (${if (noteText.isNotBlank()) noteText else selectedCategory})",
+                                        note = "Chuyển: ${receiverBank.shortName} STK $receiverAccNum (${if (noteText.isNotBlank()) noteText else selectedCategory})",
                                         timestamp = System.currentTimeMillis(),
                                         category = selectedCategory
                                     )
 
                                     onPaymentConfirmed(tx)
 
-                                    // Copy STK to clipboard
+                                    // Tự động sao chép STK chính xác vào Clipboard
                                     try {
                                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
                                         val clip = android.content.ClipData.newPlainText("VietQR STK", receiverAccNum)
                                         clipboard?.setPrimaryClip(clip)
                                     } catch (_: Exception) {}
 
-                                    // Deep-link to target bank
+                                    // Mở ứng dụng ngân hàng đích
                                     try {
                                         val launchIntent = context.packageManager.getLaunchIntentForPackage(receiverBank.packageName)
                                         if (launchIntent != null) {
                                             launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                             context.startActivity(launchIntent)
+                                        } else {
+                                            val schemeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(receiverBank.scheme)).apply {
+                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
+                                            context.startActivity(schemeIntent)
                                         }
                                     } catch (_: Exception) {}
 
-                                    Toast.makeText(context, "Đã ghi chép & mở app ngân hàng (Đã sao chép STK: $receiverAccNum)", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, "Đã sao chép STK: $receiverAccNum và mở app ${receiverBank.shortName}", Toast.LENGTH_LONG).show()
                                     onDismiss()
                                 },
                                 modifier = Modifier
@@ -599,9 +639,10 @@ fun QrPaymentDialog(
                                     .height(52.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = NepGreenPrimary,
+                                    containerColor = if (isDark) DarkHighlightNavyBg else SkyBluePrimary,
                                     contentColor = Color.White
-                                )
+                                ),
+                                border = BorderStroke(1.dp, if (isDark) DarkHighlightNavyBorder else Color.Transparent)
                             ) {
                                 Text(
                                     text = "Chuyển khoản",

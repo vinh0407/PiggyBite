@@ -30,6 +30,7 @@ import com.piggybite.app.ui.dialogs.AddTransactionDialog
 import com.piggybite.app.ui.dialogs.MyQrDialog
 import com.piggybite.app.ui.dialogs.NotificationSimulatorDialog
 import com.piggybite.app.ui.dialogs.QrPaymentDialog
+import com.piggybite.app.ui.dialogs.QrPaymentStep
 import com.piggybite.app.ui.dialogs.WeeklyReviewDialog
 import com.piggybite.app.ui.screens.AnalyticsScreen
 import com.piggybite.app.ui.screens.CalendarScreen
@@ -76,6 +77,7 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
     var toastEvent by remember { mutableStateOf<NotificationEvent?>(null) }
 
     // Dialogs state
+    var qrInitialStep by remember { mutableStateOf(QrPaymentStep.SCAN_CAMERA) }
     var showQrPaymentDialog by remember { mutableStateOf(false) }
     var showWeeklyReviewDialog by remember { mutableStateOf(false) }
     var showNotificationSimulator by remember { mutableStateOf(false) }
@@ -127,7 +129,10 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
             BottomNavBar(
                 currentTab = activeTab,
                 onTabSelected = { activeTab = it },
-                onScanQrClick = { showQrPaymentDialog = true }
+                onScanQrClick = {
+                    qrInitialStep = QrPaymentStep.SCAN_CAMERA
+                    showQrPaymentDialog = true
+                }
             )
         }
     ) { innerPadding ->
@@ -149,7 +154,14 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                         onToggleDarkMode = { repository.toggleDarkMode() },
                         accounts = accounts,
                         transactions = transactions,
-                        onScanQr = { showQrPaymentDialog = true },
+                        onScanQr = {
+                            qrInitialStep = QrPaymentStep.SCAN_CAMERA
+                            showQrPaymentDialog = true
+                        },
+                        onPasteStk = {
+                            qrInitialStep = QrPaymentStep.PASTE_ACCOUNT
+                            showQrPaymentDialog = true
+                        },
                         onAddManual = { showAddTransactionDialog = true },
                         onMyQr = { showMyQrDialog = true },
                         onOpenWeeklyReview = { showWeeklyReviewDialog = true },
@@ -162,7 +174,7 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                             accountToEdit = acc
                             showAddBankDialog = true
                         },
-                        onManageAllWallets = { activeTab = NavTab.SETTINGS }
+                        onManageAllWallets = { activeTab = NavTab.REPORTS }
                     )
                 }
                 NavTab.HISTORY -> {
@@ -172,7 +184,7 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                     )
                 }
                 NavTab.SCAN_QR -> {
-                    // Falls back to HomeScreen while opening QR dialog
+                    // Open QR Scanner directly
                     HomeScreen(
                         todayExpense = todayExpense,
                         todayIncome = todayIncome,
@@ -183,7 +195,14 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                         onToggleDarkMode = { repository.toggleDarkMode() },
                         accounts = accounts,
                         transactions = transactions,
-                        onScanQr = { showQrPaymentDialog = true },
+                        onScanQr = {
+                            qrInitialStep = QrPaymentStep.SCAN_CAMERA
+                            showQrPaymentDialog = true
+                        },
+                        onPasteStk = {
+                            qrInitialStep = QrPaymentStep.PASTE_ACCOUNT
+                            showQrPaymentDialog = true
+                        },
                         onAddManual = { showAddTransactionDialog = true },
                         onMyQr = { showMyQrDialog = true },
                         onOpenWeeklyReview = { showWeeklyReviewDialog = true },
@@ -196,11 +215,22 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                             accountToEdit = acc
                             showAddBankDialog = true
                         },
-                        onManageAllWallets = { activeTab = NavTab.SETTINGS }
+                        onManageAllWallets = { activeTab = NavTab.REPORTS }
                     )
                 }
                 NavTab.REPORTS -> {
-                    ReportsScreen(accounts = accounts, transactions = transactions)
+                    ReportsScreen(
+                        accounts = accounts,
+                        transactions = transactions,
+                        onAddBank = {
+                            accountToEdit = null
+                            showAddBankDialog = true
+                        },
+                        onEditAccount = { acc ->
+                            accountToEdit = acc
+                            showAddBankDialog = true
+                        }
+                    )
                 }
                 NavTab.SETTINGS -> {
                     SettingsScreen(
@@ -237,6 +267,7 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
     if (showQrPaymentDialog) {
         QrPaymentDialog(
             accounts = accounts,
+            initialStep = qrInitialStep,
             onDismiss = { showQrPaymentDialog = false },
             onPaymentConfirmed = { tx ->
                 repository.addTransaction(tx)
