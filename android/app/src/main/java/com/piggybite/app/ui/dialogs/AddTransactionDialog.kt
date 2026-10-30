@@ -58,6 +58,7 @@ import com.piggybite.app.ui.theme.LocalIsDarkMode
 import com.piggybite.app.ui.theme.SkyBluePrimary
 import com.piggybite.app.ui.theme.SkyBlueSoft
 import com.piggybite.app.ui.theme.TextMuted
+import com.piggybite.app.util.Formatters
 import java.util.UUID
 
 @Composable
@@ -195,8 +196,11 @@ fun AddTransactionDialog(
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = amountText,
-                    onValueChange = { input -> amountText = input.filter { it.isDigit() } },
-                    placeholder = { Text("0 đ", color = TextMuted) },
+                    onValueChange = { input ->
+                        val (formatted, _) = Formatters.formatAmountInput(amountText, input)
+                        amountText = formatted
+                    },
+                    placeholder = { Text("0", color = TextMuted) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
@@ -415,7 +419,7 @@ fun AddTransactionDialog(
 
                 Button(
                     onClick = {
-                        val amount = amountText.toLongOrNull() ?: 0L
+                        val amount = amountText.filter { it.isDigit() }.toLongOrNull() ?: 0L
                         if (amount <= 0L) {
                             Toast.makeText(context, "Vui lòng nhập số tiền", Toast.LENGTH_SHORT).show()
                             return@Button

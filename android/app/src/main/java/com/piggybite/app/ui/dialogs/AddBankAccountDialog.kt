@@ -55,6 +55,7 @@ import com.piggybite.app.ui.theme.DarkTitleBlue
 import com.piggybite.app.ui.theme.LocalIsDarkMode
 import com.piggybite.app.ui.theme.SkyBluePrimary
 import com.piggybite.app.ui.theme.TextMuted
+import com.piggybite.app.util.Formatters
 import java.util.UUID
 
 @Composable
@@ -78,7 +79,15 @@ fun AddBankAccountDialog(
         )
     }
     var accountNumber by remember { mutableStateOf(initialAccount?.accountNumber ?: "") }
-    var balanceText by remember { mutableStateOf(initialAccount?.balance?.toString() ?: "0") }
+    var balanceText by remember {
+        mutableStateOf(
+            if (initialAccount != null && initialAccount.balance > 0) {
+                Formatters.formatWithComma(initialAccount.balance)
+            } else {
+                ""
+            }
+        )
+    }
 
     val filteredBanks = remember(searchQuery) {
         if (searchQuery.isBlank()) {
@@ -249,7 +258,10 @@ fun AddBankAccountDialog(
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = balanceText,
-                    onValueChange = { input -> balanceText = input.filter { it.isDigit() } },
+                    onValueChange = { input ->
+                        val (formatted, _) = Formatters.formatAmountInput(balanceText, input)
+                        balanceText = formatted
+                    },
                     placeholder = { Text("0", color = TextMuted) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
@@ -294,7 +306,7 @@ fun AddBankAccountDialog(
 
                     Button(
                         onClick = {
-                            val bal = balanceText.toLongOrNull() ?: 0L
+                            val bal = balanceText.filter { it.isDigit() }.toLongOrNull() ?: 0L
                             val acc = BankAccount(
                                 id = initialAccount?.id ?: ("acc_" + UUID.randomUUID().toString().take(8)),
                                 bankId = selectedBank.id,

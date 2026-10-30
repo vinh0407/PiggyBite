@@ -146,7 +146,7 @@ fun QrPaymentDialog(
         if (amountKMatch != null) {
             val num = amountKMatch.groupValues[1].toLongOrNull() ?: 0L
             amountValue = num * 1000
-            amountText = amountValue.toString()
+            amountText = Formatters.formatWithComma(amountValue)
         } else {
             val amountNumMatch = Regex("\\b(\\d{1,3}(?:[.,]\\d{3})+|\\d{4,9})\\s*(?:đ|vnd|dong|đồng)?\\b", RegexOption.IGNORE_CASE).find(raw)
             if (amountNumMatch != null) {
@@ -155,7 +155,7 @@ fun QrPaymentDialog(
                     val num = clean.toLongOrNull() ?: 0L
                     if (num in 1000..500_000_000) {
                         amountValue = num
-                        amountText = num.toString()
+                        amountText = Formatters.formatWithComma(amountValue)
                     }
                 }
             }
@@ -191,7 +191,7 @@ fun QrPaymentDialog(
                         if (!parsed.receiverName.isNullOrBlank()) receiverName = parsed.receiverName
                         if (parsed.amount != null && parsed.amount > 0) {
                             amountValue = parsed.amount
-                            amountText = parsed.amount.toString()
+                            amountText = Formatters.formatWithComma(parsed.amount)
                         }
                         if (!parsed.note.isNullOrBlank()) noteText = parsed.note
 
@@ -389,7 +389,7 @@ fun QrPaymentDialog(
                                     color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
                                 )
                                 Text(
-                                    text = if (amountValue > 0) "${Formatters.formatMoney(amountValue)} ›" else "Chưa có ›",
+                                    text = if (amountValue > 0) "${Formatters.formatWithComma(amountValue)} đ ›" else "Chưa có ›",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = if (amountValue > 0) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextSub else Color(0xFF9CA3AF))
@@ -490,13 +490,13 @@ fun QrPaymentDialog(
                                 OutlinedTextField(
                                     value = amountText,
                                     onValueChange = { input ->
-                                        val clean = input.filter { it.isDigit() }
-                                        amountText = clean
-                                        amountValue = clean.toLongOrNull() ?: 0L
+                                        val (formatted, value) = Formatters.formatAmountInput(amountText, input)
+                                        amountText = formatted
+                                        amountValue = value
                                     },
                                     placeholder = {
                                         Text(
-                                            "0 đ",
+                                            "0",
                                             fontSize = 32.sp,
                                             fontWeight = FontWeight.ExtraBold,
                                             color = if (isDark) DarkTextSub else Color(0xFF9CA3AF),
@@ -537,8 +537,8 @@ fun QrPaymentDialog(
 
                                 if (amountValue > 0) {
                                     Text(
-                                        text = "= ${Formatters.formatMoney(amountValue)}",
-                                        fontSize = 13.sp,
+                                        text = "= ${Formatters.formatWithComma(amountValue)} đ",
+                                        fontSize = 13.5.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = if (isDark) DarkTextMain else Color(0xFF111827)
                                     )
@@ -567,7 +567,7 @@ fun QrPaymentDialog(
                                                 .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(10.dp))
                                                 .clickable {
                                                     amountValue += amt
-                                                    amountText = amountValue.toString()
+                                                    amountText = Formatters.formatWithComma(amountValue)
                                                 }
                                                 .padding(horizontal = 10.dp, vertical = 6.dp),
                                             contentAlignment = Alignment.Center
