@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -24,14 +26,21 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.piggybite.app.ui.theme.DarkExpenseBg
 import com.piggybite.app.ui.theme.DarkExpenseBorder
 import com.piggybite.app.ui.theme.DarkExpenseText
@@ -235,6 +244,135 @@ fun SettingsScreen(
                             .background(if (isDark) Color(0xFF1E293B) else SkyBlueSoft)
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
+                }
+            }
+        }
+
+        // Donate / Support Author Section with Small QR
+        item {
+            var showEnlargedQr by remember { mutableStateOf(false) }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(24.dp))
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "☕ Ủng hộ tác giả",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "MoMo / VietQR",
+                        fontSize = 11.5.sp,
+                        color = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isDark) com.piggybite.app.ui.theme.DarkButtonBg else SkyBlueSoft)
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "Nếu PiggyBite giúp ích cho bạn trong việc quản lý tài chính, hãy ủng hộ tác giả một ly cà phê để tiếp tục duy trì và nâng cấp ứng dụng nhé!",
+                    fontSize = 12.5.sp,
+                    color = TextMuted,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Small QR Code Thumbnail (click to view larger)
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.White)
+                        .border(
+                            1.5.dp,
+                            if (isDark) DarkTitleBlue else SkyBluePrimary.copy(alpha = 0.5f),
+                            RoundedCornerShape(16.dp)
+                        )
+                        .clickable { showEnlargedQr = true }
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    androidx.compose.foundation.Image(
+                        painter = painterResource(id = com.piggybite.app.R.drawable.author_qr_card),
+                        contentDescription = "Mã QR ủng hộ tác giả",
+                        modifier = Modifier.size(130.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Chạm vào mã QR để phóng to",
+                    fontSize = 11.5.sp,
+                    color = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            if (showEnlargedQr) {
+                Dialog(onDismissRequest = { showEnlargedQr = false }) {
+                    androidx.compose.material3.Surface(
+                        shape = RoundedCornerShape(24.dp),
+                        color = Color.White,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Ủng hộ tác giả PiggyBite ☕",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = Color(0xFF0F172A)
+                            )
+                            Spacer(modifier = Modifier.height(14.dp))
+                            androidx.compose.foundation.Image(
+                                painter = painterResource(id = com.piggybite.app.R.drawable.author_qr_card),
+                                contentDescription = "Mã QR ủng hộ tác giả",
+                                modifier = Modifier
+                                    .size(260.dp)
+                                    .clip(RoundedCornerShape(16.dp)),
+                                contentScale = ContentScale.Fit
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "Cảm ơn bạn rất nhiều vì đã đồng hành và ủng hộ!",
+                                fontSize = 12.5.sp,
+                                color = Color(0xFF64748B),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(
+                                onClick = { showEnlargedQr = false },
+                                shape = RoundedCornerShape(14.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isDark) com.piggybite.app.ui.theme.DarkButtonBg else SkyBluePrimary,
+                                    contentColor = if (isDark) DarkTitleBlue else Color.White
+                                )
+                            ) {
+                                Text("Đóng", fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
                 }
             }
         }

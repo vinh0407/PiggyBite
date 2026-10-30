@@ -1771,6 +1771,27 @@ function SettingsScreen({
         </div>
       </div>
 
+      {/* Donate Card */}
+      <div className="settings-card-box" style={{ textAlign: "center", padding: "20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+          <b style={{ fontSize: "15px" }}>☕ Ủng hộ tác giả</b>
+          <span className="status-badge-active">VietQR / MoMo</span>
+        </div>
+        <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "0 0 14px 0", textAlign: "left" }}>
+          Nếu PiggyBite giúp ích cho bạn trong việc quản lý tài chính, hãy ủng hộ tác giả một ly cà phê nhỏ để tiếp tục duy trì và nâng cấp ứng dụng nhé!
+        </p>
+        <div style={{ display: "inline-block", padding: "8px", background: "#fff", borderRadius: "16px", border: "1.5px solid #0284c7" }}>
+          <img
+            src="/author_qr_card.png"
+            alt="Mã QR ủng hộ tác giả"
+            style={{ width: "130px", height: "auto", display: "block", borderRadius: "8px" }}
+          />
+        </div>
+        <div style={{ marginTop: "8px", fontSize: "12px", color: "var(--accent-primary)", fontWeight: 600 }}>
+          Quét mã VietQR / Napas 247
+        </div>
+      </div>
+
       <div className="settings-danger-box">
         <button className="reset-data-btn" onClick={onResetData}>
           Đặt lại dữ liệu mẫu ban đầu
