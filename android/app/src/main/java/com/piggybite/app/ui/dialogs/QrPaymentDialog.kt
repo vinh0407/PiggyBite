@@ -373,7 +373,7 @@ fun QrPaymentDialog(
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Column {
                                             Text(
-                                                text = "AI Gợi ý nguồn tiền:",
+                                                text = "Gợi ý nguồn tiền tối ưu:",
                                                 fontSize = 11.5.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = bannerTextColor

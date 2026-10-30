@@ -88,14 +88,6 @@ fun HomeScreen(
                 onManageAll = onManageAllWallets
             )
 
-            // AI Financial Assistant & Cashflow Insights
-            com.piggybite.app.ui.components.AiAssistantCard(
-                totalBalance = totalBalance,
-                todayExpense = todayExpense,
-                accounts = accounts,
-                transactions = transactions
-            )
-
             // Recent Transactions / Empty State
             TransactionList(
                 transactions = transactions,

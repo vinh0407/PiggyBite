@@ -531,7 +531,7 @@ function HomeScreen({
         <div className="apk-banner-content">
           <div className="apk-badge-tag">Cài đặt ứng dụng Android</div>
           <div className="apk-banner-title">PiggyBite Native APK (21 MB)</div>
-          <div className="apk-banner-desc">Hỗ trợ đầy đủ AI offline và tự động cập nhật số dư từ thông báo</div>
+          <div className="apk-banner-desc">Tự động cập nhật số dư từ thông báo và quét mã VietQR mượt mà</div>
         </div>
         <a
           href="https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk"
@@ -1278,16 +1278,6 @@ function AnalysisView({
             );
           })}
         </div>
-      </div>
-
-      <div className="ai-advice-card">
-        <div className="ai-advice-header">
-          <span>💡</span>
-          <b>Nhận xét & Lời khuyên tài chính</b>
-        </div>
-        <p>
-          Hạng mục ăn uống và mua sắm chiếm phần lớn chi tiêu của bạn trong tháng. Bạn đang giữ tỷ lệ dự phòng tốt với tổng số dư {formatMoney(totalBalance)}. Hãy duy trì thói quen quét QR và nhận biến động số dư tự động để quản lý tài chính chuẩn xác nhất!
-        </p>
       </div>
     </div>
   );
