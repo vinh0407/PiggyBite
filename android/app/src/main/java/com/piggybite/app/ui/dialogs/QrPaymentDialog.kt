@@ -35,6 +35,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -55,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.piggybite.app.model.Bank
 import com.piggybite.app.model.BankAccount
 import com.piggybite.app.model.BankDirectory
 import com.piggybite.app.model.Transaction
@@ -81,6 +83,7 @@ import com.piggybite.app.ui.theme.SkyBluePrimary
 import com.piggybite.app.ui.theme.SkyBlueSoft
 import com.piggybite.app.ui.theme.TextMuted
 import com.piggybite.app.util.Formatters
+import com.piggybite.app.util.LaunchResult
 import com.piggybite.app.util.VietQrHelper
 import com.piggybite.app.util.VietQrParser
 import com.piggybite.app.util.VietQrResult
@@ -115,8 +118,20 @@ fun QrPaymentDialog(
     var selectedAccount by remember { mutableStateOf<BankAccount?>(accounts.firstOrNull()) }
     var selectedSourceBank by remember {
         mutableStateOf(
-            accounts.firstOrNull()?.let { BankDirectory.findBankById(it.bankId) } ?: BankDirectory.ALL_BANKS[0]
+            accounts.firstOrNull()?.let { BankDirectory.findBankById(it.bankId) }
+                ?: BankDirectory.ALL_BANKS.firstOrNull { VietQrHelper.isBankAppInstalled(context, it) }
+                ?: BankDirectory.ALL_BANKS[0]
         )
+    }
+
+    var showAppNotInstalledDialog by remember { mutableStateOf(false) }
+    var notInstalledBank by remember { mutableStateOf<Bank?>(null) }
+
+    val installedBanks = remember {
+        BankDirectory.ALL_BANKS.filter { VietQrHelper.isBankAppInstalled(context, it) }
+    }
+    val otherBanks = remember {
+        BankDirectory.ALL_BANKS.filter { !VietQrHelper.isBankAppInstalled(context, it) }
     }
 
     // Ô nhập dán STK bắt đầu hoàn toàn rỗng
@@ -756,7 +771,7 @@ fun QrPaymentDialog(
 
                                     // Mở ứng dụng ngân hàng nguồn và TỰ ĐỘNG ĐIỀN SẴN: Số tiền, STK và Loại ngân hàng nhận
                                     val finalNote = if (noteText.isNotBlank()) noteText else "Chuyen khoan"
-                                    val opened = VietQrHelper.launchBankTransfer(
+                                    val result = VietQrHelper.launchBankTransfer(
                                         context = context,
                                         sourceBank = sourceBankToLaunch,
                                         receiverBank = receiverBank,
@@ -765,20 +780,27 @@ fun QrPaymentDialog(
                                         note = finalNote
                                     )
 
-                                    if (opened) {
-                                        Toast.makeText(
-                                            context,
-                                            "Mở ${sourceBankToLaunch.shortName}: Đã nhập sẵn ${receiverBank.shortName} - STK $receiverAccNum (${Formatters.formatMoney(amountValue)})",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Vui lòng cài đặt ứng dụng ngân hàng ${sourceBankToLaunch.shortName} trên thiết bị",
-                                            Toast.LENGTH_LONG
-                                        ).show()
+                                    when (result) {
+                                        LaunchResult.SUCCESS -> {
+                                            Toast.makeText(
+                                                context,
+                                                "Mở ${sourceBankToLaunch.shortName}: Điền sẵn ${receiverBank.shortName} - STK $receiverAccNum (${Formatters.formatMoney(amountValue)})",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            onDismiss()
+                                        }
+                                        LaunchResult.NOT_INSTALLED -> {
+                                            notInstalledBank = sourceBankToLaunch
+                                            showAppNotInstalledDialog = true
+                                        }
+                                        LaunchResult.ERROR -> {
+                                            Toast.makeText(
+                                                context,
+                                                "Không thể mở ứng dụng ${sourceBankToLaunch.shortName}. Vui lòng thử lại hoặc chọn nguồn khác.",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
                                     }
-                                    onDismiss()
                                 },
                                 modifier = Modifier
                                     .weight(1f)
@@ -1133,22 +1155,75 @@ fun QrPaymentDialog(
                         }
 
                         // Hoặc chọn mở app ngân hàng bất kỳ để chuyển khoản
+                        if (installedBanks.isNotEmpty()) {
+                            item {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "ỨNG DỤNG NGÂN HÀNG ĐÃ CÀI ĐẶT TRÊN MÁY (MỞ LIỀN):",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDark) DarkTitleBlue else SkyBluePrimary
+                                )
+                            }
+
+                            items(installedBanks) { bank ->
+                                val isSelected = !isSourceCash && (selectedAccount?.bankId == bank.id || (selectedAccount == null && selectedSourceBank.id == bank.id))
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(if (isSelected) (if (isDark) DarkHighlightNavyBg else HighlightBlueLightBg) else Color.Transparent)
+                                        .clickable {
+                                            selectedSourceBank = bank
+                                            selectedAccount = BankAccount(
+                                                id = "source_${bank.id}",
+                                                bankId = bank.id,
+                                                bankName = bank.shortName,
+                                                accountNumber = "",
+                                                balance = 0L
+                                            )
+                                            isSourceCash = false
+                                            showSourceAccountPickerModal = false
+                                        }
+                                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    BankLogoView(bankId = bank.id, size = 26.dp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Text(
+                                        text = bank.shortName,
+                                        fontSize = 13.5.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) (if (isDark) DarkTitleBlue else SkyBluePrimary) else MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Text(
+                                        text = "● Mở ngay",
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF10B981)
+                                    )
+                                }
+                            }
+                        }
+
                         item {
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
-                                text = "HOẶC CHỌN ỨNG DỤNG NGÂN HÀNG ĐỂ MỞ APP:",
+                                text = if (installedBanks.isNotEmpty()) "TẤT CẢ CÁC NGÂN HÀNG KHÁC:" else "CHỌN ỨNG DỤNG NGÂN HÀNG ĐỂ MỞ APP:",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextMuted
                             )
                         }
 
-                        items(BankDirectory.ALL_BANKS) { bank ->
-                            val isSelected = !isSourceCash && selectedAccount?.bankId == bank.id
+                        items(otherBanks) { bank ->
+                            val isSelected = !isSourceCash && (selectedAccount?.bankId == bank.id || (selectedAccount == null && selectedSourceBank.id == bank.id))
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
+                                    .background(if (isSelected) (if (isDark) DarkHighlightNavyBg else HighlightBlueLightBg) else Color.Transparent)
                                     .clickable {
                                         selectedSourceBank = bank
                                         selectedAccount = BankAccount(
@@ -1174,12 +1249,79 @@ fun QrPaymentDialog(
                                     modifier = Modifier.weight(1f)
                                 )
                                 Text(
-                                    text = "Mở app",
-                                    fontSize = 11.5.sp,
+                                    text = "Chưa cài",
+                                    fontSize = 11.sp,
                                     color = TextMuted
                                 )
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    // Modal thông báo khi ứng dụng ngân hàng chưa cài đặt
+    if (showAppNotInstalledDialog && notInstalledBank != null) {
+        Dialog(onDismissRequest = { showAppNotInstalledDialog = false }) {
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = if (isDark) DarkAppBackground else Color.White,
+                border = BorderStroke(1.dp, if (isDark) DarkCardBorder else CardBorder),
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    BankLogoView(bankId = notInstalledBank!!.id, size = 48.dp)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Chưa cài đặt ${notInstalledBank!!.shortName}",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Thiết bị chưa cài ứng dụng ngân hàng ${notInstalledBank!!.shortName}. Vui lòng chọn ngân hàng nguồn khác đã cài đặt hoặc tải về từ Google Play.",
+                        fontSize = 13.sp,
+                        color = TextMuted,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Button(
+                        onClick = {
+                            showAppNotInstalledDialog = false
+                            showSourceAccountPickerModal = true
+                        },
+                        modifier = Modifier.fillMaxWidth().height(46.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = if (isDark) DarkHighlightNavyBg else SkyBluePrimary)
+                    ) {
+                        Text("Đổi sang ngân hàng khác", fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = {
+                            showAppNotInstalledDialog = false
+                            try {
+                                val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${notInstalledBank!!.packageName}")).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(marketIntent)
+                            } catch (_: Exception) {
+                                val webMarket = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${notInstalledBank!!.packageName}")).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(webMarket)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().height(46.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Tải app từ Google Play", fontWeight = FontWeight.SemiBold)
                     }
                 }
             }

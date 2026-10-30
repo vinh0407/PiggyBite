@@ -9,6 +9,12 @@ import com.piggybite.app.model.Bank
 import java.net.URLEncoder
 import java.util.Locale
 
+enum class LaunchResult {
+    SUCCESS,
+    NOT_INSTALLED,
+    ERROR
+}
+
 object VietQrHelper {
 
     /**
@@ -103,7 +109,18 @@ object VietQrHelper {
     }
 
     /**
-     * Mở ứng dụng ngân hàng nguồn được chọn và tự động điền sẵn:
+     * Kiểm tra xem ứng dụng ngân hàng có được cài đặt trên thiết bị hay không
+     */
+    fun isBankAppInstalled(context: Context, bank: Bank): Boolean {
+        return try {
+            context.packageManager.getLaunchIntentForPackage(bank.packageName) != null
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    /**
+     * Mở ứng dụng ngân hàng nguồn được chọn NGAY LẬP TỨC và tự động điền sẵn:
      * - Số tiền (amount)
      * - Số tài khoản nhận (receiverAccountNumber)
      * - Loại ngân hàng nhận (receiverBank)
@@ -116,7 +133,7 @@ object VietQrHelper {
         receiverAccountNumber: String,
         amount: Long,
         note: String
-    ): Boolean {
+    ): LaunchResult {
         val safeNote = if (note.isNotBlank()) note else "Chuyen khoan"
         val emvCoPayload = generateEmvCoPayload(
             bankBin = receiverBank.bin,
@@ -133,63 +150,72 @@ object VietQrHelper {
         )
         val deeplinkUri = Uri.parse(deeplinkUrl)
 
-        // 1. Lưu STK vào Clipboard để dán nhanh bất kỳ lúc nào
+        // 1. Lưu STK vào Clipboard để dán nhanh ngay lập tức
         try {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
             val clip = ClipData.newPlainText("VietQR STK", receiverAccountNumber)
             clipboard?.setPrimaryClip(clip)
         } catch (_: Exception) {}
 
-        // 2. Thử kích hoạt Intent mở trực tiếp app ngân hàng nguồn bằng VietQR Deeplink
-        try {
-            val deeplinkIntent = Intent(Intent.ACTION_VIEW, deeplinkUri).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                putExtra("amount", amount.toString())
-                putExtra("amountValue", amount)
-                putExtra("accountNumber", receiverAccountNumber)
-                putExtra("bankAccount", receiverAccountNumber)
-                putExtra("bankCode", receiverBank.id)
-                putExtra("bankBin", receiverBank.bin)
-                putExtra("bankName", receiverBank.shortName)
-                putExtra("note", safeNote)
-                putExtra("qrContent", emvCoPayload)
-                putExtra("data", emvCoPayload)
-            }
-            context.startActivity(deeplinkIntent)
-            return true
-        } catch (_: Exception) {}
+        val isInstalled = isBankAppInstalled(context, sourceBank)
 
-        // 3. Fallback: Mở theo package cụ thể của ngân hàng nguồn (nếu Deeplink không tự mở được app)
+        // 2. Thử mở bằng URL Scheme đặc trưng của ngân hàng nguồn (mở thẳng không qua trình duyệt)
+        val schemeUris = listOf(
+            "${sourceBank.scheme}transfer?account=$receiverAccountNumber&bank=${receiverBank.bin}&amount=$amount&note=${URLEncoder.encode(safeNote, "UTF-8")}",
+            "${sourceBank.scheme}vietqr?data=$emvCoPayload",
+            "${sourceBank.scheme}payment?account=$receiverAccountNumber&bank=${receiverBank.bin}&amount=$amount",
+            sourceBank.scheme
+        )
+
+        for (schemeStr in schemeUris) {
+            try {
+                val schemeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(schemeStr)).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    setPackage(sourceBank.packageName)
+                    putExtra("accountNumber", receiverAccountNumber)
+                    putExtra("account_number", receiverAccountNumber)
+                    putExtra("bankAccount", receiverAccountNumber)
+                    putExtra("amount", amount.toString())
+                    putExtra("amountValue", amount)
+                    putExtra("bankCode", receiverBank.vietQrAppId)
+                    putExtra("bankBin", receiverBank.bin)
+                    putExtra("bankName", receiverBank.shortName)
+                    putExtra("note", safeNote)
+                    putExtra("qrContent", emvCoPayload)
+                    putExtra("data", emvCoPayload)
+                }
+                context.startActivity(schemeIntent)
+                return LaunchResult.SUCCESS
+            } catch (_: Exception) {}
+        }
+
+        // 3. Mở trực tiếp bằng Launch Intent của Package ngân hàng nguồn với đầy đủ tham số
         try {
             val launchIntent = context.packageManager.getLaunchIntentForPackage(sourceBank.packageName)
             if (launchIntent != null) {
                 launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                launchIntent.action = Intent.ACTION_VIEW
                 launchIntent.data = deeplinkUri
+                launchIntent.putExtra("accountNumber", receiverAccountNumber)
+                launchIntent.putExtra("account_number", receiverAccountNumber)
+                launchIntent.putExtra("bankAccount", receiverAccountNumber)
                 launchIntent.putExtra("amount", amount.toString())
                 launchIntent.putExtra("amountValue", amount)
-                launchIntent.putExtra("accountNumber", receiverAccountNumber)
-                launchIntent.putExtra("bankAccount", receiverAccountNumber)
-                launchIntent.putExtra("bankCode", receiverBank.id)
+                launchIntent.putExtra("bankCode", receiverBank.vietQrAppId)
                 launchIntent.putExtra("bankBin", receiverBank.bin)
                 launchIntent.putExtra("bankName", receiverBank.shortName)
                 launchIntent.putExtra("note", safeNote)
                 launchIntent.putExtra("qrContent", emvCoPayload)
                 launchIntent.putExtra("data", emvCoPayload)
                 context.startActivity(launchIntent)
-                return true
+                return LaunchResult.SUCCESS
             }
         } catch (_: Exception) {}
 
-        // 4. Fallback: Mở URL Scheme riêng của ngân hàng nguồn
-        try {
-            val schemeUri = Uri.parse("${sourceBank.scheme}?account=$receiverAccountNumber&bank=${receiverBank.bin}&amount=$amount&note=${URLEncoder.encode(safeNote, "UTF-8")}")
-            val schemeIntent = Intent(Intent.ACTION_VIEW, schemeUri).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            context.startActivity(schemeIntent)
-            return true
-        } catch (_: Exception) {}
+        if (!isInstalled) {
+            return LaunchResult.NOT_INSTALLED
+        }
 
-        return false
+        return LaunchResult.ERROR
     }
 }
