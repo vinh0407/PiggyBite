@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.piggybite.app.ui.theme.CardBackground
 import com.piggybite.app.ui.theme.CardBorder
+import com.piggybite.app.ui.theme.DarkButtonBg
+import com.piggybite.app.ui.theme.DarkButtonBorder
 import com.piggybite.app.ui.theme.DarkCardBackground
 import com.piggybite.app.ui.theme.DarkCardBorder
 import com.piggybite.app.ui.theme.GoldAccent
@@ -71,15 +73,15 @@ fun TopHeader(
             .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // User Avatar Badge (Hình đại diện Heo tiết kiệm mới)
+        // User Avatar Badge
         Box(
             modifier = Modifier
                 .size(42.dp)
                 .clip(CircleShape)
-                .background(if (isDarkMode) Color(0xFF1E293B) else Color.White)
+                .background(if (isDarkMode) DarkButtonBg else Color.White)
                 .border(
                     1.5.dp,
-                    if (isDarkMode) Color(0xFF334155) else SkyBlueSoft,
+                    if (isDarkMode) DarkButtonBorder else SkyBlueSoft,
                     CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -96,12 +98,13 @@ fun TopHeader(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Vietnamese Today Date
+        // Vietnamese Today Date (Nếp style title)
         Text(
             text = Formatters.getVietnameseTodayString(),
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 17.5.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
+            letterSpacing = (-0.3).sp,
             modifier = Modifier.weight(1f)
         )
 

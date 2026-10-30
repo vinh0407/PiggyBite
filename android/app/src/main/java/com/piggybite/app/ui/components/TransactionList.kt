@@ -25,7 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.piggybite.app.model.Transaction
+import com.piggybite.app.ui.screens.HistoryTransactionRow
 import com.piggybite.app.ui.theme.DarkButtonBg
+import com.piggybite.app.ui.theme.DarkCardBorder
 import com.piggybite.app.ui.theme.DarkExpenseBg
 import com.piggybite.app.ui.theme.DarkExpenseBorder
 import com.piggybite.app.ui.theme.DarkExpenseText
@@ -103,72 +105,23 @@ fun TransactionList(
             }
         } else {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(20.dp))
+                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                transactions.take(8).forEach { tx ->
-                    val iconBg = if (isDark) {
-                        if (tx.isIncome) DarkIncomeBg else DarkExpenseBg
-                    } else {
-                        if (tx.isIncome) IncomeGreenSoft else ExpenseRedSoft
-                    }
-                    val iconBorder = if (isDark) {
-                        if (tx.isIncome) DarkIncomeBorder else DarkExpenseBorder
-                    } else {
-                        Color.Transparent
-                    }
-                    val accentColor = if (isDark) {
-                        if (tx.isIncome) DarkIncomeText else DarkExpenseText
-                    } else {
-                        if (tx.isIncome) IncomeGreen else ExpenseRed
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(18.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(18.dp))
-                            .padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                val recent = transactions.take(6)
+                recent.forEachIndexed { index, tx ->
+                    HistoryTransactionRow(tx = tx, isDark = isDark)
+                    if (index < recent.size - 1) {
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(iconBg)
-                                .border(if (isDark) 1.dp else 0.dp, iconBorder, CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = if (tx.isIncome) "↓" else "↑",
-                                color = accentColor,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = tx.note.ifBlank { tx.category },
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "${tx.bankName} • ${tx.category} • ${Formatters.formatShortDate(tx.timestamp)}",
-                                color = TextMuted,
-                                fontSize = 12.sp
-                            )
-                        }
-
-                        Text(
-                            text = if (tx.isIncome) "+${Formatters.formatMoney(tx.amount)}" else "−${Formatters.formatMoney(tx.amount)}",
-                            color = accentColor,
-                            fontSize = 14.5.sp,
-                            fontWeight = FontWeight.Bold
+                                .fillMaxWidth()
+                                .height(0.6.dp)
+                                .background(if (isDark) DarkCardBorder.copy(alpha = 0.5f) else Color(0xFFF3F4F6))
                         )
                     }
                 }

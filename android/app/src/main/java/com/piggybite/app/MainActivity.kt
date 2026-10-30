@@ -30,9 +30,12 @@ import com.piggybite.app.ui.dialogs.AddTransactionDialog
 import com.piggybite.app.ui.dialogs.MyQrDialog
 import com.piggybite.app.ui.dialogs.NotificationSimulatorDialog
 import com.piggybite.app.ui.dialogs.QrPaymentDialog
+import com.piggybite.app.ui.dialogs.WeeklyReviewDialog
 import com.piggybite.app.ui.screens.AnalyticsScreen
 import com.piggybite.app.ui.screens.CalendarScreen
+import com.piggybite.app.ui.screens.HistoryScreen
 import com.piggybite.app.ui.screens.HomeScreen
+import com.piggybite.app.ui.screens.ReportsScreen
 import com.piggybite.app.ui.screens.SettingsScreen
 import com.piggybite.app.ui.screens.WalletScreen
 import com.piggybite.app.ui.theme.PiggyBiteTheme
@@ -74,6 +77,7 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
 
     // Dialogs state
     var showQrPaymentDialog by remember { mutableStateOf(false) }
+    var showWeeklyReviewDialog by remember { mutableStateOf(false) }
     var showNotificationSimulator by remember { mutableStateOf(false) }
     var showAddTransactionDialog by remember { mutableStateOf(false) }
     var showAddBankDialog by remember { mutableStateOf(false) }
@@ -119,10 +123,11 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
-            // Floating Pill Shaped Navigation Bar (Home in center)
+            // Floating Pill Shaped Navigation Bar (Nếp style with 5 tabs)
             BottomNavBar(
                 currentTab = activeTab,
-                onTabSelected = { activeTab = it }
+                onTabSelected = { activeTab = it },
+                onScanQrClick = { showQrPaymentDialog = true }
             )
         }
     ) { innerPadding ->
@@ -147,6 +152,7 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                         onScanQr = { showQrPaymentDialog = true },
                         onAddManual = { showAddTransactionDialog = true },
                         onMyQr = { showMyQrDialog = true },
+                        onOpenWeeklyReview = { showWeeklyReviewDialog = true },
                         onOpenNotificationSimulator = { showNotificationSimulator = true },
                         onAddBank = {
                             accountToEdit = null
@@ -156,21 +162,32 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                             accountToEdit = acc
                             showAddBankDialog = true
                         },
-                        onManageAllWallets = { activeTab = NavTab.WALLET }
+                        onManageAllWallets = { activeTab = NavTab.SETTINGS }
                     )
                 }
-                NavTab.CALENDAR -> {
-                    CalendarScreen(transactions = transactions)
+                NavTab.HISTORY -> {
+                    HistoryScreen(
+                        transactions = transactions,
+                        onAddTransaction = { showAddTransactionDialog = true }
+                    )
                 }
-                NavTab.ANALYTICS -> {
-                    AnalyticsScreen(accounts = accounts, transactions = transactions)
-                }
-                NavTab.WALLET -> {
-                    WalletScreen(
-                        accounts = accounts,
+                NavTab.SCAN_QR -> {
+                    // Falls back to HomeScreen while opening QR dialog
+                    HomeScreen(
+                        todayExpense = todayExpense,
+                        todayIncome = todayIncome,
                         totalBalance = totalBalance,
                         isBalanceHidden = isBalanceHidden,
+                        isDarkMode = isDarkMode,
                         onToggleHideBalance = { repository.toggleBalanceVisibility() },
+                        onToggleDarkMode = { repository.toggleDarkMode() },
+                        accounts = accounts,
+                        transactions = transactions,
+                        onScanQr = { showQrPaymentDialog = true },
+                        onAddManual = { showAddTransactionDialog = true },
+                        onMyQr = { showMyQrDialog = true },
+                        onOpenWeeklyReview = { showWeeklyReviewDialog = true },
+                        onOpenNotificationSimulator = { showNotificationSimulator = true },
                         onAddBank = {
                             accountToEdit = null
                             showAddBankDialog = true
@@ -178,8 +195,12 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                         onEditAccount = { acc ->
                             accountToEdit = acc
                             showAddBankDialog = true
-                        }
+                        },
+                        onManageAllWallets = { activeTab = NavTab.SETTINGS }
                     )
+                }
+                NavTab.REPORTS -> {
+                    ReportsScreen(accounts = accounts, transactions = transactions)
                 }
                 NavTab.SETTINGS -> {
                     SettingsScreen(
@@ -203,6 +224,16 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
     }
 
     // Modal Dialogs
+    if (showWeeklyReviewDialog) {
+        WeeklyReviewDialog(
+            onDismiss = { showWeeklyReviewDialog = false },
+            onAddManual = {
+                showWeeklyReviewDialog = false
+                showAddTransactionDialog = true
+            }
+        )
+    }
+
     if (showQrPaymentDialog) {
         QrPaymentDialog(
             accounts = accounts,

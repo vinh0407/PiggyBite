@@ -16,9 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,36 +29,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.piggybite.app.ui.theme.DarkExpenseBg
-import com.piggybite.app.ui.theme.DarkExpenseBorder
-import com.piggybite.app.ui.theme.DarkExpenseText
-import com.piggybite.app.ui.theme.DarkIncomeBg
-import com.piggybite.app.ui.theme.DarkIncomeBorder
-import com.piggybite.app.ui.theme.DarkIncomeText
+import com.piggybite.app.ui.theme.DarkButtonBg
+import com.piggybite.app.ui.theme.DarkButtonBorder
+import com.piggybite.app.ui.theme.DarkCardBorder
+import com.piggybite.app.ui.theme.DarkTextMain
 import com.piggybite.app.ui.theme.DarkTextMuted
+import com.piggybite.app.ui.theme.DarkTextSub
 import com.piggybite.app.ui.theme.DarkTitleBlue
-import com.piggybite.app.ui.theme.ExpenseRed
-import com.piggybite.app.ui.theme.ExpenseRedSoft
-import com.piggybite.app.ui.theme.IncomeGreen
-import com.piggybite.app.ui.theme.IncomeGreenSoft
 import com.piggybite.app.ui.theme.LocalIsDarkMode
+import com.piggybite.app.ui.theme.NepGreenAccent
+import com.piggybite.app.ui.theme.NepGreenPrimary
 import com.piggybite.app.ui.theme.SkyBluePrimary
-import com.piggybite.app.ui.theme.SkyBlueSoft
 import com.piggybite.app.ui.theme.TextMuted
 import com.piggybite.app.util.Formatters
+import java.util.Calendar
 
 @Composable
 fun ExpenseCard(
     todayExpense: Long,
     todayIncome: Long,
+    monthExpense: Long = 1750000L,
+    remainingBudget: Long = 19784000L,
     isBalanceHidden: Boolean,
     onToggleHideBalance: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isDark = LocalIsDarkMode.current
+    val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+
+    val totalBudget = remainingBudget + monthExpense
+    val percentUsed = if (totalBudget > 0) ((monthExpense.toFloat() / totalBudget) * 100).toInt().coerceIn(1, 100) else 8
 
     Column(
         modifier = modifier
@@ -66,6 +73,7 @@ fun ExpenseCard(
             .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(26.dp))
             .padding(22.dp)
     ) {
+        // Header line: Còn lại tháng X · theo sổ PiggyBite (i)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -75,126 +83,128 @@ fun ExpenseCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Chi tiêu tháng này",
+                    text = "Còn lại tháng $currentMonth · theo sổ PiggyBite",
                     color = if (isDark) DarkTextMuted else TextMuted,
-                    fontSize = 13.5.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(6.dp))
 
-                // Eye Toggle Button
-                Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .clickable { onToggleHideBalance() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isBalanceHidden) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        contentDescription = if (isBalanceHidden) "Hiện số dư" else "Ẩn số dư",
-                        tint = if (isDark) DarkTextMuted else TextMuted,
-                        modifier = Modifier.size(17.dp)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = "Thông tin",
+                    tint = if (isDark) DarkTextSub else Color(0xFF9CA3AF),
+                    modifier = Modifier.size(15.dp)
+                )
             }
 
+            // Eye Toggle Button
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(if (isDark) com.piggybite.app.ui.theme.DarkButtonBg else SkyBlueSoft)
-                    .border(
-                        1.dp,
-                        if (isDark) com.piggybite.app.ui.theme.DarkButtonBorder else androidx.compose.ui.graphics.Color.Transparent,
-                        RoundedCornerShape(10.dp)
-                    )
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .clickable { onToggleHideBalance() },
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "tháng này",
-                    color = if (isDark) DarkTitleBlue else SkyBluePrimary,
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.Medium
+                Icon(
+                    imageVector = if (isBalanceHidden) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                    contentDescription = if (isBalanceHidden) "Hiện số dư" else "Ẩn số dư",
+                    tint = if (isDark) DarkTextMuted else TextMuted,
+                    modifier = Modifier.size(17.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
+        // Giant Remaining Balance
         Text(
-            text = if (isBalanceHidden) "•••••••• đ" else Formatters.formatMoney(todayExpense),
+            text = if (isBalanceHidden) "•••••••• đ" else Formatters.formatMoney(remainingBudget),
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 32.sp,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = (-0.5).sp
         )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // Progress bar (Nếp style: slim bar with percentage)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(if (isDark) DarkButtonBg else Color(0xFFE5E7EB))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(percentUsed / 100f)
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(if (isDark) DarkTitleBlue else NepGreenPrimary)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Text(
+                text = "Đã dùng $percentUsed%",
+                fontSize = 11.5.sp,
+                fontWeight = FontWeight.Medium,
+                color = if (isDark) DarkTextMuted else TextMuted
+            )
+        }
 
         Spacer(modifier = Modifier.height(18.dp))
 
+        // Separator line
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(0.8.dp)
+                .background(if (isDark) DarkCardBorder.copy(alpha = 0.5f) else Color(0xFFF3F4F6))
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // Two columns below: Hôm nay & Tháng này
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Chi tiêu pill (Được tối ưu cho Dark Mode: màu tối dịu mắt, không chói)
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(if (isDark) DarkExpenseBg else ExpenseRedSoft)
-                    .border(
-                        1.dp,
-                        if (isDark) DarkExpenseBorder else androidx.compose.ui.graphics.Color.Transparent,
-                        RoundedCornerShape(16.dp)
-                    )
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "Chi tiêu",
-                        color = if (isDark) DarkTextMuted else TextMuted,
-                        fontSize = 11.5.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = if (isBalanceHidden) "•••• đ" else (if (todayExpense > 0) "−${Formatters.formatMoney(todayExpense)}" else "−0 đ"),
-                        color = if (isDark) DarkExpenseText else ExpenseRed,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+            Column {
+                Text(
+                    text = "Hôm nay",
+                    fontSize = 12.sp,
+                    color = if (isDark) DarkTextMuted else TextMuted
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (isBalanceHidden) "•••• đ" else Formatters.formatMoney(todayExpense),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
 
-            // Thu nhập pill (Được tối ưu cho Dark Mode: màu tối dịu mắt, không chói)
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(if (isDark) DarkIncomeBg else IncomeGreenSoft)
-                    .border(
-                        1.dp,
-                        if (isDark) DarkIncomeBorder else androidx.compose.ui.graphics.Color.Transparent,
-                        RoundedCornerShape(16.dp)
-                    )
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "Thu nhập",
-                        color = if (isDark) DarkTextMuted else TextMuted,
-                        fontSize = 11.5.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = if (isBalanceHidden) "•••• đ" else (if (todayIncome > 0) "+${Formatters.formatMoney(todayIncome)}" else "+0 đ"),
-                        color = if (isDark) DarkIncomeText else IncomeGreen,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "Tháng này",
+                    fontSize = 12.sp,
+                    color = if (isDark) DarkTextMuted else TextMuted
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (isBalanceHidden) "•••• đ" else Formatters.formatMoney(monthExpense),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     }

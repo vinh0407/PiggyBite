@@ -14,15 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.PieChart
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.AccountBalanceWallet
-import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.PieChart
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,10 +52,10 @@ enum class NavTab(
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 ) {
-    CALENDAR("Lịch", Icons.Filled.CalendarMonth, Icons.Outlined.CalendarMonth),
-    ANALYTICS("Phân tích", Icons.Filled.PieChart, Icons.Outlined.PieChart),
-    HOME("Trang chủ", Icons.Filled.Home, Icons.Outlined.Home), // Centered!
-    WALLET("Ví / Tài sản", Icons.Filled.AccountBalanceWallet, Icons.Outlined.AccountBalanceWallet),
+    HOME("Trang chủ", Icons.Filled.Home, Icons.Outlined.Home),
+    HISTORY("Lịch sử", Icons.Filled.Schedule, Icons.Outlined.Schedule),
+    SCAN_QR("Quét QR", Icons.Filled.QrCodeScanner, Icons.Filled.QrCodeScanner),
+    REPORTS("Báo cáo", Icons.Filled.BarChart, Icons.Outlined.BarChart),
     SETTINGS("Cài đặt", Icons.Filled.Settings, Icons.Outlined.Settings)
 }
 
@@ -64,6 +63,7 @@ enum class NavTab(
 fun BottomNavBar(
     currentTab: NavTab,
     onTabSelected: (NavTab) -> Unit,
+    onScanQrClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isDark = LocalIsDarkMode.current
@@ -74,7 +74,7 @@ fun BottomNavBar(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Floating Pill Shaped Container
+        // Floating Pill Shaped Container (Nếp style)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -82,26 +82,26 @@ fun BottomNavBar(
                 .clip(RoundedCornerShape(36.dp))
                 .background(if (isDark) DarkCardBackground else MaterialTheme.colorScheme.surface)
                 .border(1.dp, if (isDark) DarkCardBorder else MaterialTheme.colorScheme.outline, RoundedCornerShape(36.dp))
-                .padding(horizontal = 8.dp, vertical = 6.dp),
+                .padding(horizontal = 6.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
             val orderedTabs = listOf(
-                NavTab.CALENDAR,
-                NavTab.ANALYTICS,
                 NavTab.HOME,
-                NavTab.WALLET,
+                NavTab.HISTORY,
+                NavTab.SCAN_QR,
+                NavTab.REPORTS,
                 NavTab.SETTINGS
             )
 
             orderedTabs.forEach { tab ->
                 val isSelected = currentTab == tab
 
-                if (tab == NavTab.HOME) {
-                    // Center Highlighted Home Pill Button
+                if (tab == NavTab.SCAN_QR) {
+                    // Center Highlighted Green Floating Action QR Button (Hero in Nếp)
                     Box(
                         modifier = Modifier
-                            .size(52.dp)
+                            .size(50.dp)
                             .shadow(8.dp, CircleShape, spotColor = if (isDark) Color(0xFF1B4332) else SkyBluePrimary.copy(alpha = 0.35f))
                             .clip(CircleShape)
                             .background(
@@ -113,12 +113,12 @@ fun BottomNavBar(
                                     }
                                 )
                             )
-                            .clickable { onTabSelected(NavTab.HOME) },
+                            .clickable { onScanQrClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Home,
-                            contentDescription = "Trang chủ",
+                            imageVector = Icons.Filled.QrCodeScanner,
+                            contentDescription = "Quét QR thanh toán",
                             tint = Color.White,
                             modifier = Modifier.size(24.dp)
                         )
@@ -138,12 +138,12 @@ fun BottomNavBar(
                             imageVector = if (isSelected) tab.selectedIcon else tab.unselectedIcon,
                             contentDescription = tab.title,
                             tint = if (isSelected) activeColor else inactiveColor,
-                            modifier = Modifier.size(21.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                         Text(
                             text = tab.title,
                             color = if (isSelected) activeColor else inactiveColor,
-                            fontSize = 10.5.sp,
+                            fontSize = 11.sp,
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                         )
                     }
