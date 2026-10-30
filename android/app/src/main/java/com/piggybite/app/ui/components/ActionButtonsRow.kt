@@ -68,7 +68,7 @@ fun ActionButtonsRow(
     onPasteStk: () -> Unit,
     onAddManual: () -> Unit,
     onMyQr: () -> Unit,
-    onOpenNotificationSimulator: () -> Unit
+    onOpenNotificationSimulator: () -> Unit = {}
 ) {
     val isDark = LocalIsDarkMode.current
     var showMethodChoiceDialog by remember { mutableStateOf(false) }
@@ -199,41 +199,6 @@ fun ActionButtonsRow(
                     fontWeight = FontWeight.SemiBold
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // Cập nhật số dư tự động
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(if (isDark) DarkButtonBg else CardBackground)
-                .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(16.dp))
-                .clickable { onOpenNotificationSimulator() }
-                .padding(horizontal = 14.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(9.dp)
-                    .clip(CircleShape)
-                    .background(if (isDark) DarkTitleBlue else SkyBluePrimary)
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = "Tự động cập nhật số dư từ SMS & App ngân hàng",
-                color = if (isDark) DarkButtonText else TextDeepNavy,
-                fontSize = 12.5.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = "›",
-                color = if (isDark) DarkTitleBlue else TextMuted,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
         }
     }
 

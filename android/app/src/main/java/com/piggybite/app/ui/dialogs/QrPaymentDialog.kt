@@ -556,14 +556,40 @@ fun QrPaymentDialog(
                                     modifier = Modifier.fillMaxWidth()
                                 )
 
+                                val availableBalance: Long = when {
+                                    isSourceCash -> {
+                                        val cashAcc = accounts.find { it.id == "cash" || it.bankId == "cash" || it.bankName.contains("tiền mặt", ignoreCase = true) }
+                                        cashAcc?.balance ?: accounts.sumOf { it.balance }
+                                    }
+                                    selectedAccount != null && selectedAccount!!.balance > 0L -> {
+                                        selectedAccount!!.balance
+                                    }
+                                    else -> {
+                                        val matchingAcc = accounts.find { it.bankId == selectedSourceBank.id }
+                                        matchingAcc?.balance ?: accounts.sumOf { it.balance }
+                                    }
+                                }
+                                val isExceedingBalance = amountValue > availableBalance
+
                                 if (amountValue > 0) {
-                                    Text(
-                                        text = "= ${Formatters.formatWithComma(amountValue)} đ",
-                                        fontSize = 13.5.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = if (isDark) DarkTextMain else Color(0xFF111827)
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                    if (isExceedingBalance) {
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = "⚠️ Vượt quá số dư ví hiện có (${Formatters.formatMoney(availableBalance)})",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFFEF4444)
+                                        )
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                    } else {
+                                        Text(
+                                            text = "= ${Formatters.formatWithComma(amountValue)} đ (Số dư ví: ${Formatters.formatMoney(availableBalance)})",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
                                 } else {
                                     Spacer(modifier = Modifier.height(4.dp))
                                 }
@@ -702,11 +728,28 @@ fun QrPaymentDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
+                            val sourceBankToLaunch = selectedAccount?.let { BankDirectory.findBankById(it.bankId) } ?: selectedSourceBank
+
+                            val availableBalance: Long = when {
+                                isSourceCash -> {
+                                    val cashAcc = accounts.find { it.id == "cash" || it.bankId == "cash" || it.bankName.contains("tiền mặt", ignoreCase = true) }
+                                    cashAcc?.balance ?: accounts.sumOf { it.balance }
+                                }
+                                selectedAccount != null && selectedAccount!!.balance > 0L -> {
+                                    selectedAccount!!.balance
+                                }
+                                else -> {
+                                    val matchingAcc = accounts.find { it.bankId == sourceBankToLaunch.id }
+                                    matchingAcc?.balance ?: accounts.sumOf { it.balance }
+                                }
+                            }
+                            val isExceedingBalance = amountValue > availableBalance
+
                             val displaySourceBank = when {
                                 isSourceCash -> "💵 Tiền mặt"
                                 selectedAccount != null && selectedAccount!!.accountNumber.isNotBlank() -> "${selectedAccount!!.bankName} (${selectedAccount!!.accountNumber.takeLast(4)})"
                                 selectedAccount != null -> selectedAccount!!.bankName
-                                else -> selectedSourceBank.shortName
+                                else -> sourceBankToLaunch.shortName
                             }
                             Row(
                                 modifier = Modifier
@@ -721,7 +764,7 @@ fun QrPaymentDialog(
                                     Text(text = "💵", fontSize = 16.sp)
                                     Spacer(modifier = Modifier.width(6.dp))
                                 } else {
-                                    BankLogoView(bankId = selectedAccount?.bankId ?: selectedSourceBank.id, size = 18.dp)
+                                    BankLogoView(bankId = selectedAccount?.bankId ?: sourceBankToLaunch.id, size = 18.dp)
                                     Spacer(modifier = Modifier.width(6.dp))
                                 }
                                 Text(
@@ -747,8 +790,15 @@ fun QrPaymentDialog(
                                         return@Button
                                     }
 
-                                    // Ngân hàng nguồn tiền được chọn để mở app và ghi nhận giao dịch
-                                    val sourceBankToLaunch = selectedAccount?.let { BankDirectory.findBankById(it.bankId) } ?: selectedSourceBank
+                                    // Chặn chuyển khoản nếu số tiền nhiều hơn số tiền hiện có của ví
+                                    if (isExceedingBalance) {
+                                        Toast.makeText(
+                                            context,
+                                            "Lỗi: Số tiền chuyển (${Formatters.formatMoney(amountValue)}) vượt quá số dư hiện có (${Formatters.formatMoney(availableBalance)}) của ví!",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        return@Button
+                                    }
 
                                     val tx = Transaction(
                                         id = UUID.randomUUID().toString(),
@@ -807,10 +857,18 @@ fun QrPaymentDialog(
                                     .height(52.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isDark) DarkHighlightNavyBg else SkyBluePrimary,
-                                    contentColor = Color.White
+                                    containerColor = if (isExceedingBalance) {
+                                        if (isDark) Color(0xFF27272A) else Color(0xFFE2E8F0)
+                                    } else {
+                                        if (isDark) DarkHighlightNavyBg else SkyBluePrimary
+                                    },
+                                    contentColor = if (isExceedingBalance) Color(0xFF94A3B8) else Color.White
                                 ),
-                                border = BorderStroke(1.dp, if (isDark) DarkHighlightNavyBorder else Color.Transparent)
+                                border = BorderStroke(
+                                    1.dp,
+                                    if (isExceedingBalance) Color(0xFFEF4444).copy(alpha = 0.6f)
+                                    else (if (isDark) DarkHighlightNavyBorder else Color.Transparent)
+                                )
                             ) {
                                 Text(
                                     text = "Chuyển khoản",

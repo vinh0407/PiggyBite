@@ -111,53 +111,6 @@ fun HomeScreen(
                 onOpenNotificationSimulator = onOpenNotificationSimulator
             )
 
-            // "Mỗi tuần, khép sổ một lần" Banner (Logic Nếp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(if (isDark) DarkCardBackground else Color(0xFFF0FDF4))
-                    .border(1.dp, if (isDark) DarkCardBorder else Color(0xFFBBF7D0), RoundedCornerShape(18.dp))
-                    .clickable { onOpenWeeklyReview() }
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(if (isDark) DarkButtonBg else Color(0xFFDCFCE7)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = null,
-                        tint = if (isDark) DarkTitleBlue else Color(0xFF16A34A),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Mỗi tuần, khép sổ một lần",
-                        fontSize = 13.5.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Bù khoản tiền mặt còn sót, biết tuần qua chi bao nhiêu",
-                        fontSize = 11.5.sp,
-                        color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
-                    )
-                }
-                Text(
-                    text = "Khép sổ ›",
-                    fontSize = 12.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isDark) DarkTitleBlue else Color(0xFF16A34A)
-                )
-            }
-
             // Giao dịch gần đây
             TransactionList(
                 transactions = transactions,

@@ -425,6 +425,21 @@ fun AddTransactionDialog(
                             return@Button
                         }
 
+                        val availableBalance: Long = if (isCashSelected) {
+                            accounts.find { it.id == "cash" || it.bankId == "cash" }?.balance ?: accounts.sumOf { it.balance }
+                        } else {
+                            selectedAccount?.balance ?: accounts.sumOf { it.balance }
+                        }
+
+                        if (!isIncome && amount > availableBalance) {
+                            Toast.makeText(
+                                context,
+                                "Lỗi: Số tiền chi (${Formatters.formatMoney(amount)}) vượt quá số dư ví hiện có (${Formatters.formatMoney(availableBalance)})!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            return@Button
+                        }
+
                         val bId = if (isCashSelected) "cash" else (selectedAccount?.id ?: "cash")
                         val bName = if (isCashSelected) "Tiền mặt" else (selectedAccount?.bankName ?: "Tiền mặt")
 
