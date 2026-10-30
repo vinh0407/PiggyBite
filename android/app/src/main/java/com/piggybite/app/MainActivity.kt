@@ -256,6 +256,7 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
     // Modal Dialogs
     if (showWeeklyReviewDialog) {
         WeeklyReviewDialog(
+            transactions = transactions,
             onDismiss = { showWeeklyReviewDialog = false },
             onAddManual = {
                 showWeeklyReviewDialog = false

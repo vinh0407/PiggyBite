@@ -65,13 +65,14 @@ class DataRepository private constructor(private val appContext: Context) {
     }
 
     private fun loadData() {
-        // One-time automatic purge of previous mock/example data so user starts with a clean slate
-        val hasPurgedSampleData = prefs.getBoolean("has_purged_sample_data_v3", false)
+        // Tự động xóa sạch toàn bộ dữ liệu mẫu/thử nghiệm cũ để người dùng bắt đầu từ con số 0 hoàn toàn sạch
+        val hasPurgedSampleData = prefs.getBoolean("has_purged_sample_data_v7_final", false)
         if (!hasPurgedSampleData) {
             prefs.edit()
                 .remove("bank_accounts")
                 .remove("transactions")
-                .putBoolean("has_purged_sample_data_v3", true)
+                .remove("received_notifications")
+                .putBoolean("has_purged_sample_data_v7_final", true)
                 .apply()
         }
 
@@ -314,10 +315,12 @@ class DataRepository private constructor(private val appContext: Context) {
         prefs.edit()
             .remove("bank_accounts")
             .remove("transactions")
-            .putBoolean("has_purged_sample_data_v3", true)
+            .remove("received_notifications")
+            .putBoolean("has_purged_sample_data_v7_final", true)
             .apply()
         _accounts.value = emptyList()
         _transactions.value = emptyList()
+        _receivedNotifications.value = emptyList()
     }
 
     companion object {

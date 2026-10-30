@@ -140,6 +140,27 @@ fun ReportsScreen(
         selectedDayTransactions.filter { !it.isIncome }.sumOf { it.amount }
     }
 
+    val overviewExpenseTxs = remember(transactions) {
+        transactions.filter { !it.isIncome }
+    }
+    val overviewTotalExpense = remember(overviewExpenseTxs) {
+        overviewExpenseTxs.sumOf { it.amount }
+    }
+    val overviewCategories = remember(overviewExpenseTxs, overviewTotalExpense) {
+        if (overviewExpenseTxs.isEmpty()) {
+            emptyList<Triple<String, Long, Float>>()
+        } else {
+            overviewExpenseTxs
+                .groupBy { it.category }
+                .map { (cat, txs) ->
+                    val sum = txs.sumOf { it.amount }
+                    val ratio = if (overviewTotalExpense > 0) sum.toFloat() / overviewTotalExpense else 0f
+                    Triple(cat, sum, ratio)
+                }
+                .sortedByDescending { it.second }
+        }
+    }
+
     fun formatCompactK(amount: Long): String {
         return when {
             amount >= 1_000_000 -> String.format(Locale("vi", "VN"), "%.1ftr", amount / 1_000_000.0)
@@ -493,56 +514,76 @@ fun ReportsScreen(
                     )
                 }
 
-                val categories = listOf(
-                    Triple("Ăn uống", 4500000L, 0.45f),
-                    Triple("Di chuyển", 1850000L, 0.20f),
-                    Triple("Mua sắm", 2300000L, 0.23f),
-                    Triple("Sinh hoạt & Tiện ích", 1200000L, 0.12f)
-                )
-
-                items(categories) { (cat, amount, ratio) ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(18.dp))
-                            .background(if (isDark) DarkCardBackground else Color.White)
-                            .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
-                            .padding(16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                if (overviewCategories.isEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(18.dp))
+                                .background(if (isDark) DarkCardBackground else Color.White)
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = cat,
-                                fontSize = 14.sp,
+                                text = "Chưa có dữ liệu chi tiêu",
+                                fontSize = 13.5.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = if (isDark) DarkTextMain else Color(0xFF111827)
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = Formatters.formatMoney(amount),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                text = "Các khoản chi tiêu được ghi nhận sẽ tự động phân bổ tại đây",
+                                fontSize = 11.5.sp,
+                                color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Box(
+                    }
+                } else {
+                    items(overviewCategories) { (cat, amount, ratio) ->
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(6.dp)
-                                .clip(RoundedCornerShape(3.dp))
-                                .background(if (isDark) DarkButtonBg else Color(0xFFE5E7EB))
+                                .clip(RoundedCornerShape(18.dp))
+                                .background(if (isDark) DarkCardBackground else Color.White)
+                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
+                                .padding(16.dp)
                         ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = cat,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                )
+                                Text(
+                                    text = Formatters.formatMoney(amount),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth(ratio)
+                                    .fillMaxWidth()
                                     .height(6.dp)
                                     .clip(RoundedCornerShape(3.dp))
-                                    .background(if (isDark) DarkTitleBlue else SkyBluePrimary)
-                            )
+                                    .background(if (isDark) DarkButtonBg else Color(0xFFE5E7EB))
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth(ratio)
+                                        .height(6.dp)
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(if (isDark) DarkTitleBlue else SkyBluePrimary)
+                                )
+                            }
                         }
                     }
                 }
