@@ -61,9 +61,6 @@ fun ExpenseCard(
     val isDark = LocalIsDarkMode.current
     val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
 
-    val totalBudget = remainingBudget + monthExpense
-    val percentUsed = if (totalBudget > 0) ((monthExpense.toFloat() / totalBudget) * 100).toInt().coerceIn(1, 100) else 8
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -126,86 +123,5 @@ fun ExpenseCard(
             fontWeight = FontWeight.ExtraBold,
             letterSpacing = (-0.5).sp
         )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // Progress bar (Nếp style: slim bar with percentage)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(if (isDark) DarkButtonBg else Color(0xFFE5E7EB))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(percentUsed / 100f)
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(if (isDark) DarkTitleBlue else NepGreenPrimary)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Text(
-                text = "Đã dùng $percentUsed%",
-                fontSize = 11.5.sp,
-                fontWeight = FontWeight.Medium,
-                color = if (isDark) DarkTextMuted else TextMuted
-            )
-        }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        // Separator line
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(0.8.dp)
-                .background(if (isDark) DarkCardBorder.copy(alpha = 0.5f) else Color(0xFFF3F4F6))
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // Two columns below: Hôm nay & Tháng này
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(
-                    text = "Hôm nay",
-                    fontSize = 12.sp,
-                    color = if (isDark) DarkTextMuted else TextMuted
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = if (isBalanceHidden) "•••• đ" else Formatters.formatMoney(todayExpense),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = "Tháng này",
-                    fontSize = 12.sp,
-                    color = if (isDark) DarkTextMuted else TextMuted
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = if (isBalanceHidden) "•••• đ" else Formatters.formatMoney(monthExpense),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
     }
 }
