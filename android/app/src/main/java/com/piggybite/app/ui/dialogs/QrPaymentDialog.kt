@@ -143,7 +143,13 @@ fun QrPaymentDialog(
 
     // AI Phân biệt dữ liệu (Fuzzy Bank Matching + Regex STK + Xử lý chính tả)
     fun parsePastedText(raw: String) {
-        if (raw.isBlank()) return
+        if (raw.isBlank()) {
+            receiverAccNum = ""
+            receiverName = ""
+            amountValue = 0L
+            amountText = ""
+            return
+        }
 
         // 1. Nhận diện ngân hàng thông minh hỗ trợ lỗi chính tả (ví dụ: argibank -> Agribank, vietcombanh -> Vietcombank)
         val foundBank = BankDirectory.findBankByKeyword(raw)
@@ -182,14 +188,23 @@ fun QrPaymentDialog(
             }
         }
 
-        // 4. Tên người nhận (nếu có thì lấy, không có thì không quan tâm theo yêu cầu)
+        // 4. Tên người nhận: loại trừ tất cả các từ khóa ngân hàng và từ khóa nghiệp vụ
+        val allBankKeywords = BankDirectory.ALL_BANKS.flatMap {
+            it.keywords + listOf(it.id, it.shortName.lowercase(), it.name.lowercase())
+        }.toSet()
+        val ignoreWords = setOf(
+            "stk", "tk", "ngan", "hang", "chuyen", "tien", "khoan", "vnd", "dong", "gui", "nhan", "toi", "so", "den", "sang"
+        ) + allBankKeywords
+
         val words = raw.split(" ", "\n", "\t").filter { it.isNotBlank() && it.none { c -> c.isDigit() } }
         val probableName = words.filter { w ->
-            val lw = w.lowercase()
-            lw.length > 2 && lw !in listOf("techcombank", "vietcombank", "mbbank", "bidv", "agribank", "argibank", "vcb", "tcb", "stk", "tk", "ngan", "hang", "chuyen", "tien", "khoan")
+            val lw = w.lowercase().trim()
+            lw.length >= 2 && lw !in ignoreWords && !allBankKeywords.any { kw -> lw.contains(kw) || kw.contains(lw) }
         }
-        if (probableName.isNotEmpty()) {
-            receiverName = probableName.joinToString(" ").uppercase()
+        receiverName = if (probableName.isNotEmpty()) {
+            probableName.joinToString(" ").uppercase()
+        } else {
+            ""
         }
     }
 

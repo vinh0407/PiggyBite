@@ -186,35 +186,6 @@ fun SettingsScreen(
                     )
                 }
 
-                // Test Simulator Modal
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onOpenNotificationSimulator() },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Thử nghiệm nhận thông báo SMS & Test AI",
-                            fontSize = 14.5.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Nhấp để mở hộp thoại kiểm tra với mẫu thông báo và xem AI phân loại",
-                            fontSize = 12.sp,
-                            color = TextMuted
-                        )
-                    }
-                    Text(
-                        text = "Mở ›",
-                        color = if (isDark) DarkTitleBlue else SkyBluePrimary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp
-                    )
-                }
-
                 // Offline mode
                 Row(
                     modifier = Modifier.fillMaxWidth(),

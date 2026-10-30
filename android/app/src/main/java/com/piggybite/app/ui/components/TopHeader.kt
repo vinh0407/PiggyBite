@@ -54,18 +54,8 @@ import com.piggybite.app.util.Formatters
 fun TopHeader(
     isDarkMode: Boolean,
     onToggleDarkMode: () -> Unit,
-    onOpenNotificationSimulator: () -> Unit
+    onOpenNotificationSimulator: () -> Unit = {}
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 0.9f,
-        targetValue = 1.35f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1200),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulseScale"
-    )
 
     Row(
         modifier = Modifier
@@ -123,37 +113,6 @@ fun TopHeader(
                 contentDescription = "Chuyển chế độ Sáng / Tối",
                 tint = if (isDarkMode) GoldAccent else SkyBluePrimary,
                 modifier = Modifier.size(20.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // Notification Bell with Live Pulse Indicator
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(if (isDarkMode) DarkCardBackground else CardBackground)
-                .border(1.dp, if (isDarkMode) DarkCardBorder else CardBorder, CircleShape)
-                .clickable { onOpenNotificationSimulator() },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Notifications,
-                contentDescription = "Thông báo ngân hàng",
-                tint = if (isDarkMode) Color(0xFF38BDF8) else SkyBluePrimary,
-                modifier = Modifier.size(20.dp)
-            )
-
-            // Pulse dot
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(5.dp)
-                    .size(8.dp)
-                    .scale(pulseScale)
-                    .clip(CircleShape)
-                    .background(if (isDarkMode) Color(0xFF34D399) else Color(0xFF10B981))
             )
         }
     }
