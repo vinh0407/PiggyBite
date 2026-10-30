@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
 fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
     val accounts by repository.accounts.collectAsState()
     val transactions by repository.transactions.collectAsState()
+    val receivedNotifications by repository.receivedNotifications.collectAsState()
     val isBalanceHidden by repository.isBalanceHidden.collectAsState()
 
     var activeTab by remember { mutableStateOf(NavTab.HOME) }
@@ -214,10 +215,13 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
 
     if (showNotificationSimulator) {
         NotificationSimulatorDialog(
+            notifications = receivedNotifications,
             onDismiss = { showNotificationSimulator = false },
             onProcessText = { text ->
                 repository.processBankNotification(text)
-            }
+            },
+            onClearAll = { repository.clearReceivedNotifications() },
+            onDeleteItem = { id -> repository.deleteReceivedNotification(id) }
         )
     }
 

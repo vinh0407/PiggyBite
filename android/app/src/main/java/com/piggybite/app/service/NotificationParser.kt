@@ -2,6 +2,9 @@ package com.piggybite.app.service
 
 import com.piggybite.app.model.Bank
 import com.piggybite.app.model.BankDirectory
+import com.piggybite.app.model.NotificationCategory
+import com.piggybite.app.model.ReceivedNotification
+import com.piggybite.app.util.Formatters
 
 data class ParsedNotification(
     val bank: Bank,
@@ -13,6 +16,58 @@ data class ParsedNotification(
 )
 
 object NotificationParser {
+
+    private val promoKeywords = listOf(
+        "khuyen mai", "khuyến mại", "khuyến mãi", "voucher", "giam gia", "giảm giá",
+        "uu dai", "ưu đãi", "hoan tien", "hoàn tiền", "vay", "vay tieu dung", "vay tiêu dùng",
+        "mo the", "mở thẻ", "chuc mung", "chúc mừng", "tri an", "tri ân", "bao hiem", "bảo hiểm",
+        "lai suat", "lãi suất", "qua tang", "quà tặng", "sinh nhat", "sinh nhật",
+        "flash sale", "deal", "cashback", "tiet kiem", "tiết kiệm", "tich diem", "tích điểm",
+        "mua ve", "mua vé", "tang ban", "tặng bạn", "san sale", "săn sale", "ma giam gia", "mã giảm giá",
+        "diem thuong", "điểm thưởng", "qua tet", "quà tết", "co hoi trung", "cơ hội trúng", "danh rieng cho ban",
+        "dành riêng cho bạn", "nhan ngay", "nhận ngay", "mo tai khoan", "mở tài khoản"
+    )
+
+    fun classifyNotification(rawText: String): ReceivedNotification {
+        val bank = BankDirectory.findBankByKeyword(rawText) ?: BankDirectory.ALL_BANKS[0]
+        val lower = rawText.lowercase()
+        val parsed = parse(rawText)
+
+        // If financial amount successfully extracted and has transaction keywords
+        if (parsed != null && parsed.amount > 0) {
+            val kind = if (parsed.isIncome) NotificationCategory.INCOME else NotificationCategory.EXPENSE
+            val summary = if (parsed.isIncome) {
+                "Nhận +${Formatters.formatMoney(parsed.amount)} vào ${bank.shortName}"
+            } else {
+                "Chuyển -${Formatters.formatMoney(parsed.amount)} từ ${bank.shortName}"
+            }
+            return ReceivedNotification(
+                bankName = bank.shortName,
+                bankId = bank.id,
+                category = kind,
+                amount = parsed.amount,
+                rawText = rawText,
+                summary = summary
+            )
+        }
+
+        // If not a transaction or contains promo keywords
+        val isExplicitPromo = promoKeywords.any { lower.contains(it) }
+        val promoSummary = if (isExplicitPromo) {
+            "Quảng cáo & Ưu đãi từ ${bank.shortName} (Tự động bỏ qua)"
+        } else {
+            "Thông báo chung từ ${bank.shortName} (Không có biến động số dư)"
+        }
+
+        return ReceivedNotification(
+            bankName = bank.shortName,
+            bankId = bank.id,
+            category = NotificationCategory.PROMO_OR_ADS,
+            amount = 0L,
+            rawText = rawText,
+            summary = promoSummary
+        )
+    }
 
     fun parse(rawText: String): ParsedNotification? {
         if (rawText.isBlank()) return null

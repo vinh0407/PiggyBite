@@ -1600,7 +1600,7 @@ function HistoryScreen({
 }
 
 // ==========================================
-// 9. BANK NOTIFICATION LISTENER & SIMULATOR
+// 9. BANK NOTIFICATION HISTORY & CLASSIFICATION
 // ==========================================
 function NotificationSimulatorModal({
   onClose,
@@ -1609,30 +1609,90 @@ function NotificationSimulatorModal({
   onClose: () => void;
   onProcess: (text: string) => void;
 }) {
+  const [filter, setFilter] = useState<"all" | "income" | "expense" | "promo">("all");
   const [customText, setCustomText] = useState("");
 
-  const sampleNotifications = [
+  const [notifications, setNotifications] = useState([
     {
+      id: "n-1",
       bank: "Vietcombank",
-      text: "VCB: 27/10/26 10:15 | TK 1028394857 | +500,000 VND | Ref: NGUYEN VAN A chuyen tien mua hang | So du: 15,000,000 VND",
+      cat: "income" as const,
+      amount: 15000000,
+      time: "10:35 • Hôm nay",
+      text: "VCB: TK 1029384756 +15,000,000 VND luc 10:35. So du 25,500,000 VND. ND: CTY ABC CHUYEN LUONG THANG 10",
+      status: "✓ Đã tự động cộng số dư vào ví",
     },
     {
-      bank: "Ví MoMo",
-      text: "MoMo: Bạn vừa nhận được 150.000đ từ Trần Thị Mai với lời nhắn 'Tien ca phe an trua'. Số dư ví: 1.000.000đ",
-    },
-    {
+      id: "n-2",
       bank: "Techcombank",
-      text: "Techcombank: +2,500,000 VND vao TK 19038475869 luc 09:30. ND: Cong ty ABC thanh toan tien thuong thang 10.",
+      cat: "expense" as const,
+      amount: 55000,
+      time: "09:15 • Hôm nay",
+      text: "Techcombank: -55,000 VND luc 09:15. So du 4,945,000 VND. ND: Thanh toan Highlands Coffee Dong Khoi",
+      status: "✓ Đã tự động trừ số dư trong ví",
     },
     {
-      bank: "MBBank",
-      text: "MB Bank: TK 0988776655 +1,200,000VND luc 14:20. ND: Le Van B chuyen khoan tien phong",
+      id: "n-3",
+      bank: "MB Bank",
+      cat: "promo" as const,
+      amount: 0,
+      time: "14:20 • Hôm qua",
+      text: "MB Bank: Ưu đãi hoàn tiền 50% khi mở thẻ tín dụng MB JCB trong tháng này! Nhận ngay voucher mua sắm 500k.",
+      status: "Bỏ qua: Tin quảng cáo (Không thay đổi số dư)",
     },
-    {
-      bank: "Agribank",
-      text: "Agribank: TK 970405xxx +800,000VND ngay 27/10/2026. ND: Tra tien vay ban be",
-    },
-  ];
+  ]);
+
+  const filtered = notifications.filter((n) => {
+    if (filter === "all") return true;
+    return n.cat === filter;
+  });
+
+  const handleProcessCustom = () => {
+    if (!customText.trim()) return;
+    const text = customText.trim();
+    const lower = text.toLowerCase();
+
+    const isPromo = /khuyen mai|khuyến mại|khuyến mãi|voucher|giam gia|giảm giá|uu dai|ưu đãi|hoan tien|hoàn tiền|vay|mo the|mở thẻ|chuc mung|chúc mừng|tri an|tri ân|qua tang|quà tặng/i.test(lower);
+    const hasPlus = text.includes("+") || /nhận được|nhan duoc|nhận tiền|cộng tiền/i.test(lower);
+    const hasMinus = text.includes("-") || /thanh toán|thanh toan|chuyển đi|trừ tiền/i.test(lower);
+
+    if (isPromo && !hasPlus && !hasMinus) {
+      setNotifications([
+        {
+          id: "n-" + Date.now(),
+          bank: "Ngân hàng",
+          cat: "promo",
+          amount: 0,
+          time: "Vừa xong",
+          text: text,
+          status: "Bỏ qua: Tin quảng cáo (Không thay đổi số dư)",
+        },
+        ...notifications,
+      ]);
+      setCustomText("");
+      alert("Hệ thống nhận diện: THÔNG BÁO QUẢNG CÁO & ƯU ĐÃI.\nĐã lưu vào lịch sử thông báo và tự động bỏ qua (không trừ/cộng tiền).");
+      return;
+    }
+
+    onProcess(text);
+    const amtMatch = text.match(/([0-9]{1,3}(?:[.,][0-9]{3})+|[0-9]{4,12})\s*(?:vnd|vnđ|đ|dong|đồng)/i) || text.match(/[+-]\s*([0-9,.]+)/);
+    const amtVal = amtMatch ? parseInt(amtMatch[1].replace(/[^0-9]/g, ""), 10) : 0;
+    const cat = hasPlus ? "income" : "expense";
+
+    setNotifications([
+      {
+        id: "n-" + Date.now(),
+        bank: "Ngân hàng",
+        cat: cat,
+        amount: amtVal,
+        time: "Vừa xong",
+        text: text,
+        status: hasPlus ? "✓ Đã tự động cộng số dư vào ví" : "✓ Đã tự động trừ số dư trong ví",
+      },
+      ...notifications,
+    ]);
+    setCustomText("");
+  };
 
   return (
     <div className="modal-backdrop-full" onClick={onClose}>
@@ -1640,57 +1700,107 @@ function NotificationSimulatorModal({
         <div className="sheet-body">
           <div className="sheet-top-header">
             <div>
-              <h3>Tự động nhận thông báo ngân hàng</h3>
+              <h3>Lịch sử thông báo biến động</h3>
               <small style={{ color: "var(--text-muted)", fontSize: "12px" }}>
-                Tự động nhận diện và cộng tiền vào ngân hàng tương ứng
+                Phân biệt chính xác: Tiền vào, Tiền ra và Tin quảng cáo ngân hàng
               </small>
             </div>
             <button className="sheet-close" onClick={onClose}>✕</button>
           </div>
 
-          <div className="notify-status-box">
+          <div className="notify-status-box" style={{ marginBottom: "12px" }}>
             <span className="notify-pulse-dot" />
             <div>
-              <b>Trình lắng nghe thông báo: Đang sẵn sàng</b>
-              <p>Mỗi khi điện thoại nhận SMS hoặc thông báo từ app ngân hàng, PiggyBite sẽ tự động cộng/trừ tiền.</p>
+              <b>Lắng nghe SMS & Biến động số dư: Đang hoạt động</b>
+              <p>Tự động bóc tách số tiền chuyển/nhận và tự động bỏ qua các tin khuyến mãi rác.</p>
             </div>
           </div>
 
-          <div className="quick-presets-section" style={{ marginTop: "16px" }}>
-            <span className="preset-label">MẪU THÔNG BÁO CHUYỂN TIỀN THỰC TẾ (NHẤP ĐỂ THỬ):</span>
-            <div className="presets-list">
-              {sampleNotifications.map((s) => (
-                <button
-                  key={s.bank}
-                  className="preset-item-btn notify-sample-btn"
-                  onClick={() => onProcess(s.text)}
-                >
-                  <div>
-                    <b>{s.bank}</b>
-                    <small style={{ fontSize: "11px", color: "var(--text-muted)" }}>{s.text}</small>
-                  </div>
-                  <span className="test-now-badge">Thử nhận</span>
-                </button>
-              ))}
-            </div>
+          {/* Filter Tabs */}
+          <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
+            {[
+              { id: "all", label: `Tất cả (${notifications.length})` },
+              { id: "income", label: `+ Tiền vào (${notifications.filter((n) => n.cat === "income").length})` },
+              { id: "expense", label: `- Tiền ra (${notifications.filter((n) => n.cat === "expense").length})` },
+              { id: "promo", label: `📢 Quảng cáo (${notifications.filter((n) => n.cat === "promo").length})` },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setFilter(t.id as any)}
+                style={{
+                  flex: 1,
+                  padding: "6px 4px",
+                  borderRadius: "8px",
+                  fontSize: "11px",
+                  fontWeight: filter === t.id ? 700 : 500,
+                  border: filter === t.id ? "1px solid var(--accent-primary)" : "1px solid var(--border-color)",
+                  background: filter === t.id ? "var(--accent-subtle)" : "transparent",
+                  color: filter === t.id ? "var(--accent-primary)" : "var(--text-muted)",
+                  cursor: "pointer",
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
 
-          <div className="input-group" style={{ marginTop: "16px" }}>
-            <label>Hoặc dán nội dung thông báo / tin nhắn SMS ngân hàng của bạn:</label>
+          {/* Notifications List */}
+          <div style={{ maxHeight: "260px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px", marginBottom: "12px" }}>
+            {filtered.map((n) => (
+              <div
+                key={n.id}
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: "12px",
+                  background: "var(--surface-color)",
+                  border: n.cat === "income" ? "1px solid #bbf7d0" : n.cat === "expense" ? "1px solid #fecaca" : "1px solid var(--border-color)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                  <b style={{ fontSize: "13px" }}>{n.bank}</b>
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      fontWeight: 700,
+                      padding: "2px 8px",
+                      borderRadius: "6px",
+                      background: n.cat === "income" ? "#dcfce7" : n.cat === "expense" ? "#fee2e2" : "#f1f5f9",
+                      color: n.cat === "income" ? "#16a34a" : n.cat === "expense" ? "#dc2626" : "#64748b",
+                    }}
+                  >
+                    {n.cat === "income" ? `+${formatMoney(n.amount)}` : n.cat === "expense" ? `-${formatMoney(n.amount)}` : "📢 Quảng cáo"}
+                  </span>
+                </div>
+                <div style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>
+                  "{n.text}"
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10.5px" }}>
+                  <span style={{ color: n.cat === "income" ? "#16a34a" : n.cat === "expense" ? "#dc2626" : "#64748b", fontWeight: 600 }}>
+                    {n.status}
+                  </span>
+                  <span style={{ color: "var(--text-muted)" }}>{n.time}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Manual Input Paste Box */}
+          <div className="input-group" style={{ marginTop: "8px" }}>
+            <label>Dán hoặc nhập thông báo để nhận diện:</label>
             <textarea
               className="notify-textarea"
-              rows={3}
-              placeholder="Dán thông báo biến động số dư ngân hàng vào đây..."
+              rows={2}
+              placeholder="Dán nội dung tin nhắn SMS hoặc thông báo ngân hàng..."
               value={customText}
               onChange={(e) => setCustomText(e.target.value)}
             />
             <button
               className="sheet-action-btn primary"
-              style={{ marginTop: "10px" }}
+              style={{ marginTop: "8px" }}
               disabled={!customText.trim()}
-              onClick={() => onProcess(customText)}
+              onClick={handleProcessCustom}
             >
-              Tự động xử lý & Cập nhật vào ngân hàng
+              Nhận diện & Phân loại thông báo
             </button>
           </div>
         </div>

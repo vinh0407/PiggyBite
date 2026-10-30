@@ -7,6 +7,8 @@ import com.google.gson.reflect.TypeToken
 import com.piggybite.app.model.Bank
 import com.piggybite.app.model.BankAccount
 import com.piggybite.app.model.BankDirectory
+import com.piggybite.app.model.NotificationCategory
+import com.piggybite.app.model.ReceivedNotification
 import com.piggybite.app.model.Transaction
 import com.piggybite.app.service.ExpenseClassifierAI
 import com.piggybite.app.service.IncomeClassifierAI
@@ -45,6 +47,9 @@ class DataRepository private constructor(private val appContext: Context) {
 
     private val _transactions = MutableStateFlow<List<Transaction>>(emptyList())
     val transactions: StateFlow<List<Transaction>> = _transactions.asStateFlow()
+
+    private val _receivedNotifications = MutableStateFlow<List<ReceivedNotification>>(emptyList())
+    val receivedNotifications: StateFlow<List<ReceivedNotification>> = _receivedNotifications.asStateFlow()
 
     private val _isBalanceHidden = MutableStateFlow(prefs.getBoolean("hide_balance", false))
     val isBalanceHidden: StateFlow<Boolean> = _isBalanceHidden.asStateFlow()
@@ -87,8 +92,41 @@ class DataRepository private constructor(private val appContext: Context) {
             emptyList()
         }
         _transactions.value = txList
+
+        val notifJson = prefs.getString("received_notifications", null)
+        val notifList = if (!notifJson.isNullOrBlank()) {
+            val type = object : TypeToken<List<ReceivedNotification>>() {}.type
+            gson.fromJson<List<ReceivedNotification>>(notifJson, type) ?: emptyList()
+        } else {
+            emptyList()
+        }
+        _receivedNotifications.value = notifList
+
         saveAccounts(accList)
         saveTransactions(txList)
+        saveReceivedNotifications(notifList)
+    }
+
+    fun addReceivedNotification(notif: ReceivedNotification) {
+        val current = _receivedNotifications.value.toMutableList()
+        current.add(0, notif)
+        _receivedNotifications.value = current
+        saveReceivedNotifications(current)
+    }
+
+    fun clearReceivedNotifications() {
+        _receivedNotifications.value = emptyList()
+        saveReceivedNotifications(emptyList())
+    }
+
+    fun deleteReceivedNotification(id: String) {
+        val current = _receivedNotifications.value.filter { it.id != id }
+        _receivedNotifications.value = current
+        saveReceivedNotifications(current)
+    }
+
+    private fun saveReceivedNotifications(list: List<ReceivedNotification>) {
+        prefs.edit().putString("received_notifications", gson.toJson(list)).apply()
     }
 
     private fun saveAccounts(list: List<BankAccount>) {
@@ -185,7 +223,15 @@ class DataRepository private constructor(private val appContext: Context) {
     }
 
     fun processBankNotification(rawText: String): ParsedNotification? {
-        val parsed = NotificationParser.parse(rawText) ?: return null
+        // Automatically classify and save to notification history (Distinguishes Income, Expense, Promo/Ads)
+        val classified = NotificationParser.classifyNotification(rawText)
+        addReceivedNotification(classified)
+
+        val parsed = NotificationParser.parse(rawText)
+        if (parsed == null || parsed.amount <= 0L) {
+            // Promotional or non-transaction notification - logged to history but no balance change
+            return null
+        }
 
         val currentAccs = _accounts.value.toMutableList()
         var targetAcc = currentAccs.firstOrNull { it.bankId == parsed.bank.id }
