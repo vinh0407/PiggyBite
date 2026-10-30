@@ -15,6 +15,36 @@
   --accent-yellow: #f59e0b;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-green: #1b4332;
+    --primary-green-hover: #2d6a4f;
+    --bg-canvas: #000000;
+    --card-bg: #0d1713;
+    --card-border: #1a2f25;
+    --text-main: #ededed;
+    --text-muted: #a1a1aa;
+    --text-sub: #71717a;
+    --accent-mint: #13281e;
+    --accent-coral: #ef4444;
+    --accent-yellow: #f59e0b;
+  }
+}
+
+body.dark, [data-theme="dark"] {
+  --primary-green: #1b4332;
+  --primary-green-hover: #2d6a4f;
+  --bg-canvas: #000000;
+  --card-bg: #0d1713;
+  --card-border: #1a2f25;
+  --text-main: #ededed;
+  --text-muted: #a1a1aa;
+  --text-sub: #71717a;
+  --accent-mint: #13281e;
+  --accent-coral: #ef4444;
+  --accent-yellow: #f59e0b;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

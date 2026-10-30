@@ -67,6 +67,7 @@ import com.piggybite.app.ui.theme.DarkIncomeBg
 import com.piggybite.app.ui.theme.DarkIncomeBorder
 import com.piggybite.app.ui.theme.DarkIncomeText
 import com.piggybite.app.ui.theme.DarkTitleBlue
+import com.piggybite.app.ui.theme.NepGreenPrimary
 import com.piggybite.app.ui.theme.ExpenseRed
 import com.piggybite.app.ui.theme.ExpenseRedSoft
 import com.piggybite.app.ui.theme.LocalIsDarkMode
@@ -211,7 +212,7 @@ fun QrPaymentDialog(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(18.dp))
-                                        .background(if (isDark) Color(0xFF1E293B) else SkyBlueSoft)
+                                        .background(if (isDark) DarkButtonBg else SkyBlueSoft)
                                         .border(
                                             1.dp,
                                             if (isDark) DarkButtonBorder else SkyBluePrimary.copy(alpha = 0.3f),
@@ -247,9 +248,9 @@ fun QrPaymentDialog(
                             // Amount Input Field
                             item {
                                 Text(
-                                    text = "SỐ TIỀN CẦN CHUYỂN (VNĐ):",
-                                    fontSize = 11.5.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    text = "Số tiền cần chuyển (đ)",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium,
                                     color = TextMuted
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
@@ -259,7 +260,7 @@ fun QrPaymentDialog(
                                     onValueChange = { input ->
                                         amountText = input.filter { it.isDigit() }
                                     },
-                                    placeholder = { Text("Ví dụ: 50000", color = TextMuted) },
+                                    placeholder = { Text("Ví dụ: 50.000", color = TextMuted) },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(16.dp),
@@ -285,7 +286,7 @@ fun QrPaymentDialog(
                                                 .weight(1f)
                                                 .clip(RoundedCornerShape(10.dp))
                                                 .background(
-                                                    if (isCurrent) (if (isDark) DarkButtonBg else SkyBlueSoft) else (if (isDark) Color(0xFF1E293B) else Color(0xFFF7F5F0))
+                                                    if (isCurrent) (if (isDark) DarkButtonBg else SkyBlueSoft) else (if (isDark) DarkButtonBg.copy(alpha = 0.5f) else Color(0xFFF7F5F0))
                                                 )
                                                 .border(
                                                     1.dp,
@@ -310,9 +311,9 @@ fun QrPaymentDialog(
                             // Note Field
                             item {
                                 Text(
-                                    text = "NỘI DUNG CHUYỂN KHOẢN:",
-                                    fontSize = 11.5.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    text = "Nội dung chuyển khoản",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium,
                                     color = TextMuted
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
@@ -362,7 +363,7 @@ fun QrPaymentDialog(
                                         .background(bannerBg)
                                         .border(1.dp, bannerBorder, RoundedCornerShape(14.dp))
                                         .padding(12.dp)
-                                ) {
+                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(
                                             imageVector = Icons.Default.AutoAwesome,
@@ -373,8 +374,8 @@ fun QrPaymentDialog(
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Column {
                                             Text(
-                                                text = "Gợi ý nguồn tiền tối ưu:",
-                                                fontSize = 11.5.sp,
+                                                text = "Gợi ý nguồn tiền tối ưu",
+                                                fontSize = 12.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = bannerTextColor
                                             )
@@ -389,9 +390,9 @@ fun QrPaymentDialog(
 
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Text(
-                                    text = "CHỌN TÀI KHOẢN NGUỒN ĐỂ TRỪ TIỀN:",
-                                    fontSize = 11.5.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    text = "Chọn tài khoản nguồn để chuyển",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium,
                                     color = TextMuted
                                 )
                             }
@@ -537,13 +538,13 @@ fun QrPaymentDialog(
                                 .height(50.dp),
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isDark) DarkButtonBg else SkyBluePrimary,
-                                contentColor = if (isDark) DarkTitleBlue else Color.White
+                                containerColor = if (isDark) NepGreenPrimary else SkyBluePrimary,
+                                contentColor = if (isDark) Color(0xFFEDEDED) else Color.White
                             ),
                             border = BorderStroke(1.dp, if (isDark) DarkButtonBorder else Color.Transparent)
                         ) {
                             Text(
-                                text = "Xác nhận & Mở ứng dụng ngân hàng",
+                                text = "Chuyển khoản & Mở ứng dụng ngân hàng",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.5.sp
                             )

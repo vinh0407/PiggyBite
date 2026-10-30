@@ -6,33 +6,35 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.Color
 
 val LocalIsDarkMode = compositionLocalOf { false }
 
 private val ModernLightColorScheme = lightColorScheme(
-    primary = SkyBluePrimary,
+    primary = NepGreenPrimary,
     onPrimary = PureWhite,
-    primaryContainer = SkyBlueSoft,
-    onPrimaryContainer = TextDeepNavy,
+    primaryContainer = NepGreenSoft,
+    onPrimaryContainer = NepGreenPrimary,
     background = ModernBackground,
     onBackground = TextDeepNavy,
     surface = CardBackground,
     onSurface = TextDeepNavy,
-    surfaceVariant = SkyBlueUltraLight,
+    surfaceVariant = CardBorderLight,
     outline = CardBorder
 )
 
+// Dark Theme: Nền đen tuyền, surface & card màu xanh đen, chữ xám sáng
 private val ModernDarkColorScheme = darkColorScheme(
-    primary = DarkTitleBlue,
-    onPrimary = DarkAppBackground,
+    primary = NepGreenAccent,
+    onPrimary = Color.White,
     primaryContainer = DarkCardBackground,
-    onPrimaryContainer = DarkTitleBlue,
-    background = DarkAppBackground,
-    onBackground = DarkTextMain,
-    surface = DarkCardBackground,
+    onPrimaryContainer = DarkTextMain,
+    background = DarkAppBackground, // Nền hoàn toàn màu đen
+    onBackground = DarkTextMain,    // Chữ xám sáng
+    surface = DarkCardBackground,   // Thẻ & card màu xanh đen
     onSurface = DarkTextMain,
-    surfaceVariant = DarkCardBorder,
-    outline = DarkCardBorder
+    surfaceVariant = DarkButtonBg,  // Nút & ô nhập màu xanh đen
+    outline = DarkCardBorder        // Viền xanh đen
 )
 
 @Composable

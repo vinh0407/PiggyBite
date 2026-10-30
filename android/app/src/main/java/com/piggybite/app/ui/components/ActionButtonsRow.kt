@@ -41,6 +41,9 @@ import com.piggybite.app.ui.theme.DarkButtonIconBg
 import com.piggybite.app.ui.theme.DarkButtonText
 import com.piggybite.app.ui.theme.DarkTitleBlue
 import com.piggybite.app.ui.theme.LocalIsDarkMode
+import com.piggybite.app.ui.theme.NepGreenHover
+import com.piggybite.app.ui.theme.NepGreenPrimary
+import com.piggybite.app.ui.theme.NepGreenSoft
 import com.piggybite.app.ui.theme.SkyBluePrimary
 import com.piggybite.app.ui.theme.SkyBlueSoft
 import com.piggybite.app.ui.theme.SkyBlueVibrant
@@ -59,25 +62,27 @@ fun ActionButtonsRow(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        // Modern Sky Blue QR Payment Button
+        // Primary QR Payment Button in Nếp style
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .shadow(6.dp, RoundedCornerShape(22.dp), spotColor = SkyBluePrimary.copy(alpha = 0.35f))
+                .shadow(6.dp, RoundedCornerShape(22.dp), spotColor = if (isDark) Color(0xFF142F23) else NepGreenPrimary.copy(alpha = 0.35f))
                 .clip(RoundedCornerShape(22.dp))
                 .background(
-                    Brush.horizontalGradient(
-                        colors = if (isDark) {
-                            listOf(androidx.compose.ui.graphics.Color(0xFF0369A1), androidx.compose.ui.graphics.Color(0xFF0284C7))
-                        } else {
-                            listOf(SkyBluePrimary, SkyBlueVibrant)
-                        }
-                    )
+                    if (isDark) {
+                        Brush.horizontalGradient(
+                            colors = listOf(Color(0xFF142F23), Color(0xFF1B3E2F))
+                        )
+                    } else {
+                        Brush.horizontalGradient(
+                            colors = listOf(NepGreenPrimary, NepGreenHover)
+                        )
+                    }
                 )
                 .border(
                     1.dp,
-                    if (isDark) DarkTitleBlue.copy(alpha = 0.3f) else androidx.compose.ui.graphics.Color.Transparent,
+                    if (isDark) Color(0xFF26543F) else Color.Transparent,
                     RoundedCornerShape(22.dp)
                 )
                 .clickable { onScanQr() },
@@ -89,27 +94,27 @@ fun ActionButtonsRow(
                 Icon(
                     imageVector = Icons.Default.QrCodeScanner,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = if (isDark) Color(0xFF52B788) else Color.White,
                     modifier = Modifier.size(22.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = "Quét QR thanh toán",
+                    text = "Quét mã QR thanh toán",
                     color = Color.White,
-                    fontSize = 16.5.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Sub Actions Row: "+ Ghi tay" & "QR của tôi"
+        // Sub Actions Row: "+ Ghi tay" & "Mã QR của tôi"
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // + Ghi tay (Tối ưu nút màu tối, sắc nét)
+            // + Ghi tay (Tối ưu nút màu xanh đen, chữ xám sáng)
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -126,13 +131,13 @@ fun ActionButtonsRow(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(if (isDark) DarkButtonIconBg else SkyBlueSoft),
+                        .background(if (isDark) DarkButtonIconBg else NepGreenSoft),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
-                        tint = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                        tint = if (isDark) DarkTitleBlue else NepGreenPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -140,12 +145,12 @@ fun ActionButtonsRow(
                 Text(
                     text = "Ghi tay",
                     color = if (isDark) DarkButtonText else TextDeepNavy,
-                    fontSize = 14.5.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
-            // QR của tôi (Tối ưu nút màu tối, sắc nét)
+            // QR của tôi (Tối ưu nút màu xanh đen, chữ xám sáng)
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -162,22 +167,22 @@ fun ActionButtonsRow(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(if (isDark) DarkButtonIconBg else SkyBlueSoft),
+                        .background(if (isDark) DarkButtonIconBg else NepGreenSoft),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.QrCode,
                         contentDescription = null,
-                        tint = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                        tint = if (isDark) DarkTitleBlue else NepGreenPrimary,
                         modifier = Modifier.size(16.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "QR của tôi",
+                    text = "Mã QR nhận",
                     color = if (isDark) DarkButtonText else TextDeepNavy,
-                    fontSize = 14.5.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }

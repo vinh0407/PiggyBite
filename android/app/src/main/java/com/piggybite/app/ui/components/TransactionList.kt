@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.piggybite.app.model.Transaction
+import com.piggybite.app.ui.theme.DarkButtonBg
 import com.piggybite.app.ui.theme.DarkExpenseBg
 import com.piggybite.app.ui.theme.DarkExpenseBorder
 import com.piggybite.app.ui.theme.DarkExpenseText
@@ -51,9 +52,9 @@ fun TransactionList(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Giao dịch gần đây",
+            text = "Gần đây",
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 17.5.sp,
+            fontSize = 17.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 12.dp)
         )
@@ -73,7 +74,7 @@ fun TransactionList(
                     modifier = Modifier
                         .size(68.dp)
                         .clip(CircleShape)
-                        .background(if (isDark) Color(0xFF1E293B) else SkyBlueSoft),
+                        .background(if (isDark) DarkButtonBg else SkyBlueSoft),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(

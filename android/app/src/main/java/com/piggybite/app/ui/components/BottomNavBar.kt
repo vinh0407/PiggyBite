@@ -38,6 +38,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.piggybite.app.ui.theme.DarkCardBackground
+import com.piggybite.app.ui.theme.DarkCardBorder
+import com.piggybite.app.ui.theme.DarkTextMuted
 import com.piggybite.app.ui.theme.DarkTextSub
 import com.piggybite.app.ui.theme.DarkTitleBlue
 import com.piggybite.app.ui.theme.LocalIsDarkMode
@@ -75,10 +78,10 @@ fun BottomNavBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(16.dp, RoundedCornerShape(36.dp), spotColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.12f))
+                .shadow(16.dp, RoundedCornerShape(36.dp), spotColor = if (isDark) Color(0xFF0D1713) else Color.Black.copy(alpha = 0.08f))
                 .clip(RoundedCornerShape(36.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(36.dp))
+                .background(if (isDark) DarkCardBackground else MaterialTheme.colorScheme.surface)
+                .border(1.dp, if (isDark) DarkCardBorder else MaterialTheme.colorScheme.outline, RoundedCornerShape(36.dp))
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
@@ -99,11 +102,15 @@ fun BottomNavBar(
                     Box(
                         modifier = Modifier
                             .size(52.dp)
-                            .shadow(8.dp, CircleShape, spotColor = SkyBluePrimary.copy(alpha = 0.4f))
+                            .shadow(8.dp, CircleShape, spotColor = if (isDark) Color(0xFF1B4332) else SkyBluePrimary.copy(alpha = 0.35f))
                             .clip(CircleShape)
                             .background(
                                 Brush.linearGradient(
-                                    colors = listOf(SkyBluePrimary, SkyBlueVibrant)
+                                    colors = if (isDark) {
+                                        listOf(Color(0xFF1B4332), Color(0xFF2D6A4F))
+                                    } else {
+                                        listOf(SkyBluePrimary, SkyBlueVibrant)
+                                    }
                                 )
                             )
                             .clickable { onTabSelected(NavTab.HOME) },
@@ -113,7 +120,7 @@ fun BottomNavBar(
                             imageVector = Icons.Filled.Home,
                             contentDescription = "Trang chủ",
                             tint = Color.White,
-                            modifier = Modifier.size(26.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 } else {
@@ -125,19 +132,19 @@ fun BottomNavBar(
                         verticalArrangement = Arrangement.Center
                     ) {
                         val activeColor = if (isDark) DarkTitleBlue else SkyBluePrimary
-                        val inactiveColor = if (isDark) DarkTextSub else TextSub
+                        val inactiveColor = if (isDark) DarkTextMuted else TextSub
 
                         Icon(
                             imageVector = if (isSelected) tab.selectedIcon else tab.unselectedIcon,
                             contentDescription = tab.title,
                             tint = if (isSelected) activeColor else inactiveColor,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(21.dp)
                         )
                         Text(
                             text = tab.title,
                             color = if (isSelected) activeColor else inactiveColor,
                             fontSize = 10.5.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                         )
                     }
                 }

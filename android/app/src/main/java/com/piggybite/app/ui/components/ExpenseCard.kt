@@ -103,19 +103,19 @@ fun ExpenseCard(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
-                    .background(if (isDark) androidx.compose.ui.graphics.Color(0xFF1E293B) else SkyBlueSoft)
+                    .background(if (isDark) com.piggybite.app.ui.theme.DarkButtonBg else SkyBlueSoft)
                     .border(
                         1.dp,
-                        if (isDark) androidx.compose.ui.graphics.Color(0xFF334155) else androidx.compose.ui.graphics.Color.Transparent,
+                        if (isDark) com.piggybite.app.ui.theme.DarkButtonBorder else androidx.compose.ui.graphics.Color.Transparent,
                         RoundedCornerShape(10.dp)
                     )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = "Tháng 10",
+                    text = "tháng này",
                     color = if (isDark) DarkTitleBlue else SkyBluePrimary,
                     fontSize = 11.5.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

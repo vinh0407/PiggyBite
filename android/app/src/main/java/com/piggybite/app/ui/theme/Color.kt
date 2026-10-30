@@ -6,64 +6,71 @@ import androidx.compose.ui.graphics.Color
 // LIGHT MODE PALETTE (Toned down, elegant)
 // ==========================================
 val PureWhite = Color(0xFFFFFFFF)
-val ModernBackground = Color(0xFFF8FAFC) // Nền trắng hiện đại
+val ModernBackground = Color(0xFFF7F8F7) // Nền ngà sáng phong cách Nếp
 val CardBackground = Color(0xFFFFFFFF)
-val CardBorder = Color(0xFFE2E8F0)
-val CardBorderLight = Color(0xFFF1F5F9)
+val CardBorder = Color(0xFFE5E7EB)
+val CardBorderLight = Color(0xFFF3F4F6)
 
-// Text Light Mode: Chữ xanh đen đậm nét
-val TextDeepNavy = Color(0xFF0F172A)
-val TextMain = Color(0xFF0F172A)
-val TextMuted = Color(0xFF64748B)
-val TextSub = Color(0xFF94A3B8)
+// Text Light Mode: Chữ xám đen đậm nét
+val TextDeepNavy = Color(0xFF111827)
+val TextMain = Color(0xFF1F2937)
+val TextMuted = Color(0xFF6B7280) // Phông xám
+val TextSub = Color(0xFF9CA3AF)
 
-// Primary Light Mode: Xanh biển trầm êm dịu, không chói
-val SkyBluePrimary = Color(0xFF0369A1) // Ocean Navy Blue (dịu mắt, sang trọng)
-val SkyBlueHover = Color(0xFF075985)
-val SkyBlueVibrant = Color(0xFF0284C7)
-val SkyBlueSoft = Color(0xFFE0F2FE)
-val SkyBlueUltraLight = Color(0xFFF0F9FF)
+// Primary Light Mode: Xanh rêu Nếp đặc trưng
+val NepGreenPrimary = Color(0xFF1B4332) // Forest Deep Green
+val NepGreenHover = Color(0xFF143326)
+val NepGreenAccent = Color(0xFF2D6A4F)
+val NepGreenSoft = Color(0xFFE8F5E9)
+val NepGreenUltraLight = Color(0xFFF1F8F5)
+
+// Backward compatibility alias
+val SkyBluePrimary = NepGreenPrimary
+val SkyBlueHover = NepGreenHover
+val SkyBlueVibrant = NepGreenAccent
+val SkyBlueSoft = NepGreenSoft
+val SkyBlueUltraLight = NepGreenUltraLight
 
 // ==========================================
-// DARK MODE PALETTE (Nền đen, tiêu đề xanh đen, chữ xám)
+// DARK MODE PALETTE: Nền đen tuyền (#000000), còn lại màu xanh đen (#0E1A15), chữ thường & phông màu xám
 // ==========================================
-val DarkAppBackground = Color(0xFF090D16) // Nền đen sâu
-val DarkCardBackground = Color(0xFF131B2E) // Thẻ đen than cao cấp
-val DarkCardBorder = Color(0xFF1E293B)
+val DarkAppBackground = Color(0xFF000000) // Nền chế độ tối hoàn toàn màu đen (True Black)
+val DarkCardBackground = Color(0xFF0D1713) // Thẻ & surface màu xanh đen
+val DarkCardBorder = Color(0xFF1A2F25)     // Viền màu xanh đen
 
-val DarkTitleBlue = Color(0xFF38BDF8) // Tiêu đề xanh sáng trên nền đen
-val DarkTextMain = Color(0xFFE2E8F0)
-val DarkTextMuted = Color(0xFF94A3B8) // Chữ xám
-val DarkTextSub = Color(0xFF64748B)
+val DarkTitleBlue = Color(0xFF52B788)     // Màu điểm nhấn xanh ngọc trên nền đen
+val DarkTextMain = Color(0xFFEDEDED)      // Chữ chính xám sáng dịu mắt
+val DarkTextMuted = Color(0xFFA1A1AA)     // Chữ phụ phông màu xám
+val DarkTextSub = Color(0xFF71717A)       // Chữ chú thích phông màu xám trầm
 
 // Accent colors (Light Mode)
-val IncomeGreen = Color(0xFF10B981)
-val IncomeGreenSoft = Color(0xFFECFDF5)
-val ExpenseRed = Color(0xFFEF4444)
+val IncomeGreen = Color(0xFF2E7D32)
+val IncomeGreenSoft = Color(0xFFE8F5E9)
+val ExpenseRed = Color(0xFFDC2626)
 val ExpenseRedSoft = Color(0xFFFEF2F2)
-val GoldAccent = Color(0xFFF59E0B)
+val GoldAccent = Color(0xFFD97706)
 
 // ==========================================
-// DARK MODE ACCENTS (Tối & mờ dịu mắt, không chói)
+// DARK MODE ACCENTS: Xanh đen, chữ xám và đỏ/xanh dịu
 // ==========================================
-val DarkExpenseBg = Color(0xFF241418)
-val DarkExpenseBorder = Color(0xFF4A1F26)
-val DarkExpenseText = Color(0xFFF87171) // Đỏ dịu mắt
+val DarkExpenseBg = Color(0xFF211315)
+val DarkExpenseBorder = Color(0xFF3D1C21)
+val DarkExpenseText = Color(0xFFE57373) // Đỏ dịu mắt
 
-val DarkIncomeBg = Color(0xFF0D221A)
-val DarkIncomeBorder = Color(0xFF174735)
-val DarkIncomeText = Color(0xFF34D399) // Xanh lá dịu mắt
+val DarkIncomeBg = Color(0xFF0C2419)
+val DarkIncomeBorder = Color(0xFF18452F)
+val DarkIncomeText = Color(0xFF4EBA7E) // Xanh lá dịu mắt
 
-// Nút màu tối trong Dark Mode (rõ nét, không chói)
-val DarkButtonBg = Color(0xFF172033)
-val DarkButtonBorder = Color(0xFF2A364F)
-val DarkButtonIconBg = Color(0xFF1E2B45)
-val DarkButtonText = Color(0xFFE2E8F0)
+// Nút màu xanh đen trong Dark Mode (theo yêu cầu còn lại màu xanh đen)
+val DarkButtonBg = Color(0xFF13281E)       // Nút màu xanh đen
+val DarkButtonBorder = Color(0xFF224534)   // Viền nút xanh đen
+val DarkButtonIconBg = Color(0xFF1A382A)   // Nền icon xanh đen
+val DarkButtonText = Color(0xFFEDEDED)     // Chữ xám sáng
 
 // Backward compatibility aliases
-val ForestGreen = SkyBluePrimary
-val ForestGreenDark = Color(0xFF0B192C)
-val ForestGreenHover = SkyBlueHover
-val MintLight = SkyBlueSoft
-val MintSoft = SkyBlueSoft
+val ForestGreen = NepGreenPrimary
+val ForestGreenDark = Color(0xFF0B1914)
+val ForestGreenHover = NepGreenHover
+val MintLight = NepGreenSoft
+val MintSoft = NepGreenSoft
 val CreamBackground = ModernBackground

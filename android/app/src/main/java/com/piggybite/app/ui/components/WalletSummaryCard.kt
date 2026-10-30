@@ -70,11 +70,11 @@ fun WalletSummaryCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "TỔNG SỐ DƯ (VÍ TỔNG HỢP)",
+                        text = "Tổng số dư tài khoản",
                         color = TextMuted,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 0.5.sp
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.2.sp
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -109,10 +109,10 @@ fun WalletSummaryCard(
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(if (isDark) Color(0xFF1E293B) else SkyBlueSoft)
+                    .background(if (isDark) DarkButtonBg else SkyBlueSoft)
                     .border(
                         if (isDark) 1.dp else 0.dp,
-                        if (isDark) Color(0xFF334155) else Color.Transparent,
+                        if (isDark) DarkButtonBorder else Color.Transparent,
                         RoundedCornerShape(12.dp)
                     )
                     .clickable { onManageAll() }

@@ -123,13 +123,13 @@ fun CalendarScreen(
                                 modifier = Modifier
                                     .size(38.dp)
                                     .clip(CircleShape)
-                                    .background(if (isSelected) SkyBluePrimary else Color.Transparent)
+                                    .background(if (isSelected) (if (isDark) DarkTitleBlue else SkyBluePrimary) else Color.Transparent)
                                     .clickable { selectedDay = dayNum },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = "$dayNum",
-                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                                    color = if (isSelected) (if (isDark) Color(0xFF0D1713) else Color.White) else MaterialTheme.colorScheme.onSurface,
                                     fontSize = 13.sp,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                                 )
