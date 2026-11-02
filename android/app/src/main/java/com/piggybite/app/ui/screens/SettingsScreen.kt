@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,12 +25,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.filled.TableChart
+import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -78,6 +84,11 @@ import com.piggybite.app.ui.theme.TextMuted
 
 @Composable
 fun SettingsScreen(
+    isBiometricEnabled: Boolean = false,
+    onToggleBiometric: (Boolean) -> Unit = {},
+    onExportCsv: () -> Unit = {},
+    onExportJson: () -> Unit = {},
+    onRestoreBackup: (Uri) -> Unit = {},
     onOpenNotificationSimulator: () -> Unit = {},
     onResetData: () -> Unit
 ) {
@@ -87,6 +98,13 @@ fun SettingsScreen(
     var hideBalanceOnOpen by remember { mutableStateOf(false) }
     var autoNotifyAlert by remember { mutableStateOf(true) }
     var showEnlargedQr by remember { mutableStateOf(false) }
+
+    // Bộ chọn tệp để khôi phục dữ liệu
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let { onRestoreBackup(it) }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -286,7 +304,41 @@ fun SettingsScreen(
                     )
                 }
 
-                // Row 3: Huấn luyện AI thông báo số dư
+                // Row 3: Khóa bảo vệ sinh trắc học (Vân tay / Face ID)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Khóa vân tay / Sinh trắc học",
+                            fontSize = 13.5.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Yêu cầu quét vân tay hoặc PIN khi mở ứng dụng",
+                            fontSize = 11.sp,
+                            color = if (isDark) DarkTextMuted else TextMuted
+                        )
+                    }
+
+                    Switch(
+                        checked = isBiometricEnabled,
+                        onCheckedChange = { onToggleBiometric(it) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = PiggyPrimary,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = if (isDark) Color(0xFF2A3A50) else Color(0xFFCBD4DF)
+                        )
+                    )
+                }
+
+                // Row 4: Huấn luyện AI thông báo số dư
                 Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) PiggyBorderDark else PiggyBorderLight))
                 Spacer(modifier = Modifier.height(6.dp))
 
@@ -390,6 +442,171 @@ fun SettingsScreen(
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
+                Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) PiggyBorderDark else PiggyBorderLight))
+
+                // Link: Xuất dữ liệu dự phòng (CSV / Excel)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onExportCsv() }
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isDark) PiggyGreenSoftDark else PiggyGreenSoftLight),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.TableChart,
+                                contentDescription = null,
+                                tint = PiggyGreen,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Xuất dữ liệu dự phòng (CSV)",
+                                fontSize = 13.5.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Tương thích 100% với Excel, Google Sheets",
+                                fontSize = 11.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Xuất CSV",
+                        tint = if (isDark) DarkTextMuted else TextMuted,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) PiggyBorderDark else PiggyBorderLight))
+
+                // Link: Sao lưu toàn bộ dữ liệu (JSON)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onExportJson() }
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Backup,
+                                contentDescription = null,
+                                tint = PiggyPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Sao lưu toàn bộ dữ liệu (JSON)",
+                                fontSize = 13.5.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Gói dự phòng đầy đủ các ví và lịch sử giao dịch",
+                                fontSize = 11.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Sao lưu JSON",
+                        tint = if (isDark) DarkTextMuted else TextMuted,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) PiggyBorderDark else PiggyBorderLight))
+
+                // Link: Khôi phục dữ liệu từ tệp sao lưu
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            try {
+                                filePickerLauncher.launch(arrayOf("*/*"))
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Không thể mở bộ chọn tệp: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isDark) Color(0xFF2C2412) else Color(0xFFFEF3C7)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.UploadFile,
+                                contentDescription = null,
+                                tint = Color(0xFFD97706),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Khôi phục dữ liệu từ tệp",
+                                fontSize = 13.5.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Nhập dữ liệu từ tệp CSV hoặc gói JSON đã sao lưu",
+                                fontSize = 11.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Khôi phục",
+                        tint = if (isDark) DarkTextMuted else TextMuted,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
                 Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) PiggyBorderDark else PiggyBorderLight))
 
                 // Link: Ủng hộ tác giả ☕

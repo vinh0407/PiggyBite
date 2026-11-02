@@ -73,6 +73,9 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:$cameraxVersion"
     implementation "androidx.camera:camera-view:$cameraxVersion"
 
+    // Biometric Authentication (Fingerprint / Face Unlock)
+    implementation 'androidx.biometric:biometric:1.2.0-alpha05'
+
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7'
 
     testImplementation 'junit:junit:4.13.2'

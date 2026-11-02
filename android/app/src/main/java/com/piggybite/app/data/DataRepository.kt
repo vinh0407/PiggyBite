@@ -57,6 +57,9 @@ class DataRepository private constructor(private val appContext: Context) {
     private val _isDarkMode = MutableStateFlow(prefs.getBoolean("dark_mode", false))
     val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
 
+    private val _isBiometricEnabled = MutableStateFlow(prefs.getBoolean("biometric_enabled", false))
+    val isBiometricEnabled: StateFlow<Boolean> = _isBiometricEnabled.asStateFlow()
+
     private val _notificationEvents = MutableSharedFlow<NotificationEvent>(replay = 0)
     val notificationEvents: SharedFlow<NotificationEvent> = _notificationEvents.asSharedFlow()
 
@@ -371,6 +374,28 @@ class DataRepository private constructor(private val appContext: Context) {
         }
 
         return parsed
+    }
+
+    fun setBiometricEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("biometric_enabled", enabled).apply()
+        _isBiometricEnabled.value = enabled
+    }
+
+    fun restoreBackup(newAccounts: List<BankAccount>?, newTransactions: List<Transaction>?) {
+        if (!newAccounts.isNullOrEmpty()) {
+            _accounts.value = newAccounts
+            saveAccounts(newAccounts)
+        }
+        if (!newTransactions.isNullOrEmpty()) {
+            // Hợp nhất các giao dịch, tránh trùng lặp id
+            val currentMap = _transactions.value.associateBy { it.id }.toMutableMap()
+            newTransactions.forEach { tx ->
+                currentMap[tx.id] = tx
+            }
+            val mergedList = currentMap.values.sortedByDescending { it.timestamp }
+            _transactions.value = mergedList
+            saveTransactions(mergedList)
+        }
     }
 
     fun clearAllData() {
