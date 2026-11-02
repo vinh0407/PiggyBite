@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.PieChart
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -90,14 +92,116 @@ fun BottomNavBar(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val mainTabs = listOf(
+            val leftTabs = listOf(
                 NavTab.HOME,
-                NavTab.HISTORY,
+                NavTab.HISTORY
+            )
+            val rightTabs = listOf(
                 NavTab.REPORTS,
                 NavTab.SETTINGS
             )
 
-            mainTabs.forEach { tab ->
+            // 1. Nhóm 2 tab bên trái (Tổng quan, Lịch sử)
+            leftTabs.forEach { tab ->
+                val isSelected = currentTab == tab
+
+                val tintColor by animateColorAsState(
+                    targetValue = if (isSelected) PiggyPrimary else if (isDark) DarkTextMuted else TextMuted,
+                    animationSpec = tween(180),
+                    label = "tabTint"
+                )
+
+                val bgColor by animateColorAsState(
+                    targetValue = if (isSelected) {
+                        if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight
+                    } else Color.Transparent,
+                    animationSpec = tween(180),
+                    label = "tabBg"
+                )
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(bgColor)
+                        .clickable { onTabSelected(tab) }
+                        .padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = if (isSelected) tab.selectedIcon else tab.unselectedIcon,
+                            contentDescription = tab.title,
+                            tint = tintColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(3.dp))
+
+                        Text(
+                            text = tab.title,
+                            fontSize = 10.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = tintColor,
+                            letterSpacing = (-0.2).sp
+                        )
+                    }
+                }
+            }
+
+            // 2. NÚT QUÉT QR Ở CHÍNH GIỮA 4 NÚT
+            Box(
+                modifier = Modifier
+                    .weight(1.1f)
+                    .clickable { onScanQrClick() }
+                    .padding(vertical = 2.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .shadow(
+                                elevation = 6.dp,
+                                shape = RoundedCornerShape(12.dp),
+                                spotColor = PiggyPrimary.copy(alpha = 0.35f)
+                            )
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(Color(0xFF15A7EA), Color(0xFF0B72CA))
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.QrCodeScanner,
+                            contentDescription = "Quét QR",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(3.dp))
+
+                    Text(
+                        text = "Quét QR",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isDark) Color(0xFF38BDF8) else PiggyPrimary,
+                        letterSpacing = (-0.2).sp
+                    )
+                }
+            }
+
+            // 3. Nhóm 2 tab bên phải (Báo cáo, Cài đặt)
+            rightTabs.forEach { tab ->
                 val isSelected = currentTab == tab
 
                 val tintColor by animateColorAsState(

@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,7 +44,8 @@ import com.piggybite.app.util.Formatters
 @Composable
 fun FloatingNotificationToast(
     event: NotificationEvent?,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onConfirm: (Boolean) -> Unit = {}
 ) {
     AnimatedVisibility(
         visible = event != null,
@@ -130,6 +132,71 @@ fun FloatingNotificationToast(
                             fontSize = 12.sp,
                             lineHeight = 16.sp
                         )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Interactive Confirmation & Training prompt
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFFF0FDF4))
+                                .border(1.dp, Color(0xFFBBF7D0), RoundedCornerShape(12.dp))
+                                .padding(horizontal = 10.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "🤖 AI hỏi: Đây có phải thông báo giao dịch không?",
+                                fontSize = 11.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF166534)
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(IncomeGreen)
+                                        .clickable {
+                                            onConfirm(true)
+                                            onDismiss()
+                                        }
+                                        .padding(vertical = 6.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "✓ Đúng (Lưu giao dịch)",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(Color(0xFFF1F5F9))
+                                        .border(1.dp, Color(0xFFCBD5E1), RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            onConfirm(false)
+                                            onDismiss()
+                                        }
+                                        .padding(vertical = 6.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "✕ Không (Bỏ qua)",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = TextMuted
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))

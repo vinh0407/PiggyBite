@@ -65,14 +65,14 @@ class DataRepository private constructor(private val appContext: Context) {
     }
 
     private fun loadData() {
-        // Tự động xóa sạch toàn bộ dữ liệu mẫu/thử nghiệm cũ để người dùng bắt đầu từ con số 0 hoàn toàn sạch
-        val hasPurgedSampleData = prefs.getBoolean("has_purged_sample_data_v7_final", false)
+        // Tự động xóa sạch toàn bộ dữ liệu cũ trên máy theo yêu cầu người dùng
+        val hasPurgedSampleData = prefs.getBoolean("has_purged_sample_data_v9_clean", false)
         if (!hasPurgedSampleData) {
             prefs.edit()
                 .remove("bank_accounts")
                 .remove("transactions")
                 .remove("received_notifications")
-                .putBoolean("has_purged_sample_data_v7_final", true)
+                .putBoolean("has_purged_sample_data_v9_clean", true)
                 .apply()
         }
 
@@ -220,6 +220,68 @@ class DataRepository private constructor(private val appContext: Context) {
             currentAccs[accIdx] = acc.copy(balance = newBal, lastUpdated = System.currentTimeMillis())
             _accounts.value = currentAccs
             saveAccounts(currentAccs)
+        }
+    }
+
+    /**
+     * Xóa một bản ghi giao dịch khỏi danh sách lịch sử
+     */
+    fun deleteTransaction(txId: String) {
+        val currentTxs = _transactions.value.filter { it.id != txId }
+        _transactions.value = currentTxs
+        saveTransactions(currentTxs)
+    }
+
+    /**
+     * Báo giao dịch thất bại: Hoàn lại tiền vào ví nguồn đã trích
+     */
+    fun refundFailedTransaction(tx: Transaction): Boolean {
+        // Xóa giao dịch thất bại khỏi lịch sử
+        val currentTxs = _transactions.value.filter { it.id != tx.id }.toMutableList()
+
+        // Nếu là giao dịch chi tiền, hoàn trả lại tiền vào ví nguồn
+        if (!tx.isIncome) {
+            val currentAccs = _accounts.value.toMutableList()
+            val accIdx = currentAccs.indexOfFirst { 
+                it.id == tx.bankAccountId || it.bankName.equals(tx.bankName, ignoreCase = true) 
+            }
+            if (accIdx >= 0) {
+                val acc = currentAccs[accIdx]
+                val refundedBal = acc.balance + tx.amount
+                currentAccs[accIdx] = acc.copy(balance = refundedBal, lastUpdated = System.currentTimeMillis())
+                _accounts.value = currentAccs
+                saveAccounts(currentAccs)
+            }
+
+            // Ghi một giao dịch hoàn tiền vào lịch sử
+            val refundTx = Transaction(
+                id = UUID.randomUUID().toString(),
+                amount = tx.amount,
+                isIncome = true,
+                category = "Hoàn tiền",
+                note = "Hoàn tiền GD thất bại: ${tx.note.ifBlank { tx.category }}",
+                bankAccountId = tx.bankAccountId,
+                bankName = tx.bankName,
+                timestamp = System.currentTimeMillis()
+            )
+            currentTxs.add(0, refundTx)
+        }
+        _transactions.value = currentTxs
+        saveTransactions(currentTxs)
+        return true
+    }
+
+    /**
+     * Huấn luyện AI từ phản hồi người dùng khi xác nhận thông báo giao dịch
+     */
+    fun trainNotificationFeedback(notifId: String, isTransaction: Boolean, correctedCategory: String? = null) {
+        val notif = _receivedNotifications.value.find { it.id == notifId } ?: return
+        if (isTransaction) {
+            if (notif.category == NotificationCategory.INCOME) {
+                incomeClassifier.train(notif.rawText, correctedCategory ?: "Thu nhập khác")
+            } else if (notif.category == NotificationCategory.EXPENSE) {
+                expenseClassifier.train(notif.rawText, correctedCategory ?: "Chi tiêu khác")
+            }
         }
     }
 

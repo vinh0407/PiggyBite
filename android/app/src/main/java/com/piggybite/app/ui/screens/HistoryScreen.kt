@@ -1,8 +1,11 @@
 package com.piggybite.app.ui.screens
 
+import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,17 +23,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Coffee
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.SyncAlt
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,9 +50,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.piggybite.app.model.Transaction
 import com.piggybite.app.ui.theme.DarkTextMain
 import com.piggybite.app.ui.theme.DarkTextMuted
@@ -88,11 +98,15 @@ enum class HistoryFilter(val label: String) {
 @Composable
 fun HistoryScreen(
     transactions: List<Transaction>,
-    onAddTransaction: () -> Unit = {}
+    onAddTransaction: () -> Unit = {},
+    onDeleteTransaction: (String) -> Unit = {},
+    onRefundTransaction: (Transaction) -> Unit = {}
 ) {
+    val context = LocalContext.current
     val isDark = LocalIsDarkMode.current
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf(HistoryFilter.ALL) }
+    var selectedTxForAction by remember { mutableStateOf<Transaction?>(null) }
 
     // Filter transactions
     val filteredList = remember(transactions, searchQuery, selectedFilter) {
@@ -405,7 +419,11 @@ fun HistoryScreen(
                                 .padding(horizontal = 16.dp, vertical = 4.dp)
                         ) {
                             txsInGroup.forEachIndexed { index, tx ->
-                                HistoryTransactionRow(tx = tx, isDark = isDark)
+                                HistoryTransactionRow(
+                                    tx = tx,
+                                    isDark = isDark,
+                                    onLongClick = { selectedTxForAction = tx }
+                                )
                                 if (index < txsInGroup.size - 1) {
                                     Box(
                                         modifier = Modifier
@@ -425,12 +443,140 @@ fun HistoryScreen(
             }
         }
     }
+
+    // Dialog khi nhấn giữ lâu giao dịch (Xóa hoặc Báo lỗi hoàn tiền)
+    if (selectedTxForAction != null) {
+        val tx = selectedTxForAction!!
+        Dialog(onDismissRequest = { selectedTxForAction = null }) {
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Tùy chọn giao dịch",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Card tóm tắt giao dịch
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+                            .padding(14.dp)
+                    ) {
+                        Text(
+                            text = if (tx.note.isNotBlank()) tx.note else tx.category,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "${tx.category} • ${tx.bankName}",
+                                fontSize = 12.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
+                            )
+                            Text(
+                                text = (if (tx.isIncome) "+" else "−") + Formatters.formatMoney(tx.amount),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (tx.isIncome) PiggyGreen else PiggyRed
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    // Nút 1: Báo giao dịch thất bại để hoàn lại tiền vào ví
+                    if (!tx.isIncome) {
+                        Button(
+                            onClick = {
+                                onRefundTransaction(tx)
+                                selectedTxForAction = null
+                                Toast.makeText(context, "Đã hoàn trả ${Formatters.formatMoney(tx.amount)} vào ${tx.bankName}!", Toast.LENGTH_SHORT).show()
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isDark) Color(0xFF1E3A5F) else Color(0xFFE0F2FE),
+                                contentColor = if (isDark) Color(0xFF38BDF8) else PiggyPrimary
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Replay, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Giao dịch thất bại (Hoàn lại tiền)",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+
+                    // Nút 2: Xóa lịch sử giao dịch này
+                    Button(
+                        onClick = {
+                            onDeleteTransaction(tx.id)
+                            selectedTxForAction = null
+                            Toast.makeText(context, "Đã xóa bản ghi giao dịch!", Toast.LENGTH_SHORT).show()
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isDark) Color(0xFF3F1D24) else Color(0xFFFEE2E2),
+                            contentColor = PiggyRed
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Xóa lịch sử giao dịch này",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Nút Đóng
+                    Button(
+                        onClick = { selectedTxForAction = null },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = if (isDark) DarkTextMuted else TextMuted
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Hủy", fontSize = 13.sp)
+                    }
+                }
+            }
+        }
+    }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HistoryTransactionRow(
     tx: Transaction,
-    isDark: Boolean
+    isDark: Boolean,
+    onLongClick: () -> Unit = {}
 ) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale("vi", "VN"))
     val formattedTime = timeFormat.format(Date(tx.timestamp))
@@ -440,6 +586,11 @@ fun HistoryTransactionRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .combinedClickable(
+                onClick = {},
+                onLongClick = onLongClick
+            )
             .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

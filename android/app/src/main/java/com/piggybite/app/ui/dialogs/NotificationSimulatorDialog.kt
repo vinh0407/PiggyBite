@@ -88,7 +88,8 @@ fun NotificationSimulatorDialog(
     onDismiss: () -> Unit,
     onProcessText: (String) -> Unit,
     onClearAll: () -> Unit,
-    onDeleteItem: (String) -> Unit
+    onDeleteItem: (String) -> Unit,
+    onTrainFeedback: (String, Boolean) -> Unit = { _, _ -> }
 ) {
     val context = LocalContext.current
     val isDark = LocalIsDarkMode.current
@@ -307,7 +308,8 @@ fun NotificationSimulatorDialog(
                             NotificationItemCard(
                                 notif = notif,
                                 isDark = isDark,
-                                onDelete = { onDeleteItem(notif.id) }
+                                onDelete = { onDeleteItem(notif.id) },
+                                onTrain = { isTx -> onTrainFeedback(notif.id, isTx) }
                             )
                         }
                     }
@@ -394,12 +396,15 @@ fun NotificationSimulatorDialog(
 private fun NotificationItemCard(
     notif: ReceivedNotification,
     isDark: Boolean,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onTrain: (Boolean) -> Unit = {}
 ) {
     val timeFormatted = remember(notif.timestamp) {
         val sdf = SimpleDateFormat("HH:mm • dd/MM", Locale.getDefault())
         sdf.format(Date(notif.timestamp))
     }
+
+    var trainedState by remember { mutableStateOf<Boolean?>(null) }
 
     val cardBorder = when (notif.category) {
         NotificationCategory.INCOME -> if (isDark) DarkIncomeBorder else Color(0xFFBBF7D0)
@@ -538,6 +543,99 @@ private fun NotificationItemCard(
                 fontSize = 10.5.sp,
                 color = TextMuted
             )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // AI Training & Verification (Hỏi người dùng để training AI nhận diện)
+        if (trainedState == null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(if (isDark) Color(0xFF13233A) else Color(0xFFEFF6FF))
+                    .border(1.dp, if (isDark) Color(0xFF1E3A5F) else Color(0xFFBFDBFE), RoundedCornerShape(10.dp))
+                    .padding(horizontal = 10.dp, vertical = 7.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "🤖 AI hỏi: Đúng là thông báo giao dịch?",
+                    fontSize = 11.5.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (isDark) Color(0xFF93C5FD) else Color(0xFF1D4ED8)
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // Nút Đúng (Giao dịch)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isDark) Color(0xFF0F3927) else Color(0xFFDCFCE7))
+                            .clickable {
+                                trainedState = true
+                                onTrain(true)
+                            }
+                            .padding(horizontal = 9.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "✓ Đúng",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isDark) Color(0xFF4ADE80) else Color(0xFF15803D)
+                        )
+                    }
+
+                    // Nút Sai (Rác / Bỏ qua)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isDark) Color(0xFF3B1E22) else Color(0xFFFEE2E2))
+                            .clickable {
+                                trainedState = false
+                                onTrain(false)
+                            }
+                            .padding(horizontal = 9.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "✕ Không phải",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isDark) Color(0xFFF87171) else Color(0xFFB91C1C)
+                        )
+                    }
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (trainedState == true) {
+                            if (isDark) Color(0xFF0F2D20) else Color(0xFFF0FDF4)
+                        } else {
+                            if (isDark) Color(0xFF2D181B) else Color(0xFFFEF2F2)
+                        }
+                    )
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (trainedState == true) {
+                        "✓ Đã huấn luyện AI: Nhận diện chính xác giao dịch biến động số dư"
+                    } else {
+                        "✓ Đã huấn luyện AI: Tự động bỏ qua dạng tin nhắn này"
+                    },
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (trainedState == true) {
+                        if (isDark) Color(0xFF4ADE80) else Color(0xFF16A34A)
+                    } else {
+                        if (isDark) Color(0xFFF87171) else Color(0xFFDC2626)
+                    }
+                )
+            }
         }
     }
 }

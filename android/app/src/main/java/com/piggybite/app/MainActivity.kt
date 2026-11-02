@@ -1,6 +1,7 @@
 package com.piggybite.app
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -181,7 +182,9 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                 NavTab.HISTORY -> {
                     HistoryScreen(
                         transactions = transactions,
-                        onAddTransaction = { showAddTransactionDialog = true }
+                        onAddTransaction = { showAddTransactionDialog = true },
+                        onDeleteTransaction = { txId -> repository.deleteTransaction(txId) },
+                        onRefundTransaction = { tx -> repository.refundFailedTransaction(tx) }
                     )
                 }
                 NavTab.SCAN_QR -> {
@@ -249,7 +252,12 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
             ) {
                 FloatingNotificationToast(
                     event = toastEvent,
-                    onDismiss = { toastEvent = null }
+                    onDismiss = { toastEvent = null },
+                    onConfirm = { isTx ->
+                        if (isTx) {
+                            Toast.makeText(context, "Đã xác nhận giao dịch & huấn luyện AI!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 )
             }
         }
@@ -286,7 +294,8 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                 repository.processBankNotification(text)
             },
             onClearAll = { repository.clearReceivedNotifications() },
-            onDeleteItem = { id -> repository.deleteReceivedNotification(id) }
+            onDeleteItem = { id -> repository.deleteReceivedNotification(id) },
+            onTrainFeedback = { id, isTx -> repository.trainNotificationFeedback(id, isTx) }
         )
     }
 

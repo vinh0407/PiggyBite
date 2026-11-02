@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -247,63 +246,6 @@ fun SpendingInsightCard(
                     fontSize = 11.5.sp,
                     color = if (isDark) Color(0xFF7DD3FC) else PiggyPrimaryDark,
                     fontWeight = FontWeight.Medium
-                )
-            }
-        }
-
-        // 2. DAILY FINANCIAL TIP CARD (Figma: tip-card Quy tắc 50/30/20)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .background(
-                    if (isDark) {
-                        Brush.linearGradient(listOf(Color(0xFF31291C), Color(0xFF1E1B16)))
-                    } else {
-                        Brush.linearGradient(listOf(Color(0xFFF8EDDA), Color(0xFFFFF9EE)))
-                    }
-                )
-                .padding(16.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(11.dp))
-                    .background(if (isDark) Color(0xFF4A381C) else Color(0xFFF1CF8E)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Bolt,
-                    contentDescription = null,
-                    tint = Color(0xFFA76A09),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column {
-                Text(
-                    text = "MẸO NHỎ HÔM NAY",
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFA76A09),
-                    letterSpacing = 0.8.sp
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "Quy tắc tài chính 50/30/20",
-                    fontSize = 13.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isDark) Color(0xFFF1DFBF) else Color(0xFF48351D)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Dành 50% thu nhập cho nhu cầu thiết yếu, 30% cho mong muốn cá nhân và 20% tích lũy tiết kiệm.",
-                    fontSize = 11.5.sp,
-                    lineHeight = 16.sp,
-                    color = if (isDark) Color(0xFFD4C2A3) else Color(0xFF6B5336)
                 )
             }
         }
