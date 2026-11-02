@@ -78,37 +78,54 @@ fun WalletSummaryCard(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(22.dp)
     ) {
-        // 1. HERO BALANCE CARD (Figma: balance-card with gradient and glowing orbs)
+        // 1. HERO BALANCE CARD (Figma: balance-card kính mờ trong suốt - Glassmorphic)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(
-                    elevation = 16.dp,
+                    elevation = 20.dp,
                     shape = RoundedCornerShape(26.dp),
-                    spotColor = Color(0xFF071C3D).copy(alpha = 0.35f)
+                    spotColor = Color(0xFF071C3D).copy(alpha = 0.45f)
                 )
                 .clip(RoundedCornerShape(26.dp))
                 .background(
                     Brush.linearGradient(
-                        colors = listOf(HeroGradientStart, HeroGradientMid, HeroGradientEnd)
+                        colors = listOf(
+                            Color(0xFF071C3D).copy(alpha = 0.90f),
+                            Color(0xFF0B3E70).copy(alpha = 0.86f),
+                            Color(0xFF087CBD).copy(alpha = 0.90f)
+                        )
                     )
+                )
+                .border(
+                    width = 1.2.dp,
+                    color = Color.White.copy(alpha = 0.22f),
+                    shape = RoundedCornerShape(26.dp)
                 )
                 .padding(24.dp)
         ) {
-            // Decorative Glowing Orbs in background
+            // Decorative Glowing Orbs in background (Hiệu ứng ánh sáng kính mờ)
             Canvas(
                 modifier = Modifier.matchParentSize()
             ) {
                 // Orb 1 top-right
                 drawCircle(
-                    color = Color.White.copy(alpha = 0.05f),
+                    color = Color.White.copy(alpha = 0.08f),
                     radius = size.width * 0.45f,
                     center = Offset(size.width * 1.05f, -size.height * 0.2f),
-                    style = Stroke(width = 1.dp.toPx())
+                    style = Stroke(width = 1.2.dp.toPx())
+                )
+                // Radial soft glow top-right
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color.White.copy(alpha = 0.12f), Color.Transparent),
+                        center = Offset(size.width * 0.95f, -size.height * 0.1f),
+                        radius = size.width * 0.4f
+                    )
                 )
                 // Orb 2 bottom-right
                 drawCircle(
-                    color = Color(0xFF15A7EA).copy(alpha = 0.08f),
+                    color = Color(0xFF15A7EA).copy(alpha = 0.12f),
                     radius = size.width * 0.32f,
                     center = Offset(size.width * 0.85f, size.height * 1.1f)
                 )
@@ -143,13 +160,13 @@ fun WalletSummaryCard(
                         )
                     }
 
-                    // Eye Toggle Button (on-dark style)
+                    // Eye Toggle Button (Kính mờ trong suốt)
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White.copy(alpha = 0.1f))
-                            .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
+                            .background(Color.White.copy(alpha = 0.16f))
+                            .border(1.dp, Color.White.copy(alpha = 0.28f), RoundedCornerShape(12.dp))
                             .clickable { onToggleHideBalance() },
                         contentAlignment = Alignment.Center
                     ) {
@@ -233,20 +250,21 @@ fun WalletSummaryCard(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // Nút "Quét để thanh toán" (Pill trắng nổi bật)
+                    // Nút "Quét để thanh toán" (Kính mờ trong suốt / Frosted Glass Button)
                     Row(
                         modifier = Modifier
                             .clip(RoundedCornerShape(14.dp))
-                            .background(Color(0xFFF9FCFF))
+                            .background(Color.White.copy(alpha = 0.22f))
+                            .border(1.dp, Color.White.copy(alpha = 0.38f), RoundedCornerShape(14.dp))
                             .clickable { onScanQr() }
-                            .padding(horizontal = 13.dp, vertical = 9.dp),
+                            .padding(horizontal = 14.dp, vertical = 9.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.QrCodeScanner,
                             contentDescription = null,
-                            tint = Color(0xFF0A5790),
+                            tint = Color.White,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
@@ -254,7 +272,7 @@ fun WalletSummaryCard(
                             text = "Quét QR",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0A5790)
+                            color = Color.White
                         )
                     }
                 }
