@@ -174,7 +174,8 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                             accountToEdit = acc
                             showAddBankDialog = true
                         },
-                        onManageAllWallets = { activeTab = NavTab.REPORTS }
+                        onManageAllWallets = { activeTab = NavTab.REPORTS },
+                        onSeeAllTransactions = { activeTab = NavTab.HISTORY }
                     )
                 }
                 NavTab.HISTORY -> {
@@ -215,7 +216,8 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                             accountToEdit = acc
                             showAddBankDialog = true
                         },
-                        onManageAllWallets = { activeTab = NavTab.REPORTS }
+                        onManageAllWallets = { activeTab = NavTab.REPORTS },
+                        onSeeAllTransactions = { activeTab = NavTab.HISTORY }
                     )
                 }
                 NavTab.REPORTS -> {

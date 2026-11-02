@@ -15,19 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,20 +46,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.piggybite.app.model.Transaction
-import com.piggybite.app.ui.theme.DarkButtonBg
-import com.piggybite.app.ui.theme.DarkButtonBorder
-import com.piggybite.app.ui.theme.DarkCardBackground
-import com.piggybite.app.ui.theme.DarkCardBorder
-import com.piggybite.app.ui.theme.DarkExpenseText
-import com.piggybite.app.ui.theme.DarkIncomeText
 import com.piggybite.app.ui.theme.DarkTextMain
 import com.piggybite.app.ui.theme.DarkTextMuted
 import com.piggybite.app.ui.theme.DarkTextSub
-import com.piggybite.app.ui.theme.DarkTitleBlue
 import com.piggybite.app.ui.theme.LocalIsDarkMode
-import com.piggybite.app.ui.theme.NepGreenPrimary
-import com.piggybite.app.ui.theme.SkyBluePrimary
-import com.piggybite.app.ui.theme.SkyBlueSoft
+import com.piggybite.app.ui.theme.PiggyBorderDark
+import com.piggybite.app.ui.theme.PiggyBorderLight
+import com.piggybite.app.ui.theme.PiggyGreen
+import com.piggybite.app.ui.theme.PiggyGreenSoftDark
+import com.piggybite.app.ui.theme.PiggyGreenSoftLight
+import com.piggybite.app.ui.theme.PiggyOrange
+import com.piggybite.app.ui.theme.PiggyOrangeSoftDark
+import com.piggybite.app.ui.theme.PiggyOrangeSoftLight
+import com.piggybite.app.ui.theme.PiggyPrimary
+import com.piggybite.app.ui.theme.PiggyPrimaryDark
+import com.piggybite.app.ui.theme.PiggyPrimarySoftDark
+import com.piggybite.app.ui.theme.PiggyPrimarySoftLight
+import com.piggybite.app.ui.theme.PiggyRed
+import com.piggybite.app.ui.theme.PiggyRedSoftDark
+import com.piggybite.app.ui.theme.PiggyRedSoftLight
+import com.piggybite.app.ui.theme.PiggySurfaceDark
+import com.piggybite.app.ui.theme.PiggySurfaceLight
+import com.piggybite.app.ui.theme.PiggySurfaceSoftDark
+import com.piggybite.app.ui.theme.PiggySurfaceSoftLight
+import com.piggybite.app.ui.theme.PiggyViolet
+import com.piggybite.app.ui.theme.PiggyVioletSoftDark
+import com.piggybite.app.ui.theme.PiggyVioletSoftLight
+import com.piggybite.app.ui.theme.TextMuted
 import com.piggybite.app.util.Formatters
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -70,15 +81,14 @@ import java.util.Locale
 
 enum class HistoryFilter(val label: String) {
     ALL("Tất cả"),
-    EXPENSE("Chi"),
-    INCOME("Thu"),
-    PENDING("Chờ xác nhận •")
+    EXPENSE("Khoản chi"),
+    INCOME("Khoản thu")
 }
 
 @Composable
 fun HistoryScreen(
     transactions: List<Transaction>,
-    onAddTransaction: () -> Unit
+    onAddTransaction: () -> Unit = {}
 ) {
     val isDark = LocalIsDarkMode.current
     var searchQuery by remember { mutableStateOf("") }
@@ -97,19 +107,26 @@ fun HistoryScreen(
                 HistoryFilter.ALL -> true
                 HistoryFilter.EXPENSE -> !tx.isIncome
                 HistoryFilter.INCOME -> tx.isIncome
-                HistoryFilter.PENDING -> false // Optional pending transactions
             }
 
             matchQuery && matchFilter
         }
     }
 
-    // Group transactions by Date (Hôm nay, Hôm qua, 21/10...)
+    // Totals for summary card
+    val totalIncome = remember(filteredList) {
+        filteredList.filter { it.isIncome }.sumOf { it.amount }
+    }
+    val totalExpense = remember(filteredList) {
+        filteredList.filter { !it.isIncome }.sumOf { it.amount }
+    }
+    val netBalance = totalIncome - totalExpense
+
+    // Group transactions by Date
     val groupedByDate = remember(filteredList) {
         val todayCal = Calendar.getInstance()
         val yesterdayCal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
-
-        val formatDayMonth = SimpleDateFormat("dd/MM", Locale("vi", "VN"))
+        val formatDayMonth = SimpleDateFormat("EEEE, dd/MM", Locale("vi", "VN"))
 
         filteredList.groupBy { tx ->
             val txCal = Calendar.getInstance().apply { timeInMillis = tx.timestamp }
@@ -129,35 +146,43 @@ fun HistoryScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 20.dp, vertical = 14.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        // Title (Nếp style: Large, bold, left-aligned)
-        Text(
-            text = "Lịch sử",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        // Top Title + Subtitle
+        Column {
+            Text(
+                text = "Lịch sử giao dịch",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "Theo dõi mọi biến động chi tiêu và thu nhập",
+                fontSize = 12.sp,
+                color = if (isDark) DarkTextMuted else TextMuted
+            )
+        }
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Search Bar (Exact Nếp design)
+        // Search Bar (Figma: search-box)
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
             placeholder = {
                 Text(
-                    text = "Tìm người nhận, ngày, số tiền, ghi chú...",
-                    fontSize = 13.5.sp,
-                    color = if (isDark) DarkTextMuted else Color(0xFF9CA3AF)
+                    text = "Tìm nội dung, danh mục, số tiền...",
+                    fontSize = 13.sp,
+                    color = if (isDark) DarkTextMuted else Color(0xFFA4AFBF)
                 )
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Tìm kiếm",
-                    tint = if (isDark) DarkTextMuted else Color(0xFF6B7280),
-                    modifier = Modifier.size(20.dp)
+                    tint = if (isDark) DarkTextMuted else TextMuted,
+                    modifier = Modifier.size(19.dp)
                 )
             },
             trailingIcon = {
@@ -166,19 +191,19 @@ fun HistoryScreen(
                         Icon(
                             imageVector = Icons.Default.Clear,
                             contentDescription = "Xoá",
-                            tint = if (isDark) DarkTextMuted else Color(0xFF6B7280),
+                            tint = if (isDark) DarkTextMuted else TextMuted,
                             modifier = Modifier.size(18.dp)
                         )
                     }
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(14.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = if (isDark) DarkTitleBlue else SkyBluePrimary,
-                unfocusedBorderColor = if (isDark) DarkCardBorder else Color(0xFFE5E7EB),
-                focusedContainerColor = if (isDark) DarkCardBackground else Color(0xFFF9FAFB),
-                unfocusedContainerColor = if (isDark) DarkCardBackground else Color(0xFFF9FAFB),
+                focusedBorderColor = PiggyPrimary,
+                unfocusedBorderColor = if (isDark) PiggyBorderDark else PiggyBorderLight,
+                focusedContainerColor = if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight,
+                unfocusedContainerColor = if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight,
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             ),
@@ -187,38 +212,131 @@ fun HistoryScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Filter Pills Row (Tất cả, Chi, Thu, Chờ xác nhận •)
+        // Segmented Filter Tabs (Figma: filter-tabs)
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .background(if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight)
+                .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(14.dp))
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             HistoryFilter.values().forEach { filter ->
                 val isSelected = selectedFilter == filter
-                val activeBg = if (isDark) NepGreenPrimary else NepGreenPrimary
-                val inactiveBg = if (isDark) DarkButtonBg else Color(0xFFF3F4F6)
-                val activeBorder = if (isDark) DarkButtonBorder else Color.Transparent
-                val inactiveBorder = if (isDark) DarkButtonBorder else Color(0xFFE5E7EB)
-
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(if (isSelected) activeBg else inactiveBg)
-                        .border(1.dp, if (isSelected) activeBorder else inactiveBorder, RoundedCornerShape(20.dp))
+                        .weight(1f)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            if (isSelected) {
+                                if (isDark) PiggySurfaceDark else PiggySurfaceLight
+                            } else Color.Transparent
+                        )
                         .clickable { selectedFilter = filter }
-                        .padding(horizontal = 14.dp, vertical = 7.dp),
+                        .padding(vertical = 7.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = filter.label,
                         fontSize = 12.5.sp,
-                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-                        color = if (isSelected) Color(0xFFEDEDED) else (if (isDark) DarkTextMuted else Color(0xFF4B5563))
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                        color = if (isSelected) {
+                            PiggyPrimary
+                        } else {
+                            if (isDark) DarkTextMuted else TextMuted
+                        }
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // 3-Column Summary Card (Figma: history-summary: Tổng thu | Tổng chi | Chênh lệch)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight)
+                .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(16.dp))
+                .padding(vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Tổng thu
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Tổng thu",
+                    fontSize = 10.5.sp,
+                    color = if (isDark) DarkTextMuted else TextMuted
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "+${Formatters.formatMoney(totalIncome)}",
+                    fontSize = 12.5.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = PiggyGreen
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(24.dp)
+                    .background(if (isDark) PiggyBorderDark else PiggyBorderLight)
+            )
+
+            // Tổng chi
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Tổng chi",
+                    fontSize = 10.5.sp,
+                    color = if (isDark) DarkTextMuted else TextMuted
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "−${Formatters.formatMoney(totalExpense)}",
+                    fontSize = 12.5.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(24.dp)
+                    .background(if (isDark) PiggyBorderDark else PiggyBorderLight)
+            )
+
+            // Chênh lệch
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Chênh lệch",
+                    fontSize = 10.5.sp,
+                    color = if (isDark) DarkTextMuted else TextMuted
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = (if (netBalance >= 0) "+" else "−") + Formatters.formatMoney(Math.abs(netBalance)),
+                    fontSize = 12.5.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = PiggyPrimary
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(14.dp))
 
         // Grouped Transactions List
         if (groupedByDate.isEmpty()) {
@@ -231,14 +349,14 @@ fun HistoryScreen(
                 Text(
                     text = "Không tìm thấy giao dịch nào",
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Thử tìm kiếm với từ khoá khác hoặc ghi chép mới",
-                    fontSize = 12.5.sp,
-                    color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
+                    fontSize = 12.sp,
+                    color = if (isDark) DarkTextMuted else TextMuted
                 )
             }
         } else {
@@ -248,24 +366,43 @@ fun HistoryScreen(
             ) {
                 groupedByDate.forEach { (dateHeader, txsInGroup) ->
                     item {
-                        // Section Date Header (Hôm nay, Hôm qua, 21/10...)
-                        Text(
-                            text = dateHeader,
-                            fontSize = 13.5.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isDark) DarkTextMuted else Color(0xFF6B7280),
-                            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
-                        )
+                        val groupTotal = txsInGroup.sumOf { if (it.isIncome) it.amount else -it.amount }
 
-                        // Card enclosing items for this date group
+                        // Date Group Heading (Figma: date-heading)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp, vertical = 6.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = dateHeader,
+                                fontSize = 13.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+
+                            Text(
+                                text = (if (groupTotal >= 0) "+" else "−") + Formatters.formatMoney(Math.abs(groupTotal)),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (groupTotal >= 0) PiggyGreen else if (isDark) DarkTextMuted else TextMuted
+                            )
+                        }
+
+                        // Date Group Card Container
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else Color(0xFFF3F4F6), RoundedCornerShape(20.dp))
-                                .padding(horizontal = 14.dp, vertical = 6.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                                .background(if (isDark) PiggySurfaceDark else PiggySurfaceLight)
+                                .border(
+                                    1.dp,
+                                    if (isDark) PiggyBorderDark else PiggyBorderLight,
+                                    RoundedCornerShape(20.dp)
+                                )
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
                         ) {
                             txsInGroup.forEachIndexed { index, tx ->
                                 HistoryTransactionRow(tx = tx, isDark = isDark)
@@ -273,8 +410,8 @@ fun HistoryScreen(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(0.8.dp)
-                                            .background(if (isDark) DarkCardBorder.copy(alpha = 0.5f) else Color(0xFFF3F4F6))
+                                            .height(0.6.dp)
+                                            .background(if (isDark) PiggyBorderDark else PiggyBorderLight)
                                     )
                                 }
                             }
@@ -283,7 +420,7 @@ fun HistoryScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
@@ -298,72 +435,105 @@ fun HistoryTransactionRow(
     val timeFormat = SimpleDateFormat("HH:mm", Locale("vi", "VN"))
     val formattedTime = timeFormat.format(Date(tx.timestamp))
 
-    // Select category icon
-    val icon: ImageVector = when {
-        tx.category.contains("Di chuyển", ignoreCase = true) || tx.note.contains("Grab", ignoreCase = true) -> Icons.Default.DirectionsCar
-        tx.category.contains("Ăn uống", ignoreCase = true) || tx.note.contains("Cơm", ignoreCase = true) -> Icons.Default.Restaurant
-        tx.category.contains("Cà phê", ignoreCase = true) || tx.note.contains("Highlands", ignoreCase = true) -> Icons.Default.LocalCafe
-        tx.category.contains("Mua sắm", ignoreCase = true) || tx.note.contains("Shopee", ignoreCase = true) -> Icons.Default.ShoppingBag
-        tx.category.contains("Sinh hoạt", ignoreCase = true) || tx.note.contains("Siêu thị", ignoreCase = true) -> Icons.Default.Home
-        tx.isIncome -> Icons.Default.Payments
-        else -> Icons.Default.CreditCard
-    }
+    val (icon, bg, tint) = getCategoryVisuals(tx.category, tx.isIncome, isDark)
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Circular Icon
+        // Icon squircle badge
         Box(
             modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(if (isDark) DarkButtonBg else Color(0xFFF3F4F6))
-                .border(1.dp, if (isDark) DarkButtonBorder else Color.Transparent, CircleShape),
+                .size(38.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(bg),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
-                tint = if (isDark) DarkTextMuted else Color(0xFF4B5563),
-                modifier = Modifier.size(20.dp)
+                contentDescription = tx.category,
+                tint = tint,
+                modifier = Modifier.size(19.dp)
             )
         }
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Center: Title & Subtitle (Di chuyển • Tiền mặt)
+        // Center: Title & Subtitle
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = tx.note.ifBlank { tx.category },
-                fontSize = 14.5.sp,
+                text = if (tx.note.isNotBlank()) tx.note else tx.category,
+                fontSize = 13.5.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isDark) DarkTextMain else Color(0xFF111827)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = "${tx.category} · ${tx.bankName}",
-                fontSize = 12.sp,
-                color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
+                fontSize = 11.5.sp,
+                color = if (isDark) DarkTextMuted else TextMuted
             )
         }
 
         // Right: Amount and Time
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = if (tx.isIncome) "+${Formatters.formatMoney(tx.amount)}" else "−${Formatters.formatMoney(tx.amount)}",
-                fontSize = 14.5.sp,
+                text = (if (tx.isIncome) "+" else "−") + Formatters.formatMoney(tx.amount),
+                fontSize = 13.5.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (tx.isIncome) (if (isDark) DarkIncomeText else Color(0xFF10B981)) else (if (isDark) DarkTextMain else Color(0xFF111827))
+                color = if (tx.isIncome) PiggyGreen else MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = formattedTime,
-                fontSize = 11.5.sp,
-                color = if (isDark) DarkTextSub else Color(0xFF9CA3AF)
+                fontSize = 10.5.sp,
+                color = if (isDark) DarkTextSub else Color(0xFFA4AFBF)
             )
         }
+    }
+}
+
+private fun getCategoryVisuals(
+    category: String,
+    isIncome: Boolean,
+    isDark: Boolean
+): Triple<ImageVector, Color, Color> {
+    if (isIncome) {
+        return Triple(
+            Icons.Default.Payments,
+            if (isDark) PiggyGreenSoftDark else PiggyGreenSoftLight,
+            PiggyGreen
+        )
+    }
+
+    val lower = category.lowercase()
+    return when {
+        lower.contains("ăn") || lower.contains("cơm") || lower.contains("nhà hàng") -> Triple(
+            Icons.Default.Restaurant,
+            if (isDark) PiggyRedSoftDark else PiggyRedSoftLight,
+            PiggyRed
+        )
+        lower.contains("cà phê") || lower.contains("cafe") || lower.contains("nước") -> Triple(
+            Icons.Default.Coffee,
+            if (isDark) PiggyOrangeSoftDark else PiggyOrangeSoftLight,
+            PiggyOrange
+        )
+        lower.contains("sắm") || lower.contains("đồ") || lower.contains("quần áo") -> Triple(
+            Icons.Default.ShoppingBag,
+            if (isDark) PiggyVioletSoftDark else PiggyVioletSoftLight,
+            PiggyViolet
+        )
+        lower.contains("xe") || lower.contains("di chuyển") || lower.contains("xăng") -> Triple(
+            Icons.Default.DirectionsCar,
+            if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight,
+            PiggyPrimary
+        )
+        else -> Triple(
+            Icons.Default.SyncAlt,
+            if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight,
+            PiggyPrimary
+        )
     }
 }

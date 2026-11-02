@@ -1,5 +1,6 @@
 package com.piggybite.app.ui.screens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,14 +21,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,29 +53,34 @@ import androidx.compose.ui.unit.sp
 import com.piggybite.app.model.BankAccount
 import com.piggybite.app.model.Transaction
 import com.piggybite.app.ui.components.BankLogoView
-import com.piggybite.app.ui.theme.CardBorder
-import com.piggybite.app.ui.theme.DarkButtonBg
-import com.piggybite.app.ui.theme.DarkButtonBorder
-import com.piggybite.app.ui.theme.DarkCardBackground
-import com.piggybite.app.ui.theme.DarkCardBorder
-import com.piggybite.app.ui.theme.DarkHighlightNavyBg
-import com.piggybite.app.ui.theme.DarkHighlightNavyBorder
-import com.piggybite.app.ui.theme.DarkHighlightNavyText
 import com.piggybite.app.ui.theme.DarkTextMain
 import com.piggybite.app.ui.theme.DarkTextMuted
 import com.piggybite.app.ui.theme.DarkTextSub
-import com.piggybite.app.ui.theme.DarkTitleBlue
-import com.piggybite.app.ui.theme.HighlightBlueLightBg
-import com.piggybite.app.ui.theme.HighlightBlueLightBorder
-import com.piggybite.app.ui.theme.HighlightBlueLightText
 import com.piggybite.app.ui.theme.LocalIsDarkMode
-import com.piggybite.app.ui.theme.SkyBluePrimary
-import com.piggybite.app.ui.theme.SkyBlueSoft
+import com.piggybite.app.ui.theme.PiggyBorderDark
+import com.piggybite.app.ui.theme.PiggyBorderLight
+import com.piggybite.app.ui.theme.PiggyGreen
+import com.piggybite.app.ui.theme.PiggyGreenSoftDark
+import com.piggybite.app.ui.theme.PiggyGreenSoftLight
+import com.piggybite.app.ui.theme.PiggyOrange
+import com.piggybite.app.ui.theme.PiggyOrangeSoftDark
+import com.piggybite.app.ui.theme.PiggyOrangeSoftLight
+import com.piggybite.app.ui.theme.PiggyPrimary
+import com.piggybite.app.ui.theme.PiggyPrimarySoftDark
+import com.piggybite.app.ui.theme.PiggyPrimarySoftLight
+import com.piggybite.app.ui.theme.PiggyRed
+import com.piggybite.app.ui.theme.PiggyRedSoftDark
+import com.piggybite.app.ui.theme.PiggyRedSoftLight
+import com.piggybite.app.ui.theme.PiggySurfaceDark
+import com.piggybite.app.ui.theme.PiggySurfaceLight
+import com.piggybite.app.ui.theme.PiggySurfaceSoftDark
+import com.piggybite.app.ui.theme.PiggySurfaceSoftLight
+import com.piggybite.app.ui.theme.PiggyViolet
+import com.piggybite.app.ui.theme.PiggyVioletSoftDark
+import com.piggybite.app.ui.theme.PiggyVioletSoftLight
 import com.piggybite.app.ui.theme.TextMuted
 import com.piggybite.app.util.Formatters
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 enum class ReportTab {
@@ -86,9 +96,7 @@ fun ReportsScreen(
     onEditAccount: (BankAccount) -> Unit = {}
 ) {
     val isDark = LocalIsDarkMode.current
-    var activeSubTab by remember { mutableStateOf(ReportTab.CALENDAR) }
-
-    // Quản lý chuyển tháng qua lại
+    var activeSubTab by remember { mutableStateOf(ReportTab.OVERVIEW) }
     var monthOffset by remember { mutableIntStateOf(0) }
 
     val cal = remember(monthOffset) {
@@ -140,6 +148,7 @@ fun ReportsScreen(
         selectedDayTransactions.filter { !it.isIncome }.sumOf { it.amount }
     }
 
+    // Tổng quan chi tiêu theo danh mục
     val overviewExpenseTxs = remember(transactions) {
         transactions.filter { !it.isIncome }
     }
@@ -161,6 +170,29 @@ fun ReportsScreen(
         }
     }
 
+    // Tính dòng tiền 6 tháng gần nhất (Figma: cashflow-card bar-chart)
+    val sixMonthsCashflow = remember(transactions) {
+        val list = mutableListOf<Triple<String, Long, Long>>()
+        val now = Calendar.getInstance()
+        for (i in 5 downTo 0) {
+            val c = (now.clone() as Calendar).apply { add(Calendar.MONTH, -i) }
+            val m = c.get(Calendar.MONTH)
+            val y = c.get(Calendar.YEAR)
+            val label = "T${m + 1}"
+
+            var inc = 0L
+            var exp = 0L
+            transactions.forEach { tx ->
+                val txCal = Calendar.getInstance().apply { timeInMillis = tx.timestamp }
+                if (txCal.get(Calendar.MONTH) == m && txCal.get(Calendar.YEAR) == y) {
+                    if (tx.isIncome) inc += tx.amount else exp += tx.amount
+                }
+            }
+            list.add(Triple(label, inc, exp))
+        }
+        list
+    }
+
     fun formatCompactK(amount: Long): String {
         return when {
             amount >= 1_000_000 -> String.format(Locale("vi", "VN"), "%.1ftr", amount / 1_000_000.0)
@@ -169,176 +201,183 @@ fun ReportsScreen(
         }
     }
 
-    val monthDisplayTitle = if (monthOffset == 0) "Tháng này" else "Tháng ${cal.get(Calendar.MONTH) + 1}, ${cal.get(Calendar.YEAR)}"
+    val monthDisplayTitle = "Tháng ${cal.get(Calendar.MONTH) + 1}, ${cal.get(Calendar.YEAR)}"
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 20.dp, vertical = 14.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        // Top Header: Báo cáo | Segmented Switch [Tổng quan | Lịch]
+        // Top Header + Segmented Control
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Báo cáo",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Column {
+                Text(
+                    text = "Báo cáo tài chính",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = monthDisplayTitle,
+                    fontSize = 12.sp,
+                    color = if (isDark) DarkTextMuted else TextMuted
+                )
+            }
 
-            // Segmented Switch [Tổng quan | Lịch]
+            // Segmented Control (Figma: segmented-control)
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(14.dp))
-                    .background(if (isDark) DarkButtonBg else Color(0xFFF3F4F6))
-                    .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(14.dp))
-                    .padding(3.dp),
+                    .background(if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight)
+                    .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(14.dp))
+                .padding(3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Tổng quan button
                 val isOverview = activeSubTab == ReportTab.OVERVIEW
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                         .background(
-                            if (isOverview) (if (isDark) DarkHighlightNavyBg else Color.White) else Color.Transparent
-                        )
-                        .border(
-                            1.dp,
-                            if (isOverview) (if (isDark) DarkHighlightNavyBorder else CardBorder) else Color.Transparent,
-                            RoundedCornerShape(10.dp)
+                            if (isOverview) (if (isDark) PiggySurfaceDark else PiggySurfaceLight) else Color.Transparent
                         )
                         .clickable { activeSubTab = ReportTab.OVERVIEW }
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Tổng quan",
-                        fontSize = 12.sp,
-                        fontWeight = if (isOverview) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isOverview) (if (isDark) DarkTitleBlue else Color(0xFF111827)) else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.PieChart,
+                            contentDescription = null,
+                            tint = if (isOverview) PiggyPrimary else (if (isDark) DarkTextMuted else TextMuted),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Tổng quan",
+                            fontSize = 11.5.sp,
+                            fontWeight = if (isOverview) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isOverview) PiggyPrimary else (if (isDark) DarkTextMuted else TextMuted)
+                        )
+                    }
                 }
 
-                // Lịch button
                 val isCal = activeSubTab == ReportTab.CALENDAR
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                         .background(
-                            if (isCal) (if (isDark) DarkHighlightNavyBg else Color.White) else Color.Transparent
-                        )
-                        .border(
-                            1.dp,
-                            if (isCal) (if (isDark) DarkHighlightNavyBorder else CardBorder) else Color.Transparent,
-                            RoundedCornerShape(10.dp)
+                            if (isCal) (if (isDark) PiggySurfaceDark else PiggySurfaceLight) else Color.Transparent
                         )
                         .clickable { activeSubTab = ReportTab.CALENDAR }
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Lịch",
-                        fontSize = 12.sp,
-                        fontWeight = if (isCal) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isCal) (if (isDark) DarkTitleBlue else Color(0xFF111827)) else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.CalendarMonth,
+                            contentDescription = null,
+                            tint = if (isCal) PiggyPrimary else (if (isDark) DarkTextMuted else TextMuted),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Lịch chi tiêu",
+                            fontSize = 11.5.sp,
+                            fontWeight = if (isCal) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isCal) PiggyPrimary else (if (isDark) DarkTextMuted else TextMuted)
+                        )
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (activeSubTab == ReportTab.CALENDAR) {
+            // ==========================================
+            // SUB-TAB 1: LỊCH CHI TIÊU (Figma: calendar-card)
+            // ==========================================
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Nút chuyển tháng: Trước | Tháng này | Sau
+                // Month switcher: < Tháng 11, 2026 >
                 item {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
-                            .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(if (isDark) PiggySurfaceDark else PiggySurfaceLight)
+                            .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(18.dp))
                             .padding(horizontal = 16.dp, vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "‹ Trước",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                        Box(
                             modifier = Modifier
-                                .clickable { monthOffset-- }
-                                .padding(4.dp)
-                        )
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(11.dp))
+                                .background(if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight)
+                                .clickable { monthOffset-- },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Tháng trước",
+                                tint = PiggyPrimary,
+                                modifier = Modifier.size(17.dp)
+                            )
+                        }
 
-                        Text(
-                            text = monthDisplayTitle,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isDark) DarkTextMain else Color(0xFF111827)
-                        )
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = monthDisplayTitle,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = "Tổng chi: ${Formatters.formatMoney(totalMonthExpense)}",
+                                fontSize = 11.5.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
+                            )
+                        }
 
-                        Text(
-                            text = "Sau ›",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (isDark) DarkTitleBlue else SkyBluePrimary,
+                        Box(
                             modifier = Modifier
-                                .clickable { monthOffset++ }
-                                .padding(4.dp)
-                        )
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(11.dp))
+                                .background(if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight)
+                                .clickable { monthOffset++ },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Tháng sau",
+                                tint = PiggyPrimary,
+                                modifier = Modifier.size(17.dp)
+                            )
+                        }
                     }
                 }
 
-                // Tổng chi tháng & Trung bình ngày
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Tổng chi $monthDisplayTitle",
-                            fontSize = 13.sp,
-                            color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = Formatters.formatMoney(totalMonthExpense),
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = if (isDark) DarkTextMain else Color(0xFF111827)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Trung bình ${Formatters.formatMoney(avgPerDay)} mỗi ngày",
-                            fontSize = 12.sp,
-                            color = if (isDark) DarkTextSub else Color(0xFF9CA3AF)
-                        )
-                    }
-                }
-
-                // Ma trận Lịch 7 cột (Hiển thị rõ ràng các khoảng chi tiêu mỗi ngày)
+                // Calendar Grid Card
                 item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(22.dp))
-                            .background(if (isDark) DarkCardBackground else Color(0xFFF9FAFB))
-                            .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(22.dp))
-                            .padding(12.dp)
+                            .background(if (isDark) PiggySurfaceDark else PiggySurfaceLight)
+                            .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(22.dp))
+                            .padding(14.dp)
                     ) {
-                        // Thứ trong tuần: T2, T3, T4, T5, T6, T7, CN
+                        // Weekdays row
                         val weekDays = listOf("T2", "T3", "T4", "T5", "T6", "T7", "CN")
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -347,9 +386,9 @@ fun ReportsScreen(
                             weekDays.forEach { w ->
                                 Text(
                                     text = w,
-                                    fontSize = 11.5.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (isDark) DarkTextSub else Color(0xFF9CA3AF),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDark) DarkTextSub else Color(0xFFA4AFBF),
                                     modifier = Modifier.width(42.dp),
                                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                                 )
@@ -358,7 +397,7 @@ fun ReportsScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // Lưới các ngày
+                        // Days Grid
                         val totalCells = firstDayOfWeek + daysInMonth
                         val rows = (totalCells + 6) / 7
 
@@ -376,62 +415,71 @@ fun ReportsScreen(
                                         val dayExpense = dailySpendings[dayNum] ?: 0L
                                         val hasExpense = dayExpense > 0
 
-                                        val cellBg = when {
-                                            isSelected -> (if (isDark) DarkHighlightNavyBg else HighlightBlueLightBg)
-                                            hasExpense -> (if (isDark) Color(0xFF161E28) else Color(0xFFF0F9FF))
-                                            else -> Color.Transparent
-                                        }
-
-                                        val cellBorder = when {
-                                            isSelected -> (if (isDark) DarkTitleBlue else SkyBluePrimary)
-                                            hasExpense -> (if (isDark) DarkHighlightNavyBorder else HighlightBlueLightBorder)
-                                            else -> Color.Transparent
-                                        }
-
                                         Box(
                                             modifier = Modifier
-                                                .width(42.dp)
-                                                .height(48.dp)
-                                                .clip(RoundedCornerShape(10.dp))
-                                                .background(cellBg)
-                                                .border(if (isSelected) 1.5.dp else (if (hasExpense) 1.dp else 0.dp), cellBorder, RoundedCornerShape(10.dp))
+                                                .width(44.dp)
+                                                .height(52.dp)
+                                                .clip(RoundedCornerShape(11.dp))
+                                                .background(
+                                                    if (isSelected) PiggyPrimary
+                                                    else if (hasExpense) (if (isDark) Color(0xFF142436) else Color(0xFFEAF6FF))
+                                                    else Color.Transparent
+                                                )
+                                                .border(
+                                                    1.dp,
+                                                    if (isSelected) PiggyPrimary
+                                                    else if (hasExpense) (if (isDark) Color(0xFF1E3A5F) else Color(0xFFBAE6FD))
+                                                    else (if (isDark) Color(0xFF141F2E) else Color(0xFFF1F5F9)),
+                                                    RoundedCornerShape(11.dp)
+                                                )
                                                 .clickable { selectedDay = dayNum }
-                                                .padding(2.dp),
-                                            contentAlignment = Alignment.Center
+                                                .padding(4.dp),
+                                            contentAlignment = Alignment.TopStart
                                         ) {
-                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Column {
                                                 Text(
                                                     text = "$dayNum",
-                                                    fontSize = 12.5.sp,
+                                                    fontSize = 11.sp,
                                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                                    color = if (isSelected) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextMain else Color(0xFF111827))
+                                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
                                                 )
                                                 if (hasExpense) {
+                                                    Spacer(modifier = Modifier.height(2.dp))
                                                     Text(
                                                         text = formatCompactK(dayExpense),
-                                                        fontSize = 9.5.sp,
-                                                        color = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
+                                                        fontSize = 9.sp,
+                                                        color = if (isSelected) Color(0xFFDCEFFF) else PiggyPrimary,
                                                         fontWeight = FontWeight.Bold
                                                     )
                                                 }
                                             }
+
+                                            if (hasExpense && !isSelected) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(5.dp)
+                                                        .clip(CircleShape)
+                                                        .background(PiggyPrimary)
+                                                        .align(Alignment.BottomEnd)
+                                                )
+                                            }
                                         }
                                     } else {
-                                        Spacer(modifier = Modifier.width(42.dp))
+                                        Spacer(modifier = Modifier.width(44.dp))
                                     }
                                 }
                             }
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(6.dp))
                         }
                     }
                 }
 
-                // Chi tiết giao dịch ngày đã chọn
+                // Selected Day Header & Transactions
                 item {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 10.dp, bottom = 4.dp),
+                            .padding(top = 4.dp, bottom = 2.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -439,13 +487,13 @@ fun ReportsScreen(
                             text = "Ngày $selectedDay, Tháng ${cal.get(Calendar.MONTH) + 1}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (isDark) DarkTextMain else Color(0xFF111827)
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
-                            text = if (selectedDayTotal > 0) Formatters.formatMoney(selectedDayTotal) else "0 đ",
-                            fontSize = 14.5.sp,
+                            text = Formatters.formatMoney(selectedDayTotal),
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (selectedDayTotal > 0) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextMuted else Color(0xFF6B7280))
+                            color = PiggyPrimary
                         )
                     }
                 }
@@ -456,15 +504,15 @@ fun ReportsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(16.dp))
-                                .padding(vertical = 24.dp),
+                                .background(if (isDark) PiggySurfaceDark else PiggySurfaceLight)
+                                .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(16.dp))
+                                .padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
                                 text = "Không có giao dịch trong ngày này",
                                 fontSize = 13.sp,
-                                color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
+                                color = if (isDark) DarkTextMuted else TextMuted
                             )
                         }
                     }
@@ -474,10 +522,9 @@ fun ReportsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(20.dp))
-                            .padding(horizontal = 14.dp, vertical = 6.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                                .background(if (isDark) PiggySurfaceDark else PiggySurfaceLight)
+                                .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(20.dp))
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
                         ) {
                             selectedDayTransactions.forEachIndexed { index, tx ->
                                 HistoryTransactionRow(tx = tx, isDark = isDark)
@@ -486,7 +533,7 @@ fun ReportsScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(0.6.dp)
-                                            .background(if (isDark) DarkCardBorder else CardBorder)
+                                            .background(if (isDark) PiggyBorderDark else PiggyBorderLight)
                                     )
                                 }
                             }
@@ -495,216 +542,404 @@ fun ReportsScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(40.dp))
+                    Spacer(modifier = Modifier.height(30.dp))
                 }
             }
         } else {
-            // TAB TỔNG QUAN: Báo cáo danh mục + Quản lý ví & Danh sách ngân hàng
+            // ==========================================
+            // SUB-TAB 2: TỔNG QUAN (Figma: category-card + cashflow-card + wallets)
+            // ==========================================
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // PHẦN 1: BÁO CÁO PHÂN BỔ CHI TIÊU
+                // 1. Phân bổ theo danh mục (Figma: category-card)
                 item {
-                    Text(
-                        text = "Phân bổ chi tiêu theo danh mục",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isDark) DarkTextMain else Color(0xFF111827)
-                    )
-                }
-
-                if (overviewCategories.isEmpty()) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(18.dp))
-                                .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
-                                .padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "Chưa có dữ liệu chi tiêu",
-                                fontSize = 13.5.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = if (isDark) DarkTextMain else Color(0xFF111827)
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Các khoản chi tiêu được ghi nhận sẽ tự động phân bổ tại đây",
-                                fontSize = 11.5.sp,
-                                color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
-                            )
-                        }
-                    }
-                } else {
-                    items(overviewCategories) { (cat, amount, ratio) ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(18.dp))
-                                .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
-                                .padding(16.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = cat,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
-                                )
-                                Text(
-                                    text = Formatters.formatMoney(amount),
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(6.dp)
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(if (isDark) DarkButtonBg else Color(0xFFE5E7EB))
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth(ratio)
-                                        .height(6.dp)
-                                        .clip(RoundedCornerShape(3.dp))
-                                        .background(if (isDark) DarkTitleBlue else SkyBluePrimary)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // PHẦN 2: QUẢN LÝ VÍ & DANH SÁCH NGÂN HÀNG
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(if (isDark) PiggySurfaceDark else PiggySurfaceLight)
+                            .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(22.dp))
+                            .padding(20.dp)
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.AccountBalanceWallet,
-                                contentDescription = null,
-                                tint = if (isDark) DarkTitleBlue else SkyBluePrimary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
+                        Column {
                             Text(
-                                text = "Quản lý ví & Tài khoản ngân hàng",
-                                fontSize = 16.sp,
+                                text = "PHÂN BỔ THÁNG",
+                                fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                color = if (isDark) Color(0xFF8997AA) else TextMuted,
+                                letterSpacing = 1.sp
                             )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Chi tiêu theo danh mục",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(18.dp))
+
+                        if (overviewCategories.isEmpty()) {
+                            Text(
+                                text = "Chưa có dữ liệu chi tiêu để phân bổ",
+                                fontSize = 12.5.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
+                            )
+                        } else {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                overviewCategories.forEach { (cat, amount, ratio) ->
+                                    val (icon, bg, tint) = getCategoryVisuals(cat, false, isDark)
+                                    val pct = (ratio * 100).toInt()
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(34.dp)
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(bg),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = icon,
+                                                contentDescription = cat,
+                                                tint = tint,
+                                                modifier = Modifier.size(17.dp)
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.width(10.dp))
+
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    text = cat,
+                                                    fontSize = 13.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                                Text(
+                                                    text = Formatters.formatMoney(amount),
+                                                    fontSize = 12.5.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.height(5.dp))
+
+                                            // Progress Bar
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(6.dp)
+                                                    .clip(RoundedCornerShape(999.dp))
+                                                    .background(if (isDark) Color(0xFF1E2B3E) else Color(0xFFE5EAF1))
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(ratio.coerceIn(0.02f, 1f))
+                                                        .height(6.dp)
+                                                        .clip(RoundedCornerShape(999.dp))
+                                                        .background(tint)
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.width(10.dp))
+
+                                        Text(
+                                            text = "$pct%",
+                                            fontSize = 11.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isDark) DarkTextMuted else TextMuted
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
 
-                // Danh sách ngân hàng
-                if (accounts.isEmpty()) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(18.dp))
-                                .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(18.dp))
-                                .padding(20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                // 2. Dòng tiền 6 tháng gần nhất (Figma: cashflow-card bar-chart)
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(if (isDark) PiggySurfaceDark else PiggySurfaceLight)
+                            .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(22.dp))
+                            .padding(20.dp)
+                    ) {
+                        Column {
                             Text(
-                                text = "Chưa có tài khoản ngân hàng nào",
-                                fontSize = 13.5.sp,
-                                color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
+                                text = "6 THÁNG GẦN NHẤT",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isDark) Color(0xFF8997AA) else TextMuted,
+                                letterSpacing = 1.sp
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Dòng tiền",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         }
-                    }
-                } else {
-                    items(accounts) { acc ->
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        val maxVal = sixMonthsCashflow.maxOfOrNull { maxOf(it.second, it.third) } ?: 1L
+                        val safeMax = if (maxVal > 0) maxVal else 1L
+
+                        // Bar Chart Visual
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(if (isDark) DarkCardBackground else Color.White)
-                                .border(1.dp, if (isDark) DarkCardBorder else CardBorder, RoundedCornerShape(16.dp))
-                                .clickable { onEditAccount(acc) }
-                                .padding(horizontal = 14.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .height(130.dp),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.Bottom
                         ) {
-                            BankLogoView(bankId = acc.bankId, size = 38.dp)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = acc.bankName,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isDark) DarkTextMain else Color(0xFF111827)
-                                )
-                                if (acc.accountNumber.isNotBlank()) {
+                            sixMonthsCashflow.forEach { (label, inc, exp) ->
+                                val incRatio = (inc.toFloat() / safeMax).coerceIn(0.08f, 1f)
+                                val expRatio = (exp.toFloat() / safeMax).coerceIn(0.08f, 1f)
+
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Bottom
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(3.dp),
+                                        verticalAlignment = Alignment.Bottom
+                                    ) {
+                                        // Income Bar (Sky Blue)
+                                        Box(
+                                            modifier = Modifier
+                                                .width(10.dp)
+                                                .height((incRatio * 95).dp)
+                                                .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+                                                .background(PiggyPrimary)
+                                        )
+
+                                        // Expense Bar (Pale Blue / Rose)
+                                        Box(
+                                            modifier = Modifier
+                                                .width(10.dp)
+                                                .height((expRatio * 95).dp)
+                                                .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+                                                .background(if (isDark) Color(0xFF4C2A34) else Color(0xFFBFD5E6))
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
                                     Text(
-                                        text = "STK: ${acc.accountNumber}",
-                                        fontSize = 12.sp,
-                                        color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
+                                        text = label,
+                                        fontSize = 11.sp,
+                                        color = if (isDark) DarkTextMuted else TextMuted
                                     )
                                 }
                             }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Bar legend
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(PiggyPrimary)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = Formatters.formatMoney(acc.balance),
-                                fontSize = 14.5.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isDark) DarkTextMain else Color(0xFF111827)
+                                text = "Thu nhập",
+                                fontSize = 11.5.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
+                            )
+
+                            Spacer(modifier = Modifier.width(18.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(if (isDark) Color(0xFF4C2A34) else Color(0xFFBFD5E6))
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Chi tiêu",
+                                fontSize = 11.5.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
                             )
                         }
                     }
                 }
 
-                // Nút Thêm ngân hàng / Ví điện tử
+                // 3. Quản lý tài khoản ví
                 item {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(if (isDark) DarkButtonBg else Color(0xFFF9FAFB))
-                            .border(1.dp, if (isDark) DarkButtonBorder else CardBorder, RoundedCornerShape(16.dp))
-                            .clickable { onAddBank() }
-                            .padding(vertical = 12.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(if (isDark) PiggySurfaceDark else PiggySurfaceLight)
+                            .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(22.dp))
+                            .padding(20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = if (isDark) DarkTitleBlue else SkyBluePrimary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Thêm ngân hàng / Ví điện tử",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isDark) DarkTitleBlue else SkyBluePrimary
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = "VÍ & TÀI KHOẢN",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDark) Color(0xFF8997AA) else TextMuted,
+                                    letterSpacing = 1.sp
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "Danh sách ví nguồn",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight)
+                                    .clickable { onAddBank() }
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = null,
+                                    tint = PiggyPrimary,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Thêm ví",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = PiggyPrimary
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            accounts.forEach { acc ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight)
+                                        .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(14.dp))
+                                        .clickable { onEditAccount(acc) }
+                                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    BankLogoView(bankId = acc.bankId, size = 32.dp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = acc.bankName,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        if (acc.accountNumber.isNotBlank()) {
+                                            Text(
+                                                text = "STK: ${acc.accountNumber}",
+                                                fontSize = 11.sp,
+                                                color = if (isDark) DarkTextMuted else TextMuted
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = Formatters.formatMoney(acc.balance),
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(40.dp))
+                    Spacer(modifier = Modifier.height(30.dp))
                 }
             }
         }
+    }
+}
+
+private fun getCategoryVisuals(
+    category: String,
+    isIncome: Boolean,
+    isDark: Boolean
+): Triple<ImageVector, Color, Color> {
+    if (isIncome) {
+        return Triple(
+            Icons.Default.Payments,
+            if (isDark) PiggyGreenSoftDark else PiggyGreenSoftLight,
+            PiggyGreen
+        )
+    }
+
+    val lower = category.lowercase()
+    return when {
+        lower.contains("ăn") || lower.contains("cơm") || lower.contains("nhà hàng") -> Triple(
+            Icons.Default.Restaurant,
+            if (isDark) PiggyRedSoftDark else PiggyRedSoftLight,
+            PiggyRed
+        )
+        lower.contains("cà phê") || lower.contains("cafe") || lower.contains("nước") -> Triple(
+            Icons.Default.Coffee,
+            if (isDark) PiggyOrangeSoftDark else PiggyOrangeSoftLight,
+            PiggyOrange
+        )
+        lower.contains("sắm") || lower.contains("đồ") || lower.contains("quần áo") -> Triple(
+            Icons.Default.ShoppingBag,
+            if (isDark) PiggyVioletSoftDark else PiggyVioletSoftLight,
+            PiggyViolet
+        )
+        lower.contains("xe") || lower.contains("di chuyển") || lower.contains("xăng") -> Triple(
+            Icons.Default.DirectionsCar,
+            if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight,
+            PiggyPrimary
+        )
+        else -> Triple(
+            Icons.Default.SyncAlt,
+            if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight,
+            PiggyPrimary
+        )
     }
 }

@@ -57,6 +57,11 @@ object Formatters {
         return sdf.format(Date(timestamp))
     }
 
+    fun formatTime(timestamp: Long): String {
+        val sdf = SimpleDateFormat("HH:mm", Locale("vi", "VN"))
+        return sdf.format(Date(timestamp))
+    }
+
     fun getVietnameseTodayString(): String {
         val cal = SimpleDateFormat("d 'tháng' M, yyyy", Locale("vi", "VN"))
         return "Hôm nay, " + cal.format(Date())

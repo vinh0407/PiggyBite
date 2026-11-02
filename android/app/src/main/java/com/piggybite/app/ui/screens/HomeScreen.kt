@@ -1,53 +1,28 @@
 package com.piggybite.app.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.piggybite.app.model.BankAccount
 import com.piggybite.app.model.Transaction
 import com.piggybite.app.ui.components.ActionButtonsRow
+import com.piggybite.app.ui.components.SpendingInsightCard
 import com.piggybite.app.ui.components.TopHeader
 import com.piggybite.app.ui.components.TransactionList
 import com.piggybite.app.ui.components.WalletSummaryCard
-import com.piggybite.app.ui.theme.DarkButtonBg
-import com.piggybite.app.ui.theme.DarkButtonBorder
-import com.piggybite.app.ui.theme.DarkCardBackground
-import com.piggybite.app.ui.theme.DarkCardBorder
-import com.piggybite.app.ui.theme.DarkTextMain
-import com.piggybite.app.ui.theme.DarkTextMuted
-import com.piggybite.app.ui.theme.DarkTitleBlue
 import com.piggybite.app.ui.theme.LocalIsDarkMode
-import com.piggybite.app.ui.theme.NepGreenPrimary
-import com.piggybite.app.ui.theme.SkyBluePrimary
+import java.util.Calendar
 
 @Composable
 fun HomeScreen(
@@ -64,20 +39,40 @@ fun HomeScreen(
     onPasteStk: () -> Unit,
     onAddManual: () -> Unit,
     onMyQr: () -> Unit,
-    onOpenWeeklyReview: () -> Unit,
-    onOpenNotificationSimulator: () -> Unit,
+    onOpenWeeklyReview: () -> Unit = {},
+    onOpenNotificationSimulator: () -> Unit = {},
     onAddBank: () -> Unit,
     onEditAccount: (BankAccount) -> Unit,
-    onManageAllWallets: () -> Unit
+    onManageAllWallets: () -> Unit,
+    onSeeAllTransactions: () -> Unit = onManageAllWallets
 ) {
     val scrollState = rememberScrollState()
     val isDark = LocalIsDarkMode.current
+
+    // Tính toán tổng thu và tổng chi của tháng hiện tại
+    val (monthIncome, monthExpense) = remember(transactions) {
+        val now = Calendar.getInstance()
+        val curMonth = now.get(Calendar.MONTH)
+        val curYear = now.get(Calendar.YEAR)
+
+        var inc = 0L
+        var exp = 0L
+
+        transactions.forEach { tx ->
+            val txCal = Calendar.getInstance().apply { timeInMillis = tx.timestamp }
+            if (txCal.get(Calendar.MONTH) == curMonth && txCal.get(Calendar.YEAR) == curYear) {
+                if (tx.isIncome) inc += tx.amount else exp += tx.amount
+            }
+        }
+        Pair(inc, exp)
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+        // Top Header (Brand Logo + Vietnamese Date + Theme Switcher)
         TopHeader(
             isDarkMode = isDarkMode,
             onToggleDarkMode = onToggleDarkMode,
@@ -88,21 +83,24 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 20.dp, vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Thẻ Tổng số dư & Liệt kê tài khoản ngân hàng duy nhất
+            // 1. Thẻ Hero Tổng số dư & Dải thẻ Ví của tôi (Figma: balance-card + wallet-grid)
             WalletSummaryCard(
                 accounts = accounts,
                 totalBalance = totalBalance,
                 isBalanceHidden = isBalanceHidden,
+                monthIncome = monthIncome,
+                monthExpense = monthExpense,
                 onToggleHideBalance = onToggleHideBalance,
                 onAddBank = onAddBank,
                 onEditAccount = onEditAccount,
-                onManageAll = onManageAllWallets
+                onManageAll = onManageAllWallets,
+                onScanQr = onScanQr
             )
 
-            // Cụm phím hành động (Chuyển khoản ngân hàng + Ghi tay)
+            // 2. Tiện ích Thao tác nhanh (Figma: quick-grid 4 phím: Quét QR, Dán STK, Ghi thu chi, QR tôi)
             ActionButtonsRow(
                 onScanQr = onScanQr,
                 onPasteStk = onPasteStk,
@@ -111,13 +109,20 @@ fun HomeScreen(
                 onOpenNotificationSimulator = onOpenNotificationSimulator
             )
 
-            // Giao dịch gần đây
-            TransactionList(
-                transactions = transactions,
-                onAddClick = onAddManual
+            // 3. Thẻ Chi tiêu của bạn (Donut Chart) & Mẹo tài chính 50/30/20 (Figma: spending-card + tip-card)
+            SpendingInsightCard(
+                monthExpense = monthExpense,
+                totalBalance = totalBalance
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            // 4. Danh sách giao dịch gần đây (Figma: recent-section)
+            TransactionList(
+                transactions = transactions,
+                onAddClick = onAddManual,
+                onSeeAllClick = onSeeAllTransactions
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

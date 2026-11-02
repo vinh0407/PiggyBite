@@ -10,32 +10,32 @@ import androidx.compose.ui.graphics.Color
 
 val LocalIsDarkMode = compositionLocalOf { false }
 
-// Chế độ sáng: Nền trắng, chữ đen, các ô chữ trắng, ô nổi bật màu xanh dương nhạt sáng
+// Chế độ sáng: Nền xám xanh thanh lịch #f4f7fb, các thẻ trắng tinh #ffffff, viền #e5eaf1, điểm nhấn #0e85d4
 private val ModernLightColorScheme = lightColorScheme(
-    primary = SkyBluePrimary,
+    primary = PiggyPrimary,
     onPrimary = PureWhite,
-    primaryContainer = HighlightBlueLightBg,
-    onPrimaryContainer = HighlightBlueLightText,
-    background = ModernBackground,
-    onBackground = TextMain,
-    surface = CardBackground,
-    onSurface = TextMain,
-    surfaceVariant = CardBorderLight,
-    outline = CardBorder
+    primaryContainer = PiggyPrimarySoftLight,
+    onPrimaryContainer = PiggyPrimary,
+    background = PiggyBgLight,
+    onBackground = PiggyTextLight,
+    surface = PiggySurfaceLight,
+    onSurface = PiggyTextLight,
+    surfaceVariant = PiggySurfaceSoftLight,
+    outline = PiggyBorderLight
 )
 
-// Chế độ tối: Nền đen, chữ xám, các ô chữ xám, ô nổi bật màu xanh dương đen
+// Chế độ tối OLED: Nền đen thẫm #050a12, các thẻ xanh đen sâu #0d1522, viền #1e2b3e, điểm nhấn #38bdf8
 private val ModernDarkColorScheme = darkColorScheme(
-    primary = DarkTitleBlue,
+    primary = PiggyPrimary,
     onPrimary = Color.White,
-    primaryContainer = DarkHighlightNavyBg,
-    onPrimaryContainer = DarkHighlightNavyText,
-    background = DarkAppBackground, // Nền đen tuyền #000000
-    onBackground = DarkTextMain,    // Chữ xám #EDEDED
-    surface = DarkCardBackground,   // Ô xám đen #12161A
-    onSurface = DarkTextMain,
-    surfaceVariant = DarkButtonBg,  // Ô xám #161B22
-    outline = DarkCardBorder        // Viền xám đen #21262D
+    primaryContainer = PiggyPrimarySoftDark,
+    onPrimaryContainer = DarkTitleBlue,
+    background = PiggyBgDark,
+    onBackground = PiggyTextDark,
+    surface = PiggySurfaceDark,
+    onSurface = PiggyTextDark,
+    surfaceVariant = PiggySurfaceSoftDark,
+    outline = PiggyBorderDark
 )
 
 @Composable
