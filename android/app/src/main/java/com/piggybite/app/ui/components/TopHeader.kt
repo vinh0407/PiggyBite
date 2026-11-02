@@ -113,18 +113,18 @@ fun TopHeader(
         // Top Actions (Dark Mode Toggle + Profile Avatar)
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             // Dark / Light Mode Button
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(13.dp))
                     .background(if (isDarkMode) PiggySurfaceDark else PiggySurfaceLight)
                     .border(
                         1.dp,
                         if (isDarkMode) PiggyBorderDark else PiggyBorderLight,
-                        RoundedCornerShape(12.dp)
+                        RoundedCornerShape(13.dp)
                     )
                     .clickable { onToggleDarkMode() },
                 contentAlignment = Alignment.Center
@@ -133,20 +133,20 @@ fun TopHeader(
                     imageVector = if (isDarkMode) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
                     contentDescription = "Đổi giao diện",
                     tint = if (isDarkMode) PiggyAmber else PiggyPrimary,
-                    modifier = Modifier.size(19.dp)
+                    modifier = Modifier.size(22.dp)
                 )
             }
 
             // Notification Bell (Bản cũ: Mở thông báo số dư & Huấn luyện AI)
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(13.dp))
                     .background(if (isDarkMode) PiggySurfaceDark else PiggySurfaceLight)
                     .border(
                         1.dp,
                         if (isDarkMode) PiggyBorderDark else PiggyBorderLight,
-                        RoundedCornerShape(12.dp)
+                        RoundedCornerShape(13.dp)
                     )
                     .clickable { onOpenNotificationSimulator() },
                 contentAlignment = Alignment.Center
@@ -155,14 +155,14 @@ fun TopHeader(
                     imageVector = Icons.Outlined.Notifications,
                     contentDescription = "Thông báo biến động số dư",
                     tint = if (isDarkMode) Color(0xFF38BDF8) else PiggyPrimary,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(22.dp)
                 )
                 // Pulse dot indicator
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(6.dp)
-                        .size(7.dp)
+                        .size(8.dp)
                         .clip(CircleShape)
                         .background(Color(0xFF22C55E))
                 )

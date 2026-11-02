@@ -163,18 +163,18 @@ fun WalletSummaryCard(
                     // Eye Toggle Button (Kính mờ trong suốt)
                     Box(
                         modifier = Modifier
-                            .size(38.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .size(42.dp)
+                            .clip(RoundedCornerShape(13.dp))
                             .background(Color.White.copy(alpha = 0.16f))
-                            .border(1.dp, Color.White.copy(alpha = 0.28f), RoundedCornerShape(12.dp))
+                            .border(1.dp, Color.White.copy(alpha = 0.28f), RoundedCornerShape(13.dp))
                             .clickable { onToggleHideBalance() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = if (isBalanceHidden) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                             contentDescription = if (isBalanceHidden) "Hiện số dư" else "Ẩn số dư",
-                            tint = Color(0xFFD2E5F5),
-                            modifier = Modifier.size(19.dp)
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
@@ -257,20 +257,20 @@ fun WalletSummaryCard(
                             .background(Color.White.copy(alpha = 0.22f))
                             .border(1.dp, Color.White.copy(alpha = 0.38f), RoundedCornerShape(14.dp))
                             .clickable { onScanQr() }
-                            .padding(horizontal = 14.dp, vertical = 9.dp),
+                            .padding(horizontal = 14.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.QrCodeScanner,
-                            contentDescription = null,
+                            contentDescription = "Quét QR",
                             tint = Color.White,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "Quét QR",
-                            fontSize = 12.sp,
+                            fontSize = 12.5.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )

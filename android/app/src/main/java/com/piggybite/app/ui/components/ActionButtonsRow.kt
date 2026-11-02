@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.QrCode
@@ -172,8 +172,8 @@ private fun QuickActionCard(
         // Colored Icon Pill
         Box(
             modifier = Modifier
-                .size(38.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .size(44.dp)
+                .clip(RoundedCornerShape(14.dp))
                 .background(iconBg),
             contentAlignment = Alignment.Center
         ) {
@@ -181,7 +181,7 @@ private fun QuickActionCard(
                 imageVector = icon,
                 contentDescription = title,
                 tint = iconTint,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(24.dp)
             )
         }
 
@@ -205,7 +205,7 @@ private fun QuickActionCard(
         }
 
         Icon(
-            imageVector = Icons.Default.ArrowForward,
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
             contentDescription = null,
             tint = if (isDark) Color(0xFF5D6C80) else Color(0xFFA4AFBF),
             modifier = Modifier.size(14.dp)

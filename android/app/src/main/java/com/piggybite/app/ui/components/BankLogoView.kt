@@ -48,13 +48,19 @@ fun BankLogoView(
     }
 
     var isError by remember(bankId) { mutableStateOf(false) }
+    val cornerRadius = (size * 0.28f).coerceAtLeast(6.dp)
+    val innerPadding = when {
+        size <= 24.dp -> 1.5.dp
+        size <= 32.dp -> 2.dp
+        else -> 3.5.dp
+    }
 
     Box(
         modifier = modifier
             .size(size)
-            .clip(RoundedCornerShape(size / 3))
+            .clip(RoundedCornerShape(cornerRadius))
             .background(Color.White)
-            .border(1.dp, CardBorder, RoundedCornerShape(size / 3)),
+            .border(1.dp, CardBorder, RoundedCornerShape(cornerRadius)),
         contentAlignment = Alignment.Center
     ) {
         if (bank != null && !isError) {
@@ -68,7 +74,7 @@ fun BankLogoView(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(3.dp),
+                    .padding(innerPadding),
                 onError = {
                     isError = true
                 }

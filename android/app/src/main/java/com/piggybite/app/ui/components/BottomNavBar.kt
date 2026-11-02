@@ -140,7 +140,7 @@ fun BottomNavBar(
                         .clip(RoundedCornerShape(24.dp))
                         .background(bgColor)
                         .clickable { onTabSelected(tab) }
-                        .padding(vertical = 9.dp),
+                        .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -151,10 +151,10 @@ fun BottomNavBar(
                             imageVector = if (isSelected) tab.selectedIcon else tab.unselectedIcon,
                             contentDescription = tab.title,
                             tint = tintColor,
-                            modifier = Modifier.size(21.dp)
+                            modifier = Modifier.size(24.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(3.dp))
 
                         Text(
                             text = tab.title,
@@ -173,7 +173,7 @@ fun BottomNavBar(
                     .weight(1.05f)
                     .clip(RoundedCornerShape(24.dp))
                     .clickable { onScanQrClick() }
-                    .padding(vertical = 4.dp),
+                    .padding(vertical = 3.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -182,13 +182,13 @@ fun BottomNavBar(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(34.dp)
+                            .size(38.dp)
                             .shadow(
                                 elevation = 8.dp,
-                                shape = RoundedCornerShape(13.dp),
+                                shape = RoundedCornerShape(14.dp),
                                 spotColor = PiggyPrimary.copy(alpha = 0.4f)
                             )
-                            .clip(RoundedCornerShape(13.dp))
+                            .clip(RoundedCornerShape(14.dp))
                             .background(
                                 Brush.linearGradient(
                                     colors = listOf(Color(0xFF15A7EA), Color(0xFF0B72CA))
@@ -200,7 +200,7 @@ fun BottomNavBar(
                             imageVector = Icons.Outlined.QrCodeScanner,
                             contentDescription = "Quét QR",
                             tint = Color.White,
-                            modifier = Modifier.size(19.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
 
@@ -208,7 +208,7 @@ fun BottomNavBar(
 
                     Text(
                         text = "Quét QR",
-                        fontSize = 10.sp,
+                        fontSize = 10.5.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isDark) Color(0xFF38BDF8) else PiggyPrimary,
                         letterSpacing = (-0.2).sp
@@ -245,7 +245,7 @@ fun BottomNavBar(
                         .clip(RoundedCornerShape(24.dp))
                         .background(bgColor)
                         .clickable { onTabSelected(tab) }
-                        .padding(vertical = 9.dp),
+                        .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -256,10 +256,10 @@ fun BottomNavBar(
                             imageVector = if (isSelected) tab.selectedIcon else tab.unselectedIcon,
                             contentDescription = tab.title,
                             tint = tintColor,
-                            modifier = Modifier.size(21.dp)
+                            modifier = Modifier.size(24.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(3.dp))
 
                         Text(
                             text = tab.title,

@@ -168,27 +168,7 @@ fun QrPaymentDialog(
             }
         }
 
-        // 3. Tách số tiền nếu có trong chuỗi (ví dụ: 50k, 100k, 50.000, 200000)
-        val amountKMatch = Regex("(\\d+)\\s*(k|nghin|nghìn)", RegexOption.IGNORE_CASE).find(raw)
-        if (amountKMatch != null) {
-            val num = amountKMatch.groupValues[1].toLongOrNull() ?: 0L
-            amountValue = num * 1000
-            amountText = Formatters.formatWithComma(amountValue)
-        } else {
-            val amountNumMatch = Regex("\\b(\\d{1,3}(?:[.,]\\d{3})+|\\d{4,9})\\s*(?:đ|vnd|dong|đồng)?\\b", RegexOption.IGNORE_CASE).find(raw)
-            if (amountNumMatch != null) {
-                val clean = amountNumMatch.groupValues[1].replace(".", "").replace(",", "")
-                if (clean != receiverAccNum) {
-                    val num = clean.toLongOrNull() ?: 0L
-                    if (num in 1000..500_000_000) {
-                        amountValue = num
-                        amountText = Formatters.formatWithComma(amountValue)
-                    }
-                }
-            }
-        }
-
-        // 4. Tên người nhận: loại trừ tất cả các từ khóa ngân hàng và từ khóa nghiệp vụ
+        // 3. Tên người nhận: loại trừ tất cả các từ khóa ngân hàng và từ khóa nghiệp vụ (không cần nhận diện số tiền)
         val allBankKeywords = BankDirectory.ALL_BANKS.flatMap {
             it.keywords + listOf(it.id, it.shortName.lowercase(), it.name.lowercase())
         }.toSet()
@@ -375,11 +355,11 @@ fun QrPaymentDialog(
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    BankLogoView(bankId = receiverBank.id, size = 20.dp)
-                                    Spacer(modifier = Modifier.width(6.dp))
+                                    BankLogoView(bankId = receiverBank.id, size = 32.dp)
+                                    Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = "${receiverBank.shortName} ›",
-                                        fontSize = 14.sp,
+                                        fontSize = 14.5.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = if (isDark) DarkTitleBlue else SkyBluePrimary
                                     )
@@ -403,32 +383,9 @@ fun QrPaymentDialog(
                                 )
                                 Text(
                                     text = if (receiverAccNum.isNotBlank()) "$receiverAccNum ›" else "Chưa có ›",
-                                    fontSize = 14.sp,
+                                    fontSize = 14.5.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = if (receiverAccNum.isNotBlank()) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextSub else Color(0xFF9CA3AF))
-                                )
-                            }
-
-                            Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) DarkCardBorder else CardBorder))
-
-                            // Row 3: Số tiền
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Số tiền",
-                                    fontSize = 13.5.sp,
-                                    color = if (isDark) DarkTextMuted else Color(0xFF6B7280)
-                                )
-                                Text(
-                                    text = if (amountValue > 0) "${Formatters.formatWithComma(amountValue)} đ ›" else "Chưa có ›",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (amountValue > 0) (if (isDark) DarkTitleBlue else SkyBluePrimary) else (if (isDark) DarkTextSub else Color(0xFF9CA3AF))
                                 )
                             }
                         }
