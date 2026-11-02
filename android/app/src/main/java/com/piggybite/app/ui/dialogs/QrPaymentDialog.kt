@@ -669,7 +669,7 @@ fun QrPaymentDialog(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = Icons.Default.Category,
-                                        contentDescription = null,
+                                        contentDescription = "Chọn danh mục",
                                         tint = if (isDark) DarkTextMuted else Color(0xFF6B7280),
                                         modifier = Modifier.size(18.dp)
                                     )
@@ -701,7 +701,7 @@ fun QrPaymentDialog(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
-                                    contentDescription = null,
+                                    contentDescription = "Ghi chú giao dịch",
                                     tint = if (isDark) DarkTextMuted else Color(0xFF6B7280),
                                     modifier = Modifier.size(18.dp)
                                 )

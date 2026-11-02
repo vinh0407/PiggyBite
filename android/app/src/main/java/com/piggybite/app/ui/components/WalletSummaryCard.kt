@@ -19,8 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -320,8 +320,8 @@ fun WalletSummaryCard(
                     )
                     Spacer(modifier = Modifier.width(3.dp))
                     Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = null,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Quản lý ví",
                         tint = PiggyPrimary,
                         modifier = Modifier.size(13.dp)
                     )
