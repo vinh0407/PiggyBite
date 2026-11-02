@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.piggybite.app.model.BankAccount
 import com.piggybite.app.model.Transaction
 import com.piggybite.app.ui.components.ActionButtonsRow
-import com.piggybite.app.ui.components.SpendingInsightCard
 import com.piggybite.app.ui.components.TopHeader
 import com.piggybite.app.ui.components.TransactionList
 import com.piggybite.app.ui.components.WalletSummaryCard
@@ -109,13 +108,7 @@ fun HomeScreen(
                 onOpenNotificationSimulator = onOpenNotificationSimulator
             )
 
-            // 3. Thẻ Chi tiêu của bạn (Donut Chart) & Mẹo tài chính 50/30/20 (Figma: spending-card + tip-card)
-            SpendingInsightCard(
-                monthExpense = monthExpense,
-                totalBalance = totalBalance
-            )
-
-            // 4. Danh sách giao dịch gần đây (Figma: recent-section)
+            // 3. Danh sách giao dịch gần đây (Figma: recent-section)
             TransactionList(
                 transactions = transactions,
                 onAddClick = onAddManual,
