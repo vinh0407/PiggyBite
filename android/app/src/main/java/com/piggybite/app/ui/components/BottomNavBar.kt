@@ -73,22 +73,32 @@ fun BottomNavBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 18.dp, vertical = 10.dp),
+            .padding(horizontal = 14.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Floating Nav Pill (Chuẩn giao diện Figma PiggyBite)
+        // Floating Nav Pill (Viên thuốc trong suốt / Frosted Glass Pill)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(
-                    elevation = 18.dp,
-                    shape = RoundedCornerShape(26.dp),
-                    spotColor = if (isDark) Color(0xFF03070E) else Color(0xFF0E85D4).copy(alpha = 0.12f)
+                    elevation = 20.dp,
+                    shape = RoundedCornerShape(36.dp),
+                    spotColor = if (isDark) Color(0xFF000000).copy(alpha = 0.6f) else Color(0xFF0EA5E9).copy(alpha = 0.16f)
                 )
-                .clip(RoundedCornerShape(26.dp))
-                .background(if (isDark) DarkCardBackground else MaterialTheme.colorScheme.surface)
-                .border(1.dp, if (isDark) DarkCardBorder else MaterialTheme.colorScheme.outline, RoundedCornerShape(26.dp))
-                .padding(horizontal = 8.dp, vertical = 7.dp),
+                .clip(RoundedCornerShape(36.dp))
+                .background(
+                    if (isDark) {
+                        Color(0xFF0B1424).copy(alpha = 0.92f)
+                    } else {
+                        Color(0xFFFFFFFF).copy(alpha = 0.92f)
+                    }
+                )
+                .border(
+                    width = 1.2.dp,
+                    color = if (isDark) Color(0xFF1E2D44).copy(alpha = 0.85f) else Color(0xFFE2E8F0).copy(alpha = 0.95f),
+                    shape = RoundedCornerShape(36.dp)
+                )
+                .padding(horizontal = 6.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -106,26 +116,31 @@ fun BottomNavBar(
                 val isSelected = currentTab == tab
 
                 val tintColor by animateColorAsState(
-                    targetValue = if (isSelected) PiggyPrimary else if (isDark) DarkTextMuted else TextMuted,
-                    animationSpec = tween(180),
+                    targetValue = if (isSelected) {
+                        if (isDark) Color(0xFF38BDF8) else PiggyPrimary
+                    } else {
+                        if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                    },
+                    animationSpec = tween(200),
                     label = "tabTint"
                 )
 
                 val bgColor by animateColorAsState(
                     targetValue = if (isSelected) {
-                        if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight
+                        if (isDark) Color(0xFF142E50) else Color(0xFFDFEEFF)
                     } else Color.Transparent,
-                    animationSpec = tween(180),
+                    animationSpec = tween(200),
                     label = "tabBg"
                 )
 
+                // Bong bóng tab (Bubble Capsule)
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(24.dp))
                         .background(bgColor)
                         .clickable { onTabSelected(tab) }
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 9.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -136,14 +151,14 @@ fun BottomNavBar(
                             imageVector = if (isSelected) tab.selectedIcon else tab.unselectedIcon,
                             contentDescription = tab.title,
                             tint = tintColor,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(21.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(3.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
                             text = tab.title,
-                            fontSize = 10.sp,
+                            fontSize = 10.5.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             color = tintColor,
                             letterSpacing = (-0.2).sp
@@ -152,12 +167,13 @@ fun BottomNavBar(
                 }
             }
 
-            // 2. NÚT QUÉT QR Ở CHÍNH GIỮA 4 NÚT
+            // 2. NÚT QUÉT QR Ở CHÍNH GIỮA 4 NÚT (Bong bóng trung tâm nổi bật)
             Box(
                 modifier = Modifier
-                    .weight(1.1f)
+                    .weight(1.05f)
+                    .clip(RoundedCornerShape(24.dp))
                     .clickable { onScanQrClick() }
-                    .padding(vertical = 2.dp),
+                    .padding(vertical = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -166,13 +182,13 @@ fun BottomNavBar(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(34.dp)
                             .shadow(
-                                elevation = 6.dp,
-                                shape = RoundedCornerShape(12.dp),
-                                spotColor = PiggyPrimary.copy(alpha = 0.35f)
+                                elevation = 8.dp,
+                                shape = RoundedCornerShape(13.dp),
+                                spotColor = PiggyPrimary.copy(alpha = 0.4f)
                             )
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(13.dp))
                             .background(
                                 Brush.linearGradient(
                                     colors = listOf(Color(0xFF15A7EA), Color(0xFF0B72CA))
@@ -184,7 +200,7 @@ fun BottomNavBar(
                             imageVector = Icons.Outlined.QrCodeScanner,
                             contentDescription = "Quét QR",
                             tint = Color.White,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(19.dp)
                         )
                     }
 
@@ -205,26 +221,31 @@ fun BottomNavBar(
                 val isSelected = currentTab == tab
 
                 val tintColor by animateColorAsState(
-                    targetValue = if (isSelected) PiggyPrimary else if (isDark) DarkTextMuted else TextMuted,
-                    animationSpec = tween(180),
+                    targetValue = if (isSelected) {
+                        if (isDark) Color(0xFF38BDF8) else PiggyPrimary
+                    } else {
+                        if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                    },
+                    animationSpec = tween(200),
                     label = "tabTint"
                 )
 
                 val bgColor by animateColorAsState(
                     targetValue = if (isSelected) {
-                        if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight
+                        if (isDark) Color(0xFF142E50) else Color(0xFFDFEEFF)
                     } else Color.Transparent,
-                    animationSpec = tween(180),
+                    animationSpec = tween(200),
                     label = "tabBg"
                 )
 
+                // Bong bóng tab (Bubble Capsule)
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(24.dp))
                         .background(bgColor)
                         .clickable { onTabSelected(tab) }
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 9.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -235,14 +256,14 @@ fun BottomNavBar(
                             imageVector = if (isSelected) tab.selectedIcon else tab.unselectedIcon,
                             contentDescription = tab.title,
                             tint = tintColor,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(21.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(3.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
                             text = tab.title,
-                            fontSize = 10.sp,
+                            fontSize = 10.5.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             color = tintColor,
                             letterSpacing = (-0.2).sp
