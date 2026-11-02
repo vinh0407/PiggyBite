@@ -31,15 +31,33 @@ Repository paths:
 
 ## Interface Showcase
 
-| Home Overview | Transaction History | Financial Reports |
-| :---: | :---: | :---: |
-| <img src="screenshots/01_home_screen.png" width="260" alt="Home Overview Screen" /> | <img src="screenshots/02_history_screen.png" width="260" alt="Transaction History Screen" /> | <img src="screenshots/03_reports_screen.png" width="260" alt="Financial Reports Screen" /> |
-| Frosted glass hero card, quick actions grid, and floating navigation dock. | Income/expense metrics, real-time query filtering, and long-press refund actions. | Category distribution donut chart, 6-month cashflow bars, and day-by-day calendar. |
+### Dashboard and Core Navigation
 
-| Monthly Wrapped | Settings and Privacy | VietQR Camera Scanner |
+| Home (Light Mode) | Home (Dark Mode) | Transaction History |
 | :---: | :---: | :---: |
-| <img src="screenshots/04_monthly_wrapped.png" width="260" alt="Monthly Wrapped Infographic" /> | <img src="screenshots/05_settings_screen.png" width="260" alt="Settings and Data Privacy Screen" /> | <img src="screenshots/06_scan_qr_screen.png" width="260" alt="VietQR Scanner Screen" /> |
-| Financial habit review, savings rate analytics, peak spending days, and export. | Biometric app lock, Excel-compatible CSV export, JSON backup, and AI training. | High-speed CameraX scanner with automated bank and account recognition. |
+| <img src="screenshots/01_home_screen.png" width="260" alt="Home Overview Screen (Light Mode)" /> | <img src="screenshots/02_home_dark_screen.png" width="260" alt="Home Overview Screen (Dark Mode)" /> | <img src="screenshots/03_history_screen.png" width="260" alt="Transaction History Screen" /> |
+| Frosted glass balance card, quick actions grid, and floating navigation dock. | Pure OLED dark theme, live wallet cards, and quick transfer shortcuts. | Real-time query search, income and expense filters, and refund management. |
+
+### Analytics and Payment Tools
+
+| Financial Reports | Monthly Wrapped Infographic | VietQR Camera Scanner |
+| :---: | :---: | :---: |
+| <img src="screenshots/04_reports_screen.png" width="260" alt="Financial Reports Screen" /> | <img src="screenshots/05_monthly_wrapped.png" width="260" alt="Monthly Wrapped Infographic" /> | <img src="screenshots/06_scan_qr_screen.png" width="260" alt="VietQR Scanner Screen" /> |
+| Category spending distribution donut chart, 6-month cashflow bars, and calendar view. | Personalized financial habit summary, peak spending days, and shareable card. | Real-time CameraX scanner with automated bank recognition and gallery import. |
+
+### Smart Automation and Data Privacy
+
+| Smart STK Extraction | Bank Notification Listener | Settings and Privacy |
+| :---: | :---: | :---: |
+| <img src="screenshots/07_paste_stk_screen.png" width="260" alt="Smart Account Number Auto-Extraction" /> | <img src="screenshots/08_notification_parser_screen.png" width="260" alt="Bank Notification and SMS Listener" /> | <img src="screenshots/11_settings_screen.png" width="260" alt="Settings and Data Privacy Screen" /> |
+| Automated bank and account parsing from copied text messages in 1 second. | Local notification listener classifying transactions, spam, and AI verification. | Direct APK updates, biometric fingerprint lock, CSV export, and JSON backup. |
+
+### Account and Receiving Setup
+
+| My Receiving VietQR | Bank and Wallet Selector |
+| :---: | :---: |
+| <img src="screenshots/09_my_qr_screen.png" width="260" alt="Personal Receiving VietQR" /> | <img src="screenshots/10_add_account_screen.png" width="260" alt="Multi-Bank and Wallet Selector" /> |
+| Permanent offline receiving QR code storage with instant display. | Seamless integration with 36+ Vietnamese banks and digital wallets. |
 
 ---
 
