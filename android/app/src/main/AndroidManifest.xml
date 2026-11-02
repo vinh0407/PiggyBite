@@ -112,6 +112,31 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- App Widget màn hình chính PiggyBite -->
+        <receiver
+            android:name=".widget.PiggyBiteWidgetProvider"
+            android:exported="true"
+            android:label="PiggyBite Số dư &amp; Quét QR">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/piggybite_widget_info" />
+        </receiver>
+
+        <!-- Quick Settings Tile: Quét VietQR từ thanh thông báo vuốt xuống -->
+        <service
+            android:name=".service.ScanQrTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_qs_scan_qr"
+            android:label="Quét VietQR"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

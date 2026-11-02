@@ -135,10 +135,16 @@ class DataRepository private constructor(private val appContext: Context) {
 
     private fun saveAccounts(list: List<BankAccount>) {
         prefs.edit().putString("bank_accounts", gson.toJson(list)).apply()
+        try {
+            com.piggybite.app.widget.PiggyBiteWidgetProvider.updateAllWidgets(appContext)
+        } catch (_: Exception) {}
     }
 
     private fun saveTransactions(list: List<Transaction>) {
         prefs.edit().putString("transactions", gson.toJson(list)).apply()
+        try {
+            com.piggybite.app.widget.PiggyBiteWidgetProvider.updateAllWidgets(appContext)
+        } catch (_: Exception) {}
     }
 
     fun toggleBalanceVisibility() {

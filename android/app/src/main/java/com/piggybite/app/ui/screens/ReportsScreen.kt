@@ -93,7 +93,8 @@ fun ReportsScreen(
     accounts: List<BankAccount>,
     transactions: List<Transaction>,
     onAddBank: () -> Unit = {},
-    onEditAccount: (BankAccount) -> Unit = {}
+    onEditAccount: (BankAccount) -> Unit = {},
+    onOpenMonthlyWrapped: () -> Unit = {}
 ) {
     val isDark = LocalIsDarkMode.current
     var activeSubTab by remember { mutableStateOf(ReportTab.OVERVIEW) }
@@ -230,15 +231,36 @@ fun ReportsScreen(
                 )
             }
 
-            // Segmented Control (Figma: segmented-control)
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight)
-                    .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(14.dp))
-                .padding(3.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Button Mở Wrapped Tổng kết tháng
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isDark) Color(0xFF1E293B) else Color(0xFFE0F2FE))
+                        .border(1.dp, if (isDark) Color(0xFF334155) else Color(0xFFBAE6FD), RoundedCornerShape(12.dp))
+                        .clickable { onOpenMonthlyWrapped() }
+                        .padding(horizontal = 9.dp, vertical = 7.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "✨ Wrapped",
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isDark) Color(0xFF38BDF8) else PiggyPrimary
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Segmented Control (Figma: segmented-control)
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(if (isDark) PiggySurfaceSoftDark else PiggySurfaceSoftLight)
+                        .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, RoundedCornerShape(14.dp))
+                        .padding(3.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                 val isOverview = activeSubTab == ReportTab.OVERVIEW
                 Box(
                     modifier = Modifier
@@ -295,6 +317,7 @@ fun ReportsScreen(
                     }
                 }
             }
+        }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

@@ -1,5 +1,6 @@
 package com.piggybite.app
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -30,6 +31,7 @@ import com.piggybite.app.ui.components.FloatingNotificationToast
 import com.piggybite.app.ui.components.NavTab
 import com.piggybite.app.ui.dialogs.AddBankAccountDialog
 import com.piggybite.app.ui.dialogs.AddTransactionDialog
+import com.piggybite.app.ui.dialogs.MonthlyWrappedDialog
 import com.piggybite.app.ui.dialogs.MyQrDialog
 import com.piggybite.app.ui.dialogs.NotificationSimulatorDialog
 import com.piggybite.app.ui.dialogs.QrPaymentDialog
@@ -47,6 +49,7 @@ import com.piggybite.app.service.NotificationAccessHelper
 import com.piggybite.app.ui.dialogs.NotificationAccessDialog
 import com.piggybite.app.util.BackupHelper
 import com.piggybite.app.util.BiometricHelper
+import com.piggybite.app.widget.PiggyBiteWidgetProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -56,8 +59,11 @@ import kotlinx.coroutines.delay
 
 class MainActivity : FragmentActivity() {
 
+    private var initialActionState by mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleIntent(intent)
 
         val repository = DataRepository.getInstance(applicationContext)
 
@@ -65,14 +71,39 @@ class MainActivity : FragmentActivity() {
             val isDarkMode by repository.isDarkMode.collectAsState()
 
             PiggyBiteTheme(darkTheme = isDarkMode) {
-                MainAppContent(repository, isDarkMode)
+                MainAppContent(
+                    repository = repository,
+                    isDarkMode = isDarkMode,
+                    initialAction = initialActionState,
+                    onActionHandled = { initialActionState = null }
+                )
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent == null) return
+        if (intent.action == PiggyBiteWidgetProvider.ACTION_SCAN_QR || intent.getStringExtra("action") == "scan_qr") {
+            initialActionState = "scan_qr"
+        } else if (intent.action == PiggyBiteWidgetProvider.ACTION_MY_QR || intent.getStringExtra("action") == "my_qr") {
+            initialActionState = "my_qr"
         }
     }
 }
 
 @Composable
-fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
+fun MainAppContent(
+    repository: DataRepository,
+    isDarkMode: Boolean,
+    initialAction: String? = null,
+    onActionHandled: () -> Unit = {}
+) {
     val accounts by repository.accounts.collectAsState()
     val transactions by repository.transactions.collectAsState()
     val receivedNotifications by repository.receivedNotifications.collectAsState()
@@ -92,6 +123,24 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
     var showAddBankDialog by remember { mutableStateOf(false) }
     var accountToEdit by remember { mutableStateOf<BankAccount?>(null) }
     var showMyQrDialog by remember { mutableStateOf(false) }
+    var showMonthlyWrappedDialog by remember { mutableStateOf(false) }
+
+    // Xử lý hành động từ Home Widget hoặc Quick Settings Tile
+    LaunchedEffect(initialAction) {
+        if (initialAction != null) {
+            when (initialAction) {
+                "scan_qr" -> {
+                    qrInitialStep = QrPaymentStep.SCAN_CAMERA
+                    showQrPaymentDialog = true
+                    onActionHandled()
+                }
+                "my_qr" -> {
+                    showMyQrDialog = true
+                    onActionHandled()
+                }
+            }
+        }
+    }
 
     // Notification access: re-check each time app returns to foreground (e.g. back from Settings)
     val context = LocalContext.current
@@ -270,7 +319,8 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                         onEditAccount = { acc ->
                             accountToEdit = acc
                             showAddBankDialog = true
-                        }
+                        },
+                        onOpenMonthlyWrapped = { showMonthlyWrappedDialog = true }
                     )
                 }
                 NavTab.SETTINGS -> {
@@ -440,6 +490,13 @@ fun MainAppContent(repository: DataRepository, isDarkMode: Boolean) {
                 repository.saveAccountQr(accId, path)
             },
             onDismiss = { showMyQrDialog = false }
+        )
+    }
+
+    if (showMonthlyWrappedDialog) {
+        MonthlyWrappedDialog(
+            transactions = transactions,
+            onDismiss = { showMonthlyWrappedDialog = false }
         )
     }
 
