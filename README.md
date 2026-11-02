@@ -1,6 +1,8 @@
-# PiggyBite
-
-Smart, Privacy-First Personal Finance Manager for Android.
+<p align="center">
+  <img src="screenshots/app_logo.png" width="112" height="112" alt="PiggyBite Logo" style="border-radius: 24px;" />
+  <h1 align="center">PiggyBite</h1>
+  <p align="center">Smart, Privacy-First Personal Finance Manager for Android</p>
+</p>
 
 <p align="center">
   <a href="https://github.com/vinh0407/PiggyBite/raw/main/APK/PiggyBite.apk">

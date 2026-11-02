@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Notifications
@@ -67,28 +66,30 @@ fun TopHeader(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Brand Squircle Gradient Mark (Figma: brand-mark)
+            // Brand Squircle Mark with custom Logo on white background
             Box(
                 modifier = Modifier
                     .size(42.dp)
                     .shadow(
-                        elevation = 8.dp,
+                        elevation = 4.dp,
                         shape = RoundedCornerShape(13.dp),
-                        spotColor = PiggyPrimary.copy(alpha = 0.25f)
+                        spotColor = Color.Black.copy(alpha = 0.08f)
                     )
                     .clip(RoundedCornerShape(13.dp))
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(0xFF15A7EA), Color(0xFF0B72CA))
-                        )
-                    ),
+                    .background(Color.White)
+                    .border(
+                        width = 1.dp,
+                        color = if (isDarkMode) PiggyBorderDark else PiggyBorderLight,
+                        shape = RoundedCornerShape(13.dp)
+                    )
+                    .padding(4.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Savings,
+                Image(
+                    painter = painterResource(id = R.drawable.app_logo),
                     contentDescription = "PiggyBite",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(32.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
 

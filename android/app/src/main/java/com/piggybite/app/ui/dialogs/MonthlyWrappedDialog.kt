@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocalAtm
 import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults

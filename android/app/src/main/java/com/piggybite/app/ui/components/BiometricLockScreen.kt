@@ -1,5 +1,6 @@
 package com.piggybite.app.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -27,12 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.piggybite.app.R
 import com.piggybite.app.ui.theme.DarkTextMuted
 import com.piggybite.app.ui.theme.LocalIsDarkMode
 import com.piggybite.app.ui.theme.PiggyBorderDark
@@ -60,28 +62,30 @@ fun BiometricLockScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // App Brand Mark
+            // App Brand Mark with custom Logo on white background
             Box(
                 modifier = Modifier
                     .size(68.dp)
                     .shadow(
-                        elevation = 12.dp,
+                        elevation = 8.dp,
                         shape = RoundedCornerShape(20.dp),
-                        spotColor = PiggyPrimary.copy(alpha = 0.35f)
+                        spotColor = Color.Black.copy(alpha = 0.08f)
                     )
                     .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(0xFF15A7EA), Color(0xFF0B72CA))
-                        )
-                    ),
+                    .background(Color.White)
+                    .border(
+                        width = 1.dp,
+                        color = if (isDark) PiggyBorderDark else PiggyBorderLight,
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .padding(6.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Savings,
+                Image(
+                    painter = painterResource(id = R.drawable.app_logo),
                     contentDescription = "PiggyBite",
-                    tint = Color.White,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(52.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
 
