@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Delete
@@ -236,7 +238,7 @@ fun HistoryScreen(
                 .padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            HistoryFilter.values().forEach { filter ->
+            HistoryFilter.entries.forEach { filter ->
                 val isSelected = selectedFilter == filter
                 Box(
                     modifier = Modifier
@@ -357,21 +359,68 @@ fun HistoryScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 40.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(top = 48.dp, bottom = 48.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
+                Box(
+                    modifier = Modifier
+                        .size(68.dp)
+                        .clip(CircleShape)
+                        .background(if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight)
+                        .border(1.dp, if (isDark) PiggyBorderDark else PiggyBorderLight, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
+                        contentDescription = null,
+                        tint = PiggyPrimary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Text(
-                    text = "Không tìm thấy giao dịch nào",
-                    fontSize = 15.sp,
+                    text = "Chưa có giao dịch nào",
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+
+                Spacer(modifier = Modifier.height(6.dp))
+
                 Text(
-                    text = "Thử tìm kiếm với từ khoá khác hoặc ghi chép mới",
-                    fontSize = 12.sp,
-                    color = if (isDark) DarkTextMuted else TextMuted
+                    text = if (searchQuery.isNotBlank()) "Không tìm thấy kết quả khớp với \"$searchQuery\"" else "Ghi chép giao dịch đầu tiên để theo dõi tài chính",
+                    fontSize = 12.5.sp,
+                    color = if (isDark) DarkTextMuted else TextMuted,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = onAddTransaction,
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PiggyPrimary,
+                        contentColor = Color.White
+                    ),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp, vertical = 11.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Thêm giao dịch",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.5.sp
+                    )
+                }
             }
         } else {
             LazyColumn(

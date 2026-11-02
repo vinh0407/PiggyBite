@@ -48,6 +48,8 @@ fun PiggyBiteTheme(
     CompositionLocalProvider(LocalIsDarkMode provides darkTheme) {
         MaterialTheme(
             colorScheme = colorScheme,
+            typography = PiggyTypography,
+            shapes = PiggyShapes,
             content = content
         )
     }

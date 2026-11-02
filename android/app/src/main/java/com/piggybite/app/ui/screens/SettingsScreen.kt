@@ -22,9 +22,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Smartphone
@@ -158,8 +159,8 @@ fun SettingsScreen(
                 }
 
                 Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = null,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Tải xuống APK",
                     tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
@@ -284,6 +285,60 @@ fun SettingsScreen(
                         )
                     )
                 }
+
+                // Row 3: Huấn luyện AI thông báo số dư
+                Box(modifier = Modifier.fillMaxWidth().height(0.6.dp).background(if (isDark) PiggyBorderDark else PiggyBorderLight))
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onOpenNotificationSimulator() }
+                        .padding(vertical = 6.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isDark) PiggyPrimarySoftDark else PiggyPrimarySoftLight),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Psychology,
+                                contentDescription = "Huấn luyện AI",
+                                tint = PiggyPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Mô phỏng & Huấn luyện AI",
+                                fontSize = 13.5.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Thử nghiệm bóc tách thông báo ngân hàng",
+                                fontSize = 11.sp,
+                                color = if (isDark) DarkTextMuted else TextMuted
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Mở mô phỏng thông báo",
+                        tint = if (isDark) DarkTextMuted else TextMuted,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
 
@@ -361,8 +416,8 @@ fun SettingsScreen(
                     }
 
                     Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = null,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Xem QR ủng hộ",
                         tint = if (isDark) DarkTextMuted else TextMuted,
                         modifier = Modifier.size(16.dp)
                     )
@@ -403,8 +458,8 @@ fun SettingsScreen(
                     }
 
                     Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = null,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Xoá dữ liệu",
                         tint = PiggyRed,
                         modifier = Modifier.size(16.dp)
                     )
